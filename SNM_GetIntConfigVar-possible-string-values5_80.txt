@@ -1,0 +1,567 @@
+# The following 411 variable-names can be used for the SWS-functions 
+#
+#    SNM_GetIntConfigVar(), SNM_SetIntConfigVar(), SNM_GetDoubleConfigVar() and SNM_SetDoubleConfigVar()
+#
+# who change Reaper's configuration-variables at run time. Just pass the variable-name to the parameter "varname".
+#
+# These variablenames are from Reaper 5.80 and probably missing some, but should be fairly complete anyway.
+#
+# These can be used to set configuration-stuff in the preferences, the project-settings, the render-dialog,
+# many context-menus(like MCP or transport-context-menus) and various others.
+# They are either double or integer-values. The integer-values are usually bitfields, where every bit stores 
+# e.g. the value of a checkbox in the preferences.
+# That said: one variable may contain the settings for up to 32(more?) settings at once.
+#
+# Keep in mind: if you change settings, these changes might not be stored in Reaper's setting-files, so they 
+#               may get lost, when Reaper is exited. If you want to retain settings, you need to set them in
+#               the corresponding ini-files as well(usually the reaper.ini) with BR_Win32_WritePrivateProfileString()
+#
+#               Project-settings should be stored the next time a project is saved, but doublecheck that, if 
+#               storing projectsettings into a projectfile is a must in your script!
+#
+# collection by Meo Mespotine mespotine.de for the ultraschall.fm-project
+# some of them were collected by various users in the Reaper-forums, thanx for that :)
+
+__numcpu
+acidimport
+actionmenu
+adjreclat
+adjrecmanlat
+adjrecmanlatin
+afxcfg
+    the audioformat for "Apply FX, Glue, Freeze, etc", as set in the Project Settings->Media-dialog
+    only includes the format, not the individual format-settings(like bitrate, etc)
+        1179012432, Video (ffmpeg/libav encoder)
+        1195984416, Video (GIF)
+        1279477280, Video (LCF)
+        1332176723, OGG Opus
+        1634297446, AIFF
+        1684303904, DDP
+        1718378851, FLAC
+        1769172768, Audio CD Image(CUE/BIN format)
+        1836069740, MP3 (encoder by LAME project)
+        1869047670, OGG Vorbis
+        2002876005, WAV
+        2004250731, WavPack lossless compressor
+    
+allstereopairs
+altpeaks
+altpeaksopathlist
+altpeakspath
+alwaysallowkb
+aot
+applyfxtail
+audioasync
+audiocloseinactive
+audioclosestop
+audioprshift
+audiothreadpr
+autoclosetrackwnds
+automute
+automuteflags
+automuteval
+autonbworkerthreads
+autoreturntime
+autoreturntime_action
+autosaveint
+autosavemode
+autoxfade
+copyimpmedia
+cpuallowed
+csurfrate
+ctrlcopyitem
+cueitems
+custommenu
+defautomode
+defenvs
+deffadelen
+deffadeshape
+defhwvol
+defpitchcfg
+defrenderpath
+defsavepath
+defsendflag
+defsendvol
+defsplitxfadelen
+deftrackrecflags
+deftrackrecinput
+deftrackvol
+defvzoom
+defxfadeshape
+disabledxscan
+disk_peakmmap2
+disk_rdblksex
+disk_rdmodeex
+disk_rdsizeex
+disk_wrblks
+disk_wrblks2
+disk_wrmode
+disk_wrsize
+diskcheck
+diskcheckmb
+edit_fontsize
+env_autoadd
+env_deffoc
+env_ol_minh
+env_options
+env_reduce
+envattach
+ENVATTACH
+envclicksegmode
+envlanes
+envtranstime
+envtrimadjmode
+envwritepasschg
+errnowarn
+fadeeditflags
+fadeeditlink
+fadeeditpostsel
+fadeeditpresel
+feedbackmode
+fullscreenRectB
+fullscreenRectL
+fullscreenRectR
+fullscreenRectT
+fxdenorm
+fxfloat_focus
+fxresize
+g_config_project
+g_markerlist_updcnt
+    the number of projects with markers that have been opened since Reaper started, with one count for each project
+    this counter includes already closed projects as well
+        0, no project with a marker existing
+        1 and higher, n project(s) with one or more markers exist(s)
+    
+griddot
+gridinbg
+gridinbg2
+groupdispmode
+guidelines2
+handzoom
+help
+hwfadex
+hwoutfx_bypass
+ide_colors
+insertmtrack
+isFullscreen 
+    stores, if Reaper is currently set to fullscreen
+        0, Reaper isn't fullscreen
+        1, Reaper is fullscreen
+        
+itemclickmovecurs
+itemdblclk
+itemeditpr
+itemfade_minheight
+itemfade_minwidth
+itemfadehandle_maxwidth
+itemfxtail
+itemicons
+itemicons_minheight
+itemlabel_minheight
+itemlowerhalf_minheight
+itemmixflag
+itemprops
+itemprops_timemode
+itemsnap
+itemtexthide
+itemtimelock
+itemvolmode
+kbd_usealt
+labelitems2
+lastthemefn5
+loadlastproj
+locklooptotime
+loop
+loopclickmode
+loopgran
+loopgranlen
+loopnewitems
+loopselpr
+loopstopfx
+manuallat
+manuallatin
+mastermutesolo
+maxitemlanes
+maxrecent
+maxrecentfx
+maxrecsize
+maxrecsize_use
+maxsnaptrack
+maxspeakgain
+metronome_defout
+metronome_flags
+midiccdensity
+mididefcolormap
+midieditor
+midiins
+midiins_cs
+midioctoffs
+midiouts
+midiouts_clock
+midiouts_clock_nospp
+midiouts_llmode
+midioutthread
+midisendflags
+miditicksperbeat
+midivu
+mixerflag
+mixeruiflag
+mixrowflags
+mousemovemod
+mousewheelmode
+multiprojopt
+multitouch
+multitouch_ignore_ms
+multitouch_ignorewheel_ms
+multitouch_rotate_gear
+multitouch_swipe_gear
+multitouch_zoom_gear
+mutefadems10
+mvu_rmsgain
+mvu_rmsmode
+mvu_rmsoffs2
+mvu_rmsred
+mvu_rmssize
+nativedrawtext
+newfnopt
+newprojdo
+newtflag
+nometers
+norunmute
+offlineinact
+opencopyprompt
+opennotes
+optimizesilence
+pandispmode
+panlaw
+panmode
+peakcachegenmode
+peakcachegenrs
+peakrecbm
+peaksedges
+pitchenvrange
+playcursormode
+playrate
+playresamplemode
+pmfol
+pooledenvattach
+pooledenvs
+prebufperb
+preroll
+prerollmeas
+projalignbeatsrate
+    the "Force project tempo/time signature changes to occur on whole samples"-checkbox, as set in the Project Settings -> Project Settings
+        0, checkbox is unchecked
+        1, checkbox is checked
+    
+projbpm
+projfrbase
+    the framerate of videos in the project, as set in the Project-Settings -> Video
+    only integer framerates are allowed
+
+        1 to 999999999 are allowed framerates
+
+    for default framerates, see projfrdrop
+    
+projfrdrop
+    the default-framerates for videos in the project, as set in the Project-Settings -> Video
+    reflects the default-setting you chose in the dropdown-menu(without entering an individual one), that is not a "normal" integer one, like 23.076
+    correspondents with settings in the variable projfrbase
+        
+        0, integer framerate-settings
+        1, 29.97DF
+        2, 23.976 fps when projfrbase is set to 24
+        2, 29.97ND when projfrbase is set to 30
+    
+    for individual framerates, see projfrbase
+
+projgriddiv
+projgriddivsnap
+projgridframe
+projgridmin
+projgridsnapmin
+projgridswing
+projgroupover
+projgroupsel
+projintmix
+projmasternch
+projmastervuflags
+projmaxlen
+projmaxlenuse
+projmeaslen
+projmeasoffs
+projmetrobeatlen
+projmetrocountin
+projmetroen
+projmetrof1
+projmetrof2
+projmetrov1
+projmetrov2
+projmidieditor
+projpeaksgain
+projrecforopencopy
+projrecmode
+projrelpath
+projrenderaddtoproj
+projrenderdither
+projrenderlimit
+projrendernch
+projrenderqdelay
+projrenderrateinternal
+projrenderresample
+projrendersrate
+projrenderstems
+projripedit
+projsellock
+projshowgrid
+projsmpteahead
+projsmptefw_rec
+projsmpteinput
+projsmptemaxfree
+projsmpteoffs
+projsmpterate
+projsmpterateuseproj
+projsmpteresync
+projsmpteresync_rec
+projsmpteskip
+projsmptesync
+projsrate
+    the project's sample-rate in Hertz, as set in the Project Settings -> Project Settings
+    only integer values are allowed
+        -2147483648 to 2147483647 Hz are alloed
+
+projsrateuse
+    use Project sample rate-checkbox, as set in the Project Settings -> Project Settings
+        0, unchecked; dont use project sample rate
+        1, checked; use project sample rate
+    
+projtakelane
+projtimemode
+projtimemode2
+projtimeoffs
+projtrackgroupdisabled
+projtsdenom
+projvidflags
+    individual settings for videos in the project, as set in the Project Settings->Video
+    this value is a bitfield
+        &1   = 0, Video colorspace Auto
+        &1   = 1, I420/YV12
+        &2 = 1 and &1 = 0, YUY2
+        &2 = 1 and &1 = 1, RGB
+        
+        &256 = 0, items in higher numbered tracks replace lower
+        &256 = 1, items in lower numbered tracks replace higher
+        
+        &512 = 0, unchecked: Always resize video sources to prefered video size
+        &512 = 1, checked: Always resize video sources to prefered video size
+        
+        &1024 = 0, unchecked: Always resize output to prefered video size
+        &1024 = 1, checked: Always resize output to prefered video size
+        
+        &2048 = 0, checked: Use high quality filtering when resizing
+        &2048 = 1, unchecked: Use high quality filtering when resizing
+        
+        &4096 = 0, checked: Preserve aspect ratio(letterbox) when resizing
+        &4096 = 1, unchecked: Preserve aspect ratio(letterbox) when resizing
+
+projvidh
+    height of the video in pixels, as set in the Project Settings->Video
+    only integer allowed, or it will reset to 0
+        1 to 1999999999 are allowed settings
+
+projvidw
+    width of the video in pixels, as set in the Project Settings->Video
+    only integer allowed, or it will reset to 0
+        1 to 1999999999 are allowed settings
+    
+promptendrec
+psmaxv
+psminv
+quantflag
+quantolms
+quantolms2
+quantsize2
+rbn
+reamote_maxblock
+reamote_maxlat_render
+reamote_maxpkt
+reamote_smplfmt
+reascript
+reascripttimeout
+recaddatloop
+reccfg
+    the audioformat for Recording, as set in the Project Settings->Media-dialog
+    only includes the format, not the individual format-settings(like bitrate, etc)
+        1179012432, Video (ffmpeg/libav encoder)
+        1195984416, Video (GIF)
+        1279477280, Video (LCF)
+        1332176723, OGG Opus
+        1634297446, AIFF
+        1684303904, DDP
+        1718378851, FLAC
+        1769172768, Audio CD Image(CUE/BIN format)
+        1836069740, MP3 (encoder by LAME project)
+        1869047670, OGG Vorbis
+        2002876005, WAV
+        2004250731, WavPack lossless compressor
+    
+recfile_wildcards
+recopts
+recupdatems
+relativeedges
+relsnap
+renderaheadlen
+renderaheadlen2
+renderbsnew
+rendercfg 
+    the render-format set in the render-dialog
+    only includes the format, not the individual format-settings(like bitrate, etc)
+        1179012432, Video (ffmpeg/libav encoder)
+        1195984416, Video (GIF)
+        1279477280, Video (LCF)
+        1332176723, OGG Opus
+        1634297446, AIFF
+        1684303904, DDP
+        1718378851, FLAC
+        1769172768, Audio CD Image(CUE/BIN format)
+        1836069740, MP3 (encoder by LAME project)
+        1869047670, OGG Vorbis
+        2002876005, WAV
+        2004250731, WavPack lossless compressor
+    
+renderclosewhendone
+renderqdelay
+rendertail
+rendertaillen
+rendertails
+resetvuplay
+restrictcpu
+rewireslave
+rewireslavedelay
+reximport
+rfprojfirst
+rightclickemulate
+ripplelockmode
+rulerlayout
+runafterstop
+runallonstop
+sampleedges
+saveopts
+saveundostatesproj
+scnameedit
+scnotes
+scoreminnotelen
+scorequant
+screenset_as_views
+screenset_as_win
+screenset_autosave
+scrubloopend
+scrubloopstart
+scrubmode
+scrubrelgain
+seekmodes
+selitem_tintalpha
+selitemtop
+showctinmix
+showlastundo
+showmaintrack
+showpeaks
+showpeaksbuild
+showrecitems
+slidermaxv
+sliderminv
+slidershex
+smoothseek
+smoothseekmeas
+snapextrad
+snapextraden
+solodimdb10
+solodimen
+soloip
+specpeak_alpha
+specpeak_bv
+specpeak_ftp
+specpeak_hueh
+specpeak_huel
+specpeak_lo
+specpeak_na
+splitautoxfade
+stopendofloop
+stopprojlen
+syncsmpmax2
+syncsmpuse
+tabtotransflag
+takelanes
+tcpalign
+templateditcursor
+tempoenvmax
+tempoenvmin
+tempoenvtimelock
+textflags
+threadpr
+timeseledge
+tinttcp
+titlebarreghide
+tooltipdelay
+tooltips
+trackitemgap
+trackselonmouse
+transflags
+transientsensitivity
+transientthreshold
+trimmidionsplit
+tsmarker
+undomask
+undomaxmem
+unselitem_tintalpha
+use_reamote
+usedxplugs
+useinnc
+userewire
+verchk
+vgrid
+video_colorspace
+video_decprio
+video_delayms
+viewadvance
+volenvrange
+vstbr64
+vstfolder_settings
+vstfullstate
+vuclipstick
+vudecay
+vumaxvol
+vuminvol
+vuupdfreq
+vzoom2
+vzoommode
+warnmaxram64
+workbehvr
+workbuffxuims
+workbufmsex
+workrender
+workset_max
+workset_min
+workset_use
+workthreads
+zoom
+zoommode
+zoomshowarm
+
+
+# these are reported to work, though I couldn't verify them
+
+asio_bsize
+bigwndframes
+ccresettab
+defrecpath
+lazyupds
+midiedit
+midilatmask
+projmetrofn1
+projmetrofn2
+projmetropattern
+projrelsnap
+reuseeditor
+rulerlabelmargin
+vstbr32
