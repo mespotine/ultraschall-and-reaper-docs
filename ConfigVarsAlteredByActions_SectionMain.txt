@@ -1,4 +1,4 @@
-This is a full list of config-variables changed by actions. The format is: Section_CommandID(AID) and then the configvariable altered.
+This is a full list of config-variables changed by actions in the Main-section. The format is: Section_CommandID(AID) and then the configvariable altered.
 The INT/DOUBLE-values are a hint to what has changed to what, but isn't 100%-accurate.
 
 The list isn't cleaned yet, means, while creating this list, some false positives happened through the process. 
