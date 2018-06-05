@@ -1,4 +1,4 @@
--- written by Meo Mespotine mespotine.de 18th of May 2018
+-- written by Meo Mespotine mespotine.de 2nd of June 2018
 -- for the ultraschall.fm-project
 
 -- requires Reaper 5.80 and SWS 2.9.7
@@ -455,7 +455,7 @@ if L==6 then
 elseif L==2 then return
 else
   -- all valid variables
-  A="__numcpu\nacidimport\nactionmenu\nadjreclat\nadjrecmanlat\nadjrecmanlatin\nallstereopairs\naltpeaks\naltpeaksopathlist\naltpeakspath\nalwaysallowkb\naot\napplyfxtail\nasio_bsize\naudioasync\naudiocloseinactive\naudioclosestop\naudioprshift\naudiothreadpr\nautoclosetrackwnds\nautomute\nautomuteflags\nautomuteval\nautonbworkerthreads\nautoreturntime\nautoreturntime_action\nautosaveint\nautosavemode\nautoxfade\ncopyimpmedia\ncpuallowed\ncsurfrate\nctrlcopyitem\ncueitems\ncustommenu\ndefautomode\ndefenvs\ndeffadelen\ndeffadeshape\ndefhwvol\ndefpitchcfg\ndefrenderpath\ndefsavepath\ndefsendflag\ndefsendvol\ndefsplitxfadelen\ndeftrackrecflags\ndeftrackrecinput\ndeftrackvol\ndefvzoom\ndefxfadeshape\ndisabledxscan\ndisk_peakmmap2\ndisk_rdmodeex\ndisk_rdsizeex\ndisk_wrblks"
+  A="ara\n__numcpu\nacidimport\nactionmenu\nadjreclat\nadjrecmanlat\nadjrecmanlatin\nallstereopairs\naltpeaks\naltpeaksopathlist\naltpeakspath\nalwaysallowkb\naot\napplyfxtail\nasio_bsize\naudioasync\naudiocloseinactive\naudioclosestop\naudioprshift\naudiothreadpr\nautoclosetrackwnds\nautomute\nautomuteflags\nautomuteval\nautonbworkerthreads\nautoreturntime\nautoreturntime_action\nautosaveint\nautosavemode\nautoxfade\ncopyimpmedia\ncpuallowed\ncsurfrate\nctrlcopyitem\ncueitems\ncustommenu\ndefautomode\ndefenvs\ndeffadelen\ndeffadeshape\ndefhwvol\ndefpitchcfg\ndefrenderpath\ndefsavepath\ndefsendflag\ndefsendvol\ndefsplitxfadelen\ndeftrackrecflags\ndeftrackrecinput\ndeftrackvol\ndefvzoom\ndefxfadeshape\ndisabledxscan\ndisk_peakmmap2\ndisk_rdmodeex\ndisk_rdsizeex\ndisk_wrblks"
   A=A.."\ndisk_wrblks2\ndisk_wrmode\ndisk_wrsize\ndiskcheck\ndiskcheckmb\nedit_fontsize\nenv_autoadd\nenv_deffoc\nenv_ol_minh\nenv_options\nenv_reduce\nenvattach\nenvclicksegmode\nenvlanes\nenvtranstime\nenvtrimadjmode\nenvwritepasschg\nerrnowarn\nfadeeditflags\nfadeeditlink\nfadeeditpostsel\nfadeeditpresel\nfeedbackmode\nfullscreenRectB\nfullscreenRectL\nfullscreenRectR\nfullscreenRectT\nfxdenorm\nfxfloat_focus\nfxresize\ng_config_project\ng_markerlist_updcnt\ngriddot\ngridinbg\ngridinbg2\ngroupdispmode\nguidelines2\nhandzoom\nhelp\nhwfadex\nhwoutfx_bypass\nide_colors\ninsertmtrack\nisFullscreen\nitemclickmovecurs\nitemdblclk\nitemeditpr\nitemfade_minheight\nitemfade_minwidth\nitemfadehandle_maxwidth\nitemfxtail\nitemicons\nitemicons_minheight\nitemlabel_minheight\nitemlowerhalf_minheight"
   A=A.."\nitemmixflag\nitemprops\nitemprops_timemode\nitemsnap\nitemtexthide\nitemtimelock\nitemvolmode\nkbd_usealt\nlabelitems2\nlastthemefn5\nloadlastproj\nlocklooptotime\nloop\nloopclickmode\nloopgran\nloopgranlen\nloopnewitems\nloopselpr\nloopstopfx\nmanuallat\nmanuallatin\nmastermutesolo\nmaxitemlanes\nmaxrecent\nmaxrecentfx\nmaxrecsize\nmaxrecsize_use\nmaxsnaptrack\nmaxspeakgain\nmetronome_defout\nmetronome_flags\nmidiccdensity\nmididefcolormap\nmidieditor\nmidiins\nmidiins_cs\nmidioctoffs\nmidiouts\nmidiouts_clock\nmidiouts_clock_nospp\nmidiouts_llmode\nmidioutthread\nmidisendflags\nmiditicksperbeat\nmidivu\nmixerflag\nmixeruiflag\nmixrowflags\nmousemovemod\nmousewheelmode\nmultiprojopt\nmultitouch\nmultitouch_ignore_ms\nmultitouch_ignorewheel_ms\nmultitouch_rotate_gear"
   A=A.."\nmultitouch_swipe_gear\nmultitouch_zoom_gear\nmutefadems10\nmvu_rmsgain\nmvu_rmsmode\nmvu_rmsoffs2\nmvu_rmsred\nmvu_rmssize\nnativedrawtext\nnewfnopt\nnewprojdo\nnewtflag\nnometers\nnorunmute\nofflineinact\nopencopyprompt\nopennotes\noptimizesilence\npandispmode\npanlaw\npanmode\npeakcachegenmode\npeakcachegenrs\npeakrecbm\npeaksedges\npitchenvrange\nplaycursormode\nplayrate\nplayresamplemode\npmfol\npooledenvattach\npooledenvs\nprebufperb\npreroll\nprerollmeas\nprojalignbeatsrate\nprojbpm\nprojfrbase\nprojfrdrop\nprojgriddiv\nprojgriddivsnap\nprojgridframe\nprojgridmin\nprojgridsnapmin\nprojgridswing\nprojgroupover\nprojgroupsel\nprojintmix\nprojmasternch\nprojmastervuflags\nprojmaxlen\nprojmaxlenuse\nprojmeaslen\nprojmeasoffs\nprojmetrobeatlen\nprojmetrocountin"
@@ -467,6 +467,9 @@ else
   -- these are rumored to work, but I couldn't verify them. I include them anyway, just in case
   A=A.."\nafxcfg\nbigwndframes\nccresettab\ndefrecpath\nlazyupds\nmidiedit\nmidilatmask\nprojmetrofn1\nprojmetrofn2\nprojmetropattern\nprojrelsnap\nreccfg\nreuseeditor\nrulerlabelmargin\nvstbr32"
   A=A.."\nhidpi_win32"
+  
+  -- these are from Reaper 9.91 pre 2, as accepted by get_config_var_string
+  A=A.."aOt\nArA\nARA\ntitlebarreghide\nreascript\nstopendofloop\nlastthemefn5\naot\ntooltips\nhelp\nisFullscreen\nfullscreenRectL\nfullscreenRectR\nfullscreenRectT\nfullscreenRectB\nitemtexthide\nlabelitems2\ncueitems\nmixerflag\nshowctinmix\nactionmenu\ncustommenu\ntransflags\nrbn\nrunallonstop\nenv_reduce\nenvclicksegmode\nnometers\nviewadvance\ncopyimpmedia\nitemclickmovecurs\nsolodimen\ntakelanes\nsmoothseek\nsplitautoxfade\nrelativeedges\ntrimmidionsplit\npooledenvs\nrulerlayout\npreroll\nhwoutfx_bypass\ndiskcheck\nkbd_usealt\nmultiprojopt\nfxfloat_focus\nvgrid\nshowpeaks\ntransientsensitivity\ntransientthreshold\naudiothreadpr\nwarnmaxram64\nuiscale\nbigwndframes\ng_markerlist_updcnt\nmvu_rmsmode\nmvu_rmssize\nmvu_rmsoffs2\nmvu_rmsred\nmvu_rmsgain\nitemicons\nitemicons_minheight\nitemlabel_minheight\nitemlowerhalf_minheight\nitemfade_minwidth\nitemfade_minheight\nitemfadehandle_maxwidth\nvstfolder_settings\nsyncsmpuse\nsyncsmpmax2\nsmoothseekmeas\nadjreclat\nrecopts\nmanuallat\nmanuallatin\nadjrecmanlat\nadjrecmanlatin\nmultitouch\nmultitouch_swipe_gear\nmultitouch_zoom_gear\nmultitouch_rotate_gear\nmultitouch_ignorewheel_ms\nmultitouch_ignore_ms\nprerollmeas\nstopprojlen\ninsertmtrack\nitemsnap\nloadlastproj\npromptendrec\npeakcachegenmode\npeakcachegenrs\npeakrecbm\naudioclosestop\naudiocloseinactive\nrfprojfirst\nuseinnc\npmfol\nmaxrecsize\nmaxrecsize_use\nprojrelpath\nhandzoom\nmidioutthread\nmidisendflags\nmidiins\nmidiins_cs\nmidiouts\nmidiouts_clock\nmidiouts_clock_nospp\nmidiouts_llmode\nworkthreads\nautonbworkerthreads\nworkbufmsex\nworkbuffxuims\nprebufperb\nmidioctoffs\nplaycursormode\ngroupdispmode\ntooltipdelay\nshowlastundo\ntcpalign\ntimeseledge\nnativedrawtext\nmidivu\nmidieditor\nmidiccdensity\nscnotes\nzoomshowarm\nofflineinact\nundomaxmem\nmaxsnaptrack\nzoommode\ndefvzoom\nvzoommode\nseekmodes\ndeffadeshape\ndefxfadeshape\nmousemovemod\ndefautomode\ndeffadelen\ndefsplitxfadelen\ndefenvs\nsaveopts\nautosaveint\nautosavemode\nfxresize\nvstfullstate\nara\nenvtrimadjmode\nenvwritepasschg\nenv_options\nvstbr64\nusedxplugs\ndisabledxscan\nvuupdfreq\nvudecay\naltpeaks\nsnapextrad\nsnapextraden\nshowrecitems\nrecaddatloop\nrecupdatems\nnorunmute\noptimizesilence\nenv_autoadd\nrenderaheadlen\nrenderaheadlen2\nloopclickmode\nloopstopfx\nundomask\nctrlcopyitem\nworkrender\naudioasync\nworkbehvr\nthreadpr\nmousewheelmode\nautoclosetrackwnds\nalwaysallowkb\nguidelines2\ntextflags\nrestrictcpu\nworkset_use\nworkset_min\nworkset_max\ncpuallowed\nverchk\nrenderbsnew\nscrubmode\nscrubloopstart\nscrubloopend\nscrubrelgain\nitemvolmode\nvolenvrange\npitchenvrange\ntempoenvmin\ntempoenvmax\npeaksedges\nsampleedges\nsliderminv\nslidermaxv\nvuminvol\nvumaxvol\nvuclipstick\ntrackitemgap\nmaxitemlanes\nitemfxtail\nripplelockmode\nrendertail\nslidershex\nnewtflag\nitemdblclk\ndiskcheckmb\nopencopyprompt\nselitemtop\nrenderclosewhendone\nrenderqdelay\nrunafterstop\naltpeakspath\naltpeaksopathlist\ndefrenderpath\ndefsavepath\nnewprojdo\npandispmode\nmididefcolormap\nvideo_colorspace\nvideo_delayms\nvideo_decprio\ntabtotransflag\nreximport\nacidimport\ndefsendflag\ndeftrackrecflags\ndeftrackrecinput\ndefsendvol\ndefhwvol\ndeftrackvol\ncsurfrate\nenv_ol_minh\nenvlanes\nenv_deffoc\nresetvuplay\nquantsize2\nquantflag\nquantolms\nquantolms2\napplyfxtail\nuserewire\nitemeditpr\nloopselpr\ndisk_peakmmap2\ndisk_rdmodeex\ndisk_rdblksex\ndisk_rdsizeex\ndisk_wrmode\ndisk_wrblks\ndisk_wrblks2\ndisk_wrsize\nuse_reamote\nreamote_smplfmt\nreamote_maxblock\nreamote_maxlat_render\nreamote_maxpkt\nscreenset_autosave\nscreenset_as_views\nscreenset_as_win\ntinttcp\nsoloip\ngridinbg\ngridinbg2\ngriddot\ntsmarker\nshowpeaksbuild\nnewfnopt\nrecfile_wildcards\nsaveundostatesproj\nallstereopairs\ntrackselonmouse\nselitem_tintalpha\nunselitem_tintalpha\nhwfadex\nfxdenorm\nmiditicksperbeat\nerrnowarn\nmaxrecent\nloopnewitems\nscnameedit\nmaxrecentfx\nautoreturntime\nautoreturntime_action\nenvtranstime\nmutefadems10\nsolodimdb10\nautomuteflags\nautomute\nautomuteval\nrightclickemulate\nitemprops\nreascripttimeout\nedit_fontsize\nfadeeditpresel\nfadeeditpostsel\nfadeeditflags\nfadeeditlink\nmetronome_defout\nmetronome_flags\nitemprops_timemode\nspecpeak_alpha\nspecpeak_bv\nspecpeak_ftp\nspecpeak_huel\nspecpeak_hueh\nspecpeak_lo\nspecpeak_na\nmaxspeakgain\nreascript\nHelp\nReaScript\nMIDIEDITOR\nTAKELANES\nAUTOMUTE\nMultitouch\nAutomute\nHelp\nReaScript\n"
   
   -- possible other variables
   --[[
@@ -551,12 +554,16 @@ end
 -- comment-section at the beginning of this script.
 -- Every variable-name must be in it's own line without trailing or preceding whitespaces or tabs!
 vars={} -- variable-values
+vars_double={}
+vars_string={}
 vars2={} -- variable-names
 counter=0
 i=1 -- number of variables(for later use)
 for line in A:gmatch("(.-)\n") do
   if vars[line]==nil then counter=counter+1 end
-  vars[line]=reaper.SNM_GetDoubleConfigVar(line,-8)
+  vars[line]=reaper.SNM_GetIntConfigVar(line,-8)
+  vars_double[line]=reaper.SNM_GetDoubleConfigVar(line,-8)
+  if reaper.get_config_var_string==nil then vars_string[line]="String variable not available in this Reaper-version, sorry." else _t,vars_string[line]=reaper.get_config_var_string(line) end
   i=i+1
   vars2[i]=line
 end
@@ -571,14 +578,19 @@ function main()
     -- update only every 15th cycle, to save ressources.
     for a=1, i do
       line=vars2[a]
-
+      if reaper.get_config_var_string==nil then 
+      temp="String variable not available in this Reaper-version, sorry." 
+      else _t,temp=reaper.get_config_var_string(tostring(line)) end
       -- go through all variables and see, if their values have changed since last defer-run
       -- if they've changed, display them and update the value stored in the table vars
-      if reaper.SNM_GetIntConfigVar(line,-8)==vars[line] then--and reaper.SNM_GetDoubleConfigVar(line,-7)==vars[line] then
+      if reaper.SNM_GetIntConfigVar(line,-8)==vars[line] and 
+--      reaper.SNM_GetDoubleConfigVar(line,-8)==vars_double[line] and
+      temp==vars_string[line] then
       elseif line~=nil then
         vars[line]=reaper.SNM_GetIntConfigVar(line,-8) -- update value
-        varsB=reaper.SNM_GetDoubleConfigVar(line,-8)
-        if line~=nil and line~="" and count==3 then reaper.ShowConsoleMsg("\n"..line.." : \n       int:"..vars[line].."\n       double:"..varsB.."\n") end -- show varname and value
+        vars_double[line]=reaper.SNM_GetDoubleConfigVar(line,-8)
+        if reaper.get_config_var_string==nil then vars_string[line]="String variable not available in this Reaper-version, sorry." else _t,vars_string[line]=reaper.get_config_var_string(line) end
+        if line~=nil and line~="" and count==3 then reaper.ShowConsoleMsg("\n"..line.."\n       int: "..vars[line].."\n       double: "..vars_double[line].."\n       string: "..vars_string[line].."\n") end -- show varname and value        
         a1=vars[line]&1 if a1~=0 then a1=1 end
         a2=vars[line]&2 if a2~=0 then a2=1 end
         a3=vars[line]&4 if a3~=0 then a3=1 end
@@ -617,15 +629,18 @@ function main()
         
         if count==3 then 
           reaper.ShowConsoleMsg("       Bitfield, with &1 at start: "..a1.." "..a2.." "..a3.." "..a4..":"..a5.." "..a6.." "..a7.." "..a8.." - "..a9.." "..a10.." "..a11.." "..a12..":"..a13.." "..a14.." "..a15.." "..a16.." - "..a17.." "..a18.." "..a19.." "..a20..":"..a21.." "..a22.." "..a23.." "..a24.." - "..a25.." "..a26.." "..a27.." "..a28..":"..a29.." "..a30.." "..a31.." "..a32.."\n") 
-        end
+          Lr,LLr=reaper.BR_Win32_GetPrivateProfileString("REAPER", line,"nothingfound",reaper.get_ini_file())
+          if LLR~="nothingfound" then reaper.ShowConsoleMsg("       Entry in the reaper.ini: [REAPER] -> "..line.."   - Currently-set-ini-value: "..LLr.."\n") end
+        end--]]
       end
     end
   if count~=3 then count=2 end
   -- after the first run, show an introduction to the script
     if count==2 then 
       reaper.ClearConsole() 
-      reaper.ShowConsoleMsg("Reaper-Config-Variable-Inspector by Meo Mespotine(mespotine.de) 18.5.2018 for Ultraschall.fm\n\n  This shows all altered Config-Variables and their bitwise-representation, that can be accessed at runtime through LUA \n  using the SWS-functions: \n     SNM_GetIntConfigVar(), SNM_SetIntConfigVar(), SNM_GetDoubleConfigVar() and SNM_SetDoubleConfigVar(). \n\n  These variables cover the preferences window, project-settings, \n  render-dialog, settings in the context-menu of transportarea \n  and numerous other things.\n\n  Just change some settings in the preferences and click apply to see, \n  which variable is changed to which value, shown in this Reascript-Console.\n\n  Keep in mind: certain variables use bit-wise-values, which means, \n  that one variable may contain the settings for numerous \n  checkboxes; stored using a bitmask, which will be shown in here as well.\n\n") 
-      reaper.ShowConsoleMsg("IMPORANT! This script has an issue with float-variables, when the float is set as an integer, it's changes will not be shown.\n      For instance, when setting projmaxlen (maximum project-length) in Project Settings, it will not update, if you \n      set the value to 1.000, but it will update it, when you set it to 1.001(triggering the float-section of the value).\n      So when reverse-engineering floats, keep in mind to set the float-part of the value, or it will not show up!\n      Sorry for that...")      count=3 
+      reaper.ShowConsoleMsg("Reaper-Config-Variable-Inspector by Meo Mespotine(mespotine.de) 18.5.2018 for Ultraschall.fm\n\n  This shows all altered Config-Variables and their bitwise-representation as well as the value in the reaper.ini,\n  that can be accessed at runtime through LUA using the SWS-functions: \n     SNM_GetIntConfigVar(), SNM_SetIntConfigVar(), SNM_GetDoubleConfigVar() and SNM_SetDoubleConfigVar(). \n\n  These variables cover the preferences window, project-settings, render-dialog, settings in the context-menu of \n  transportarea and numerous other things.\n\n  Just change some settings in the preferences and click apply to see, which variable is changed to which value, \n  shown in this Reascript-Console.\n\n  Keep in mind: certain variables use bit-wise-values, which means, that one variable may contain the settings for \n  numerous checkboxes; stored using a bitmask, which will be shown in here as well.\n\n") 
+      reaper.ShowConsoleMsg("  Mismatch between int/double-values the currently set reaper.ini-value(as well as only int/double changing) is a hint at,\n  that the value is not stored into reaper.ini.\n\n")
+      reaper.ShowConsoleMsg("IMPORANT! This script has an issue with float-variables, when the float is set as an integer, it's changes will not be shown.\n      For instance, when setting projmaxlen (maximum project-length) in Project Settings, it will not update, if you \n      set the value to 1.000, but it will update it, when you set it to 1.001(triggering the float-section of the value).\n      So when reverse-engineering floats, keep in mind to set the float-part of the value, or it will not show up!\n      Sorry for that...\n")      count=3 
     end
   end
   reaper.defer(main)
