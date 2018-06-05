@@ -1,6 +1,7 @@
-# The following 411 variable-names can be used for the SWS-functions 
+# The following 413 variable-names can be used for the SWS-functions 
 #
-#    SNM_GetIntConfigVar(), SNM_SetIntConfigVar(), SNM_GetDoubleConfigVar() and SNM_SetDoubleConfigVar()
+#    SNM_GetIntConfigVar(), SNM_SetIntConfigVar(), SNM_GetDoubleConfigVar() and SNM_SetDoubleConfigVar(), as well as 
+#    the C++-only function get_config_var()
 #
 # who change Reaper's configuration-variables at run time. Just pass the variable-name to the parameter "varname".
 #
@@ -12,18 +13,26 @@
 # They are either double or integer-values. The integer-values are usually bitfields, where every bit stores 
 # e.g. the value of a checkbox in the preferences.
 # That said: one variable may contain the settings for up to 32(or more?) settings at once.
+# Some variables are string-variables, but they can be accessed only with get_config_var_string(), which is
+# only available in pre-releases of Reaper only, at the time of writing(I tried to document them as well anyway).
+# They can also be accessed as integer, but only have the first 8/9 bytes available(64bits)
+#
+# Integer-variables are usually 32bits, only those who can be accessed as string-variable can be 64bits as well.
+#
 #
 # To get/set double variables, use the functions SNM_GetDoubleConfigVar and SNM_SetDoubleConfigVar,
 # to get/set integer(-bitfield) variables, use the functions SNM_GetIntConfigVar or SNM_SetIntConfigVar.
 # You need SWS(www.sws-extension.org) installed to have these functions available!
+# The alternative is to use the C++-only function get_config_var(), which is not available for ReaScripts.
 #
-# Bitfields are documented differently than you usually use them. That means, &16384=1 is actually &16384=16384, 
+# I documented bitfields differently than you usually use them. That means, &16384=1 is actually &16384=16384, 
 # while &16384=0 is &16384=0. This is only for better readability of the document, not for any technical reasons.
 #
 # Sometimes, variables seem not be existing and valid until they've been set somehow. For instance, afxcfg appears
 # only as valid, when an audio-format for "Apply FX, Glue, Freeze, etc" in the Project Settings -> Media-dialog has 
 # been set.
 # So if you discover a variable as not functioning, keep in mind it might not be set(yet) and therefore not be available.
+# Just set it and it should appear as existing.
 #
 # I also document limitations with variables within this textfile. These are not taken from actually setting these variables, 
 # but rather taken from the limitations imposed by setting-dialogs. So, even if I write about limitations, other values
@@ -47,14 +56,26 @@
 # documented by Meo Mespotine mespotine.de for the ultraschall.fm-project
 # some of the variable-names were collected by various users in the Reaper-forums, thanx for that :)
 # This document is licensed under creative-commons cc-by-sa-nc license. More information about Creative Commons, at creativecommons.org
+#
+# If you want, you can thank me for this work at ultraschall.fm/danke, where you can find my Amazon-wishlist(hint hint, nudge nudge ;) )
 
-# 245 variables documented
+
+# 335 variables documented
 # Playrate context menu, Help-information display context-menu, Transport-Context Menus, Project Settings, the Master VU-settings, 
 # Ruler context-menu, Metronome and pre-roll settings, Projecttab-context-menu, MixerControlPanel-context menu, Action-menu, 
 # TrackControlPanel-context menu, Crossfade-editor, FX browser, Peaks Display Settings, Scale Finder, Screensets/Layouts
-# the View-menu, the Options-menu and Render to File-dialogs are completely documented.
+# the View-menu, the Options-menu, Customize menus/toolbars, Adjust Entire Tempo Envelope, Quantize Item Positions and 
+# Render to File-dialogs are completely documented, as well as all variables toggled by actions only.
 #
-# Only partially documented: Preferences(General to Project and Automation to External Editors), 
+# Only partially documented: Preferences(General to Seeking and Editing Behavior to External Editors)
+#
+# Some variables I couldn't trigger, so the following 22 aren't documented and unknown:
+#   ctrlcopyitem, disk_rdblksex, itemdblclk, itemprops, itemprops_timemode, maxspeakgain, metronome_flags, midiins,
+#   midiins_cs, mousemovemod, newfnopt, projmidieditor, renderqdelay, rightclickemulate,
+#   scoreminnotelen, scorequant, selitemtop, slidermaxv, sliderminv, titlebarreghide, tsmarker, vstfolder_settings
+
+# The following variables can be triggered by actions only
+#   aot, cueitems, itemtexthide, psmaxv, psminv, templateditcursor
 
 __numcpu
     The number of CPUs available in your system. 
@@ -63,7 +84,7 @@ __numcpu
         0 to 2147483647; higher values become negative
     
 acidimport
-    When importing media-dragdownlist, as set in the Media with embedded tempo information-section in Preferences -> Video/REX/Misc
+    When importing media-dropdownlist, as set in the Media with embedded tempo information-section in Preferences -> Video/REX/Misc
     It is an integer.
         0, Adjust media to project tempo
         1, Import media at source tempo
@@ -75,7 +96,7 @@ actionmenu
     Show recent actions-entry, as set in the Actions-menu.
     It is an integer.
         0, don't show recent actions - unchecked
-        0, show recent actions - checked
+        1, show recent actions - checked
         
     Stored in reaper.ini under the same name in the section REAPER.
     
@@ -83,8 +104,8 @@ adjreclat
 adjrecmanlat
 adjrecmanlatin
 afxcfg
-    the audioformat for "Apply FX, Glue, Freeze, etc", as set in the Project Settings->Media-dialog
-    only includes the format, not the individual format-settings(like bitrate, etc)
+    The audioformat for "Apply FX, Glue, Freeze, etc", as set in the Project Settings->Media-dialog
+    Only includes the format, not the individual format-settings(like bitrate, etc)
     It is an integer.
         1179012432, Video (ffmpeg/libav encoder)
         1195984416, Video (GIF)
@@ -100,6 +121,14 @@ afxcfg
         2004250731, WavPack lossless compressor
     
 allstereopairs
+    Show non-standard stereo channel pairs(i.e Input2/Input3 etc)-checkbox in the Channel naming/mapping-section, as set in Preferences -> Audio
+    It is an integer
+        0, don't show non standard stereo channel pairs(off) - unchecked
+        1, show non standard stereo channel pairs(on) - checked
+    
+    For other settings in section Channel naming/mapping as set in Preferences -> Audio, see metronome_defout, useinnc
+    Stored in reaper.ini under the same name in the section REAPER.
+    
 altpeaks
     Some peak-settings, as set in the Waveform media peak caching settings in Preferences -> Media, as well as in Preferences -> Paths.
     This is not(!) located in Preferences -> Appearances-Media!
@@ -121,29 +150,29 @@ altpeaks
 
 altpeaksopathlist
     The alternate peak cache path for the following paths-inputbox, as set in the Preferences -> Paths
-    The value is a combination of the letters of the name of the pathname on bitlevel.
-    Supports only the first 9 letters.
-    It is an integer value    
-    examples:
-        A,  1 0 0 0:0 0 1 0 - 0 0 0 0:0 0 0 0 (the first byte represents the bitwise representation of an A)
-        AA, 1 0 0 0:0 0 1 0 - 1 0 0 0:0 0 1 0 (the two bytes represent the bitwise representation of an A each)
+    It is string value
+    
+    Note: the string-representation can be accessed only using get_config_var_string(), which is only available in pre-releases of Reaper
+          at the time of writing.
+        
+    The value can be accessed as integer as well. In that case, it is a combination of the first 8 letters of the name of the pathname on bitlevel.
+    Supports only the first 8 letters.
     
     For other paths, see altpeaks, altpeakspath, defrenderpath, defsavepath 
-    Stored in reaper.ini under the same name in the section REAPER, where the individual bytes are transformed 
-                         into a string, like 1 0 0 0:0 0 1 0 - 1 0 0 0:0 0 1 0 is stored as AA in the reaper.ini
+    Stored in reaper.ini under the same name in the section REAPER.
 
 altpeakspath
     The alternate peaks-path, as set in the Preferences -> Paths
-    The value is a combination of the letters of the name of the pathname on bitlevel.
-    Supports only the first 9 letters.
-    It is an integer value
-    examples:
-        A,  1 0 0 0:0 0 1 0 - 0 0 0 0:0 0 0 0 (the first byte represents the bitwise representation of an A)
-        AA, 1 0 0 0:0 0 1 0 - 1 0 0 0:0 0 1 0 (the two bytes represent the bitwise representation of an A each)
+    It is string value
+    
+    Note: the string-representation can be accessed only using get_config_var_string(), which is only available in pre-releases of Reaper
+          at the time of writing.
+        
+    The value can be accessed as integer as well. In that case, it is a combination of the first 8 letters of the name of the pathname on bitlevel.
+    Supports only the first 8 letters.
     
     For other paths, see altpeaks, altpeaksopathlist, defrenderpath, defsavepath
-    Stored in reaper.ini under the same name in the section REAPER, where the individual bytes are transformed 
-                         into a string, like 1 0 0 0:0 0 1 0 - 1 0 0 0:0 0 1 0 is stored as AA in the reaper.ini
+    Stored in reaper.ini under the same name in the section REAPER.
                          
 alwaysallowkb
     Allow keyboard commands even when mouse-editing-checkbox, as set in Preferences -> General ->Advanced UI/system tweaks
@@ -154,6 +183,13 @@ alwaysallowkb
     Stored in reaper.ini under the same name in the section REAPER.
     
 aot
+    The toggle state of the action 40239 - "Options: Toggle always on top", which keeps Reaper always as the foremost front window.
+    It is an integer
+        0, toggle state off
+        1, toggle state on
+        
+    Stored in reaper.ini under the same name in the section REAPER.
+
 applyfxtail
     Tail length when using Apply FX to items in milliseconds, as set in Preferences -> Media
     This is not(!) located in Preferences -> Appearances-Media!
@@ -164,28 +200,76 @@ applyfxtail
                                                                    altpeaks, showpeaks, peakcachegenrs, offlineinact, insertmtrack, opencopyprompt
                                                              
     Stored in reaper.ini under the same name in the section REAPER.
+
+ara
+    Only available in pre-releases or Reaper, yet!
+    Enable ARA for VST3 plug-ins that support it(requires restarting REAPER) in section VST compatibility, as set in Preferences -> VST
+        0, enable ARA(on) - checked
+        1, disable ARA(off) - unchecked
+        
+    For other settings in Preferences -> VST, see vstfullstate
+    Stored in reaper.ini under the same name in the section REAPER.
     
 audioasync
-audiocloseinactive
-    Several settings regarding closing audio-devices
-    It's an integer bitfield
+    Several settings, as set in Preferences -> Buffering.
+    It is an integer-bitfield.
         &1=0, unknown
         &1=1, unknown
-        
-        &2=0, unknown
-        &2=1, unknown
+    
+        &2=0, use native events for synchronizing (recommended)(on) - checked
+        &2=1, use native events for synchronizing (recommended)(off) - unchecked
         
         &4=0, unknown
         &4=1, unknown
+    
+        &8=0, unknown
+        &8=1, unknown
+        
+        &16=0, unknown
+        &16=1, unknown
+        
+        &32=0, unknown
+        &32=1, unknown
+        
+        &64=0, unknown
+        &64=1, unknown
+        
+        &128=0, Use old v4.x worker thread scheduling(off) - unchecked
+        &128=1, Use old v4.x worker thread scheduling(on) - checked
+        
+    For other settings as set in Preferences -> Buffering, see autonbworkerthreads, prebufperb, threadpr, workbehvr, workbuffxuims, 
+                                                               workbufmsex, workrender, workthreads
+    Stored in reaper.ini under the same name in the section REAPER.
+        
+audiocloseinactive
+    Several settings regarding closing audio-devices, as set in Preferences -> Audio
+    It's an integer bitfield
+        &1=0, Close audio device when stopped and application is inactive(off) - unchecked
+        &1=1, Close audio device when stopped and application is inactive(on) - checked
+        
+        &2=0, Close audio device when inactive and tracks are record armed(off) - unchecked
+        &2=1, Close audio device when inactive and tracks are record armed(on) - checked
+        
+        &4=0, Close audio device when inactive and ReWire devices are open(off) - unchecked
+        &4=1, Close audio device when inactive and ReWire devices are open(on) - checked
         
         &8=0, Close control surface device when stopped and not active applications, as set in Preferences -> Control/OSC/web, unchecked
         &8=1, Close control surface device when stopped and not active applications, as set in Preferences -> Control/OSC/web, checked
     
+    For other settings in Preferences -> Audio, see audioclosestop, errnowarn, hwfadex, optimizesilence
     Stored in reaper.ini under the same name in the section REAPER.
     
 audioclosestop
+    Close audio device when stopped and active(less responsive)-checkbox, as set in Preferences -> Audio
+    It's an integer
+        0, don't close audio when stopped - unchecked
+        1, close audio device when stopped - checked
+        
+    For other settings in Preferences -> Audio, see audiocloseinactive, errnowarn, hwfadex, optimizesilence
+    Stored in reaper.ini under the same name in the section REAPER.
+    
 audioprshift
-    Preserve pitch in audio items when changing master playrate, as set in the contextmenu of the master-playrate in the transport-area.
+    Preserve pitch in audio items when changing master playrate, as set in the contextmenu of the master-playrate in the transport-area as well as toggled by action 40671
     It is an integer.
         0, don't preserve pitch - unchecked
         1, preserve pitch - checked
@@ -211,9 +295,42 @@ autoclosetrackwnds
     Stored in reaper.ini under the same name in the section REAPER.
     
 automute
+    Automute-dropdownlist in the section Mute-settings, as set in Preferences -> Mute/Solo
+    It is an integer
+        0, No automatic muting
+        1, Automatically mute master track
+        2, Automatically mute any track
+        
+    For other settings set in section Mute settings in Preferences -> Mute/Solo, see automuteflags, automuteval, mutefadems10, norunmute
+    Stored in reaper.ini under the same name in the section REAPER.
+    
 automuteflags
+    Reset on playback start-checkbox in section Mute-settings, as set in Preferences -> Mute/Solo
+    It is an integer-bitfield
+        &1=0, Reset on playback start(on) - checked
+        &1=1, Reset on playback start(off) - unchecked
+        
+    For other settings set in section Mute settings in Preferences -> Mute/Solo, see automute, automuteflags, automuteval, mutefadems10, norunmute
+    Stored in reaper.ini under the same name in the section REAPER.
+    
 automuteval
+    when volume exceeds-inputbox, as set in Preferences -> Mute/Solo
+    It is a double float
+        1.0 for 0dB; probably a slider value
+        
+    For other settings set in section Mute settings in Preferences -> Mute/Solo, see automute, automuteflags, mutefadems10, norunmute
+    Stored in reaper.ini under the same name in the section REAPER.
+    
 autonbworkerthreads
+    Auto-detect the number of needed audio processing threads-checkbox, as set in Preferences -> Buffering
+    It is an integer
+        0, don't auto-detect(allows usage of variable workthread)(off) - unchecked
+        1, auto-detect(on) - checked
+
+    For other settings as set in Preferences -> Buffering, see audioasync, prebufperb, threadpr, workbehvr, workbuffxuims, 
+                                                               workbufmsex, workrender, workthreads
+    Stored in reaper.ini under the same name in the section REAPER.
+        
 autoreturntime
     Automation recording return speed-inputbox, as set in Preferences -> Automation
     It is given in seconds.
@@ -258,7 +375,7 @@ autosavemode
     Stored in reaper.ini under the same name in the section REAPER.
 
 autoxfade
-    Some settings regarding autocrossfade, as set in the Options-menu as well as in the Options -> New recording that overlaps existing media items
+    Some settings regarding autocrossfade, as set in the Options-menu as well as in the Options -> New recording that overlaps existing media items and in Preferences -> Media Item Defaults as well as toggled by actions 40041, 40114
     It is an integer-bitfield
         &1=0, Auto-crossfade media items when editing(off) - unchecked
         &1=1, Auto-crossfade media items when editing(on) - checked
@@ -277,8 +394,21 @@ autoxfade
         
     For lane settings influenced by autoxfade, see takelanes, projtakelane 
     
+    For other settings, as set in Preferences -> Media Item Defaults, see loopnewitems, splitautoxfade, autoxfade, deffadeshape, defxfadeshape, 
+                                                                          deffadelen, defsplitxfadelen
+
+    Stored in reaper.ini under the same name in the section REAPER, but not, when changed through the Options-menu!
+
+bigwndframes
+    Use large (non-tool) window frames for windows-checkbox, as set in Preferences -> General -> Advanced UI/system tweaks-button
+    It is an integer
+        0, don't use large window frames(off) - unchecked
+        1, use large window frames(on) - checked
+    
+    Stored in reaper.ini under the same name in the section REAPER.
+    
 copyimpmedia
-    Some checkboxes in the Media Settings-section, as set in Preferences -> Media.
+    Some checkboxes in the Media Settings-section, as set in Preferences -> Media as well as toggled by action 40263
     This is not(!) located in Preferences -> Appearances-Media!
     It is an integer-bitfield.
         &1=0, Copy imported media to project media directory - unchecked
@@ -296,7 +426,7 @@ copyimpmedia
     Stored in reaper.ini under the same name in the section REAPER.
     
 cpuallowed
-    The Restrict REAPER to specific CPUs-textbox.
+    The Restrict REAPER to specific CPUs-inputbox.
     It is an integer-bitfield.
     Every bit represents a given cpu. Set it to 1 and Reaper uses the cpu, set it to 0, Reaper will no use the cpu.
     There are 32 cpus supported (0 to 31)
@@ -322,13 +452,138 @@ csurfrate
     Stored in reaper.ini under the same name in the section REAPER.
     
 ctrlcopyitem
+    unknown
+    
 cueitems
+    View: Toggle show media cues in items as triggered by action 40691(in sections Main, Media Explorer, MIDI Editor, MIDI Eventlist Editor, MIDI Inline Editor)
+    It is an integer
+        0, togglestate off
+        1, togglestate on
+    
+    Stored in reaper.ini under the same name in the section REAPER.
+    
 custommenu
+    Include default menu as submenu-checkbox in Menu-Editor.
+    It is an integer-bitfield
+        &1=0, include default menus as submenu(off) - unchecked
+        &1=1, include default menus as submenu(on) - checked
+        
+        &4=0, unknown
+        &4=1, unknown
+        
+    Stored in reaper.ini under the same name in the section REAPER.
+
 defautomode
+    The default automation mode-dropdownlist as well as the Arm new envelopes-checkbox in the section Tracks, as set in Preferences -> Track/Send Defaults
+    It is an integer bitfield
+        &1 and &2 and &4, Default automation mode-dropdownlist
+            0 0 0, Trim/Read
+            1 0 0, Read
+            0 1 0, Touch
+            1 1 0, Write
+            0 0 1, Latch
+            1 0 1, Latch Preview
+            
+        &512=0, Arm new envelopes(on) - checked
+        &512=1, Arm new envelopes(off) - unchecked
+        
+    For other settings of section Tracks from Preferences -> Track/Send Defaults, see defenvs, deftrackrecflags, deftrackvol, defvzoom, newtflag, splitautoxfade, vzoom2
+        
+    Stored in reaper.ini under the same name in the section REAPER.
+        
 defenvs
+    The default visible envelopes-checkboxes and Default envelope shape-dropdownlist, as set in section Tracks in Preferences -> Track/Send Defaults
+    It is an integer bitfield
+        &1=0, Volume(pre-FX)(off) - unchecked
+        &1=1, Volume(pre-FX)(on) - checked
+        
+        &2=0, Pan(pre-FX)(off) - unchecked
+        &2=1, Pan(pre-FX)(on) - checked
+        
+        &4=0, Volume(off) - unchecked
+        &4=1, Volume(on) - checked
+    
+        &8=0, Pan(off) - unchecked
+        &8=1, Pan(on) - checked
+        
+        &16=0, unknown
+        &16=1, unknown
+        
+        &32=0, unknown
+        &32=1, unknown
+        
+        &64=0, unknown
+        &64=1, unknown
+        
+        &128=0, unknown
+        &128=1, unknown
+        
+        &256=0, unknown
+        &256=1, unknown
+        
+        &512=0, unknown
+        &512=1, unknown
+        
+        &1024=0, unknown
+        &1024=1, unknown
+        
+        &2048=0, unknown
+        &2048=1, unknown
+        
+        &4096=0, unknown
+        &4096=1, unknown
+        
+        &8192=0, unknown
+        &8192=1, unknown
+        
+        &16384=0, unknown
+        &16384=1, unknown
+        
+        &32768=0, Mute(might influence splitautoxfade=0 as well)(off) - unchecked
+        &32768=1, Mute(might influence splitautoxfade=1 as well)(on) - unchecked
+        
+        &65536 and &131072 and &262144, the Default envelope point shape-dropdownlist
+            0 0 0, Linear
+            1 0 0, Square
+            0 1 0, Slow start/end
+            1 1 0, Fast start
+            0 0 1, Fast end
+            1 0 1, Bezier
+
+        For other settings of section Tracks from Preferences -> Track/Send Defaults, see defautomode, errnowarn, volenvrange, deftrackrecinput, deftrackrecflags, deftrackvol, defvzoom, newtflag, splitautoxfade, vzoom2
+        
+        Stored in reaper.ini under the same name in the section REAPER.
+        
 deffadelen
+    Create automatic fade-in/fade-out for new items, length-inputbox, as set in Preferences -> Media Item Defaults
+    It is a double-float
+        Fadelength in seconds; negative values are allowed.
+
+    For other settings, as set in Preferences -> Media Item Defaults, see loopnewitems, splitautoxfade, autoxfade, deffadeshape, defxfadeshape, 
+                                                                          defsplitxfadelen
+        
+    Stored in reaper.ini under the same name in the section REAPER.
+    
 deffadeshape
+    The Default fade-in/fade-out-shape-button, as set in Preferences -> Media Item Defaults
+    It is an integer
+        0 to 6, the individual shapes selectable through the button.
+
+    For other settings, as set in Preferences -> Media Item Defaults, see loopnewitems, splitautoxfade, autoxfade, defxfadeshape, 
+                                                                          deffadelen, defsplitxfadelen
+        
+    Stored in reaper.ini under the same name in the section REAPER.
+    
 defhwvol
+    The Hardware output default gain-inputbox as set in section Sends / Track Hardware Outputs in Preferences -> Track/Send Defaults
+    Might be calculable with the Api-function DB2SLIDER
+    It is a double float
+        6.3095734448019e-008(-144.0 dB) to 1.7782794100389e+308(6165.0dB); 1.0 for 0dB
+    
+    For other settings of section Sends / Track Hardware Outputs from Preferences -> Track/Send Defaults, see defsendflag, defsendvol
+    
+    Stored in reaper.ini under the same name in the section REAPER, with a maximum length of 317 digits(as float)
+    
 defpitchcfg
     The Default Pitch Mode and Pitch shifter parameter-dropdownlists, as set in the Project Settings -> Project Settings
     This is the same, as the pitchmode-settings for items(as set in a MediaItemStateChunk).
@@ -1279,38 +1534,230 @@ defpitchcfg
         
 defrenderpath
     The Default render path-inputbox, as set in the Preferences -> Paths
-    The value is a combination of the letters of the name of the pathname on bitlevel.
-    Supports only the first 9 letters.
-    It is an integer value
-    examples:
-        A,  1 0 0 0:0 0 1 0 - 0 0 0 0:0 0 0 0 (the first byte represents the bitwise representation of an A)
-        AA, 1 0 0 0:0 0 1 0 - 1 0 0 0:0 0 1 0 (the two bytes represent the bitwise representation of an A each)
+    It is string value
+    
+    Note: the string-representation can be accessed only using get_config_var_string(), which is only available in pre-releases of Reaper
+          at the time of writing.
+        
+    The value can be accessed as integer as well. In that case, it is a combination of the first 8 letters of the name of the pathname on bitlevel.
+    Supports only the first 8 letters.
     
     For other paths, see altpeaks, altpeakspath, altpeaksopathlist, defsavepath 
-    Stored in reaper.ini under the same name in the section REAPER, where the individual bytes are transformed 
-                         into a string, like 1 0 0 0:0 0 1 0 - 1 0 0 0:0 0 1 0 is stored as AA in the reaper.ini
+    Stored in reaper.ini under the same name in the section REAPER.
 
 defsavepath
     The Default path to save new projects-inputbox, as set in the Preferences -> Paths
-    The value is a combination of the letters of the name of the pathname on bitlevel.
-    Supports only the first 9 letters.
-    It is an integer value
-    examples:
-        A,  1 0 0 0:0 0 1 0 - 0 0 0 0:0 0 0 0 (the first byte represents the bitwise representation of an A)
-        AA, 1 0 0 0:0 0 1 0 - 1 0 0 0:0 0 1 0 (the two bytes represent the bitwise representation of an A each)
+    It is string value
+    
+    Note: the string-representation can be accessed only using get_config_var_string(), which is only available in pre-releases of Reaper
+          at the time of writing.
+        
+    The value can be accessed as integer as well. In that case, it is a combination of the first 8 letters of the name of the pathname on bitlevel.
+    Supports only the first 8 letters.
     
     For other paths, see altpeaks, altpeakspath, altpeaksopathlist, defrenderpath, defsavepath 
-    Stored in reaper.ini under the same name in the section REAPER, where the individual bytes are transformed 
-                         into a string, like 1 0 0 0:0 0 1 0 - 1 0 0 0:0 0 1 0 is stored as AA in the reaper.ini
+    Stored in reaper.ini under the same name in the section REAPER.
 
 defsendflag
+    Send/hardware output default mode-dropdownlist and checkboxes below in section Sends / Track Hardware Outputs, as set in Preferences -> Track/Send Defaults
+    It is an integer-bitfield
+        &1 and &2, Send/hardware output default mode-dropdownlist
+            0 0, Post-Fader (Post-Pan)
+            1 0, Pre-FX
+            0 1, Post-FX(v1 deprecated)
+            1 1, Pre-Fader (Post-FX)
+        
+        &4=0, unknown
+        &4=1, unknown
+        
+        &8=0, unknown
+        &8=1, unknown
+        
+        &16=0, unknown
+        &16=1, unknown
+        
+        &32=0, unknown
+        &32=1, unknown
+        
+        &64=0, unknown
+        &64=1, unknown
+        
+        &128=0, unknown
+        &128=1, unknown
+        
+        &256=0, Sends send MIDI by default(on) - checked
+        &256=1, Sends send MIDI by default(off) - unchecked
+        
+        &512=0, Sends send audio by default(on) - checked
+        &512=1, Sends send audio by default(off) - unchecked
+        
+    For other settings of section Sends / Track Hardware Outputs from Preferences -> Track/Send Defaults, see defhwvol, defsendflag, defsendvol
+        
+    Stored in reaper.ini under the same name in the section REAPER.
+    
 defsendvol
+    The Send default gain-inputbox as set in section Sends / Track Hardware Outputs in Preferences -> Track/Send Defaults
+    Might be calculable with the Api-function DB2SLIDER
+    It is a double float
+        6.3095734448019e-008(-144.0 dB) to 1.7782794100389e+308(6165.0dB); 1.0 for 0dB
+    
+    For other settings of section Sends / Track Hardware Outputs from Preferences -> Track/Send Defaults, see defhwvol, defsendflag
+    
+    Stored in reaper.ini under the same name in the section REAPER, with a maximum length of 317 digits(as float)
+    
 defsplitxfadelen
+    Overlap and crossfade items when splitting length-inputbox, as set in Preferences -> Media Item Defaults
+    It is a double-float
+        overlap/crossfade-length in seconds; negative values are allowed.
+
+    For other settings, as set in Preferences -> Media Item Defaults, see loopnewitems, splitautoxfade, autoxfade, deffadeshape, defxfadeshape, 
+                                                                          deffadelen
+        
+    Stored in reaper.ini under the same name in the section REAPER.
+    
 deftrackrecflags
+    The Record arm-checkbox and Record config-dropdownlist from the section Tracks, as set in Preferences -> Track/Send Defaults
+    Default Recording-management is stored in here, but not the default recording-inputs!
+    It is an integer-bitfield
+        &1=0, Record Arm(off) - unchecked
+        &1=1, Record Arm(on) - checked
+        
+        &2=0, Automatic record-arm, when track selected(off) - unchecked
+        &2=1, Automatic record-arm, when track selected(on) - checked
+        
+        &16 and &32 and &64 and &128, the Record config-dropdownlist -> Record: input-fields/menus
+            0 0 0 0, Record: input (audio or MIDI)
+            
+            1 1 1 0, Record: MIDI overdub/replace -> Record: MIDI overdub
+            0 0 0 1, Record: MIDI overdub/replace -> Record: MIDI replace
+            1 0 0 1, Record: MIDI overdub/replace -> Record: MIDI touch-replace
+            ? ? ? ?, Record: MIDI overdub/replace -> Record: MIDI latch-replace - What is the missing value?
+            
+            1 1 0 1, Record: Output -> Record: Output (multichannel, latency compensated)
+            0 1 0 1, Record: Output -> Record: Output (multichannel)
+            1 1 0 0, Record: Output -> Record: Output (stereo, latency compensated)
+            1 0 0 0, Record: Output -> Record: Output (stereo)
+            0 1 1 0, Record: Output -> Record: Output (mono, latency compensated)
+            1 0 1 0, Record: Output -> Record: Output (mono)
+            0 0 1 0, Record: Output -> Record: Output (MIDI)
+            
+            0 0 1 1, Record: input (force format) -> Record: input (force mono)
+            1 0 1 1, Record: input (force format) -> Record: input (force stereo)
+            ? ? ? ?, Record: input (force format) -> Record: input (force multichannel) - What is the missing value?
+            ? ? ? ?, Record: input (force format) -> Record: input (force MIDI) - What is the missing value?
+            
+            0 1 0 0, Record: disable (input monitoring only)
+        
+        &256 and &512, Monitor input-settings
+            0 0, no Monitoring of input
+            1 0, Monitor Input
+            0 1, Monitor Input (Tape Auto Style)
+        
+        &4096=0, Monitor track media when recording(off) - unchecked
+        &4096=1, Monitor track media when recording(on) - checked
+        
+        &8192=0, Preserve PDC delayed monitoring in recorded items(off) - unchecked
+        &8192=1, Preserve PDC delayed monitoring in recorded items(on) - checked
+
+    For the record-input-channels, see deftrackrecinput.
+    
+    For other settings of section Tracks from Preferences -> Track/Send Defaults, see defautomode, errnowarn, volenvrange, deftrackrecinput, defenvs, deftrackvol, defvzoom, newtflag, splitautoxfade, vzoom2
+        
+    Stored in reaper.ini under the same name in the section REAPER.
+        
 deftrackrecinput
+    The Record config-dropdownlist from the section Tracks, as set in Preferences -> Track/Send Defaults
+    Default recording-inputs are stored here, but not the Recording-management/monitoring.
+    It is an integer
+        -1, Input: None
+    
+        0, Input: Mono -> Left
+        1, Input: Mono -> Right
+        2-15, Input: Channel 3 to 16
+            ...
+        
+        1024, Input: Stereo -> Left/Right(Channel 1/2)
+        1025, Input: Channel 2/3
+        1026, Input: Channel 3/4
+        1027-1038, Input Stereo 4/5 to 15/16
+            ...
+        
+        2048, Input: Multichannel -> Channel 1[multichannel]
+        2049, Input: Multichannel -> Channel 2[multichannel]]
+            ...
+        2050-2063, Input: Multichannel -> Channel 3[multichannel] to Input: Multichannel -> Channel 16[multichannel]
+            ...
+        
+        6080, Input: MIDI -> Virtual MIDI Keyboards -> All Channels
+        6081, Input: MIDI -> Virtual MIDI Keyboards -> Channel 1
+        6082, Input: MIDI -> Virtual MIDI Keyboards -> Channel 2
+        6083, Input: MIDI -> Virtual MIDI Keyboards -> Channel 3
+        6084, Input: MIDI -> Virtual MIDI Keyboards -> Channel 4
+        6085, Input: MIDI -> Virtual MIDI Keyboards -> Channel 5
+        6086, Input: MIDI -> Virtual MIDI Keyboards -> Channel 6
+        6087, Input: MIDI -> Virtual MIDI Keyboards -> Channel 7
+        6088, Input: MIDI -> Virtual MIDI Keyboards -> Channel 8
+        6089, Input: MIDI -> Virtual MIDI Keyboards -> Channel 9
+        6090, Input: MIDI -> Virtual MIDI Keyboards -> Channel 10
+        6091, Input: MIDI -> Virtual MIDI Keyboards -> Channel 11
+        6092, Input: MIDI -> Virtual MIDI Keyboards -> Channel 12
+        6093, Input: MIDI -> Virtual MIDI Keyboards -> Channel 13
+        6094, Input: MIDI -> Virtual MIDI Keyboards -> Channel 14
+        6095, Input: MIDI -> Virtual MIDI Keyboards -> Channel 15
+        6096, Input: MIDI -> Virtual MIDI Keyboards -> Channel 16
+        
+        6112, Input: MIDI -> All MIDI Inputs -> All Channels
+        6113, Input: MIDI -> All MIDI Inputs -> Channel 1
+        6114, Input: MIDI -> All MIDI Inputs -> Channel 2
+        6115, Input: MIDI -> All MIDI Inputs -> Channel 3
+        6116, Input: MIDI -> All MIDI Inputs -> Channel 4
+        6117, Input: MIDI -> All MIDI Inputs -> Channel 5
+        6118, Input: MIDI -> All MIDI Inputs -> Channel 6
+        6119, Input: MIDI -> All MIDI Inputs -> Channel 7
+        6120, Input: MIDI -> All MIDI Inputs -> Channel 8
+        6121, Input: MIDI -> All MIDI Inputs -> Channel 9
+        6122, Input: MIDI -> All MIDI Inputs -> Channel 10
+        6123, Input: MIDI -> All MIDI Inputs -> Channel 11
+        6124, Input: MIDI -> All MIDI Inputs -> Channel 12
+        6125, Input: MIDI -> All MIDI Inputs -> Channel 13
+        6126, Input: MIDI -> All MIDI Inputs -> Channel 14
+        6127, Input: MIDI -> All MIDI Inputs -> Channel 15
+        6128, Input: MIDI -> All MIDI Inputs -> Channel 16
+        
+        For other settings of section Tracks from Preferences -> Track/Send Defaults, see defautomode, errnowarn, volenvrange, deftrackrecinput, defenvs, deftrackrecflags, deftrackvol, defvzoom, newtflag, splitautoxfade, vzoom2
+        
+        Stored in reaper.ini under the same name in the section REAPER.
+    
 deftrackvol
+    The Track volume fader default gain-inputbox as set in section Tracks in Preferences -> Track/Send Defaults
+    Might be calculable with the Api-function DB2SLIDER
+    It is a double float
+        6.3095734448019e-008(-144.0 dB) to 1.7782794100389e+308(6165.0dB); 1.0 for 0dB
+    
+    For other settings of section Tracks from Preferences -> Track/Send Defaults, see defautomode, errnowarn, volenvrange, deftrackrecinput, defenvs, deftrackrecflags, defvzoom, newtflag, splitautoxfade, vzoom2
+    
+    Stored in reaper.ini under the same name in the section REAPER, with a maximum length of 317 digits(as float)
+    
 defvzoom
+    The Default track height in new projects-dropdownlist as set in section Tracks in Preferences -> Track/Send Defaults
+    Might influence vzoom2 as well, when no track is put into the project yet.
+    It is an integer
+        0(minimum zoom) to 40(maximum zoom); defaults are: 2(Small), 6(Medium), 16(Large)
+        
+    For other settings of section Tracks from Preferences -> Track/Send Defaults, see defautomode, errnowarn, volenvrange, deftrackrecinput, defenvs, deftrackrecflags, deftrackvol, newtflag, splitautoxfade, vzoom2
+        
+    Stored in reaper.ini under the same name in the section REAPER.
+        
 defxfadeshape
+    The Default crossfade-shape-button, as set in Preferences -> Media Item Defaults
+    It is an integer
+        0 to 6, the individual shapes selectable through the button.
+
+    For other settings, as set in Preferences -> Media Item Defaults, see loopnewitems, splitautoxfade, autoxfade, deffadeshape, 
+                                                                          deffadelen, defsplitxfadelen
+        
+    Stored in reaper.ini under the same name in the section REAPER.
+    
 disabledxscan
     The Disable DX plug-ins scanning-checkbox in the Direct-X (DX)-section as set in Preferences -> ReWire/DX
     It is an integer
@@ -1322,13 +1769,74 @@ disabledxscan
     Stored in reaper.ini under the same name in the section REAPER.
     
 disk_peakmmap2
+    Allow memory mapping of peak-files (faster, but uses more address space)-checkbox, as set in Preferences -> Buffering -> Advanced Disk I/O options...
+    It is an integer
+        0, Don't allow memory mapping(off) - unchecked
+        1, Allow memory mapping(on) - checked
+
+    For other settings as set in Preferences -> Buffering -> Advanced Disk I/O options..., see disk_rdmodeex, disk_rdsizeex, 
+                                                                                               disk_wrblks, disk_wrblks2, disk_wrmode, disk_wrsize
+    Stored in reaper.ini under the same name in the section REAPER.
+    
 disk_rdblksex
+    unknown
+    
 disk_rdmodeex
+    Preferred disk read mode-dropdownlist, as set in Preferences -> Buffering -> Advanced Disk I/O options...
+    It is an integer
+        0, Asynchronous unbuffered
+        1, Asynchronous buffered (default)
+        2, Synchronous
+
+    For other settings as set in Preferences -> Buffering -> Advanced Disk I/O options..., see disk_peakmmap2, disk_rdsizeex, 
+                                                                                               disk_wrblks, disk_wrblks2, disk_wrmode, disk_wrsize
+    Stored in reaper.ini under the same name in the section REAPER.
+
 disk_rdsizeex
+    Read buffer size-inputbox, as set in Preferences -> Buffering -> Advanced Disk I/O options...
+    It is an integer
+        4096 to 2147483647; in bytes; default is 262144
+    
 disk_wrblks
+    Write buffers, as set in Preferences -> Buffering -> Advanced Disk I/O options...
+    Influences disk_wrblks2 to size of disk_wrblks, when disk_wrblks>=disk_wrblks2
+    It is an integer
+        2 to 2147483647; number of buffers; default is 16
+        
+    For other settings as set in Preferences -> Buffering -> Advanced Disk I/O options..., see disk_peakmmap2, disk_rdmodeex, disk_rdsizeex, 
+                                                                                               disk_wrblks2, disk_wrmode, disk_wrsize
+    Stored in reaper.ini under the same name in the section REAPER.
+    
 disk_wrblks2
+    Write buffers (maximum), as set in Preferences -> Buffering -> Advanced Disk I/O options...
+    Influenced by disk_wrblks to size of disk_wrblks, when disk_wrblks>=disk_wrblks2
+    It is an integer
+        2 to 2147483647; number of buffers; default is 128
+        
+    For other settings as set in Preferences -> Buffering -> Advanced Disk I/O options..., see disk_peakmmap2, disk_rdmodeex, disk_rdsizeex, 
+                                                                                               disk_wrblks, disk_wrmode, disk_wrsize
+    Stored in reaper.ini under the same name in the section REAPER.
+    
 disk_wrmode
+    Preferred disk write mode-dropdownlist, as set in Preferences -> Buffering -> Advanced Disk I/O options...
+    It is an integer
+        0, Asynchronous (default)
+        1, Synchronous
+        2, Asynchronous (write-through)
+        
+    For other settings as set in Preferences -> Buffering -> Advanced Disk I/O options..., see disk_peakmmap2, disk_rdmodeex, disk_rdsizeex, 
+                                                                                               disk_wrblks, disk_wrblks2, disk_wrsize
+    Stored in reaper.ini under the same name in the section REAPER.
+    
 disk_wrsize
+    Write buffer size-inputbox, as set in Preferences -> Buffering -> Advanced Disk I/O options...
+    It is an integer
+        4096 to 2147483647; in bytes; default is 65536
+
+    For other settings as set in Preferences -> Buffering -> Advanced Disk I/O options..., see disk_peakmmap2, disk_rdmodeex, disk_rdsizeex, 
+                                                                                               disk_wrblks, disk_wrblks2, disk_wrmode
+    Stored in reaper.ini under the same name in the section REAPER.
+    
 diskcheck
     The audio-information-field in the upper right corner of the screen, as set in it's accompanying context-menu.
     It is an integer-bitfield
@@ -1354,6 +1862,12 @@ diskcheck
     
 diskcheckmb
 edit_fontsize
+    The fontsize of the Reascript/JSFX-IDE.
+    It is an integer.
+        negative values are treated like the positive value+1; 16 is default
+        
+    Stored in reaper.ini under the same name in the section REAPER, as soon as the variable is changed.
+        
 env_autoadd
     Several settings from the Automation-section, as set in Preferences -> Automation.
     It is an integer-bitfield
@@ -1371,7 +1885,26 @@ env_autoadd
     Stored in reaper.ini under the same name in the section REAPER.
     
 env_deffoc
+    When adding envelopes or setting visible, set focus to the envelope, as set in Preferences -> Envelope Display
+    It is an integer
+        0, don't set focus(off) - unchecked
+        1, set focus(on) - checked
+        
+    For other settings as set in Preferences -> Envelope Display, see volenvrange, pitchenvrange, tempoenvmax, tempoenvmin, env_ol_minh, 
+                                                                      env_reduce, envclicksegmode, envlanes, envtranstime, pooledenvs
+    Stored in reaper.ini under the same name in the section REAPER.
+    
 env_ol_minh
+    When drawn over media, overlap envelopes if each line is less than-checkbox AND inputbox, as set in Preferences -> Envelope Display
+    To check the checkbox, just make the value negative and minus -1
+    It is an integer
+        0 to 2147483647, in pixels, When drawn over media, overlap envelopes if each line is less than-checkbox(off)
+        -1 to -2147483648, in pixels, When drawn over media, overlap envelopes if each line is less than-checkbox(on)
+        
+    For other settings as set in Preferences -> Envelope Display, see volenvrange, pitchenvrange, tempoenvmax, tempoenvmin, env_deffoc, 
+                                                                      env_reduce, envclicksegmode, envlanes, envtranstime, pooledenvs
+    Stored in reaper.ini under the same name in the section REAPER.
+
 env_options
     Several settings from the Automation-section, as set in Preferences -> Automation.
     It is an integer-bitfield
@@ -1383,7 +1916,7 @@ env_options
     Stored in reaper.ini under the same name in the section REAPER.
     
 env_reduce
-    Several settings from the Automation-section, as set in Preferences -> Automation as well as in menu Options -> Envelope points
+    Several settings from the Automation-section, as set in Preferences -> Automation as well as in Preferences -> Envelope Display as well as in menu Options -> Envelope points as well as toggled by actions 40648, 40649
     It is an integer-bitfield
         &1=0, Reduce envelope point data when recording or drawing automation(off) - unchecked
         &1=1, Reduce envelope point data when recording or drawing automation(on) - checked
@@ -1399,11 +1932,11 @@ env_reduce
             0 1, Do not add additional points
             1 0, Add points before and after edit position
         
-        &32=0, unknown
-        &32=1, unknown
+        &32=0, fader scaled volume envelopes-checkbox(Preferences -> Envelope Display)(on) - checked
+        &32=1, fader scaled volume envelopes-checkbox(Preferences -> Envelope Display)(off) - unchecked
         
-        &64=0, unknown
-        &64=1, unknown
+        &64=0, other envelopes(Preferences -> Envelope Display)(on) - checked
+        &64=1, other envelopes(Preferences -> Envelope Display)(off) - unchecked
         
         &128=0, Ripple edit all affects tempo map(Ripple Edit Button-context menu from Main Toolbar)(off) - unchecked
         &128=1, Ripple edit all affects tempo map(Ripple Edit Button-context menu from Main Toolbar)ri(on) - checked
@@ -1414,9 +1947,13 @@ env_reduce
         &512=0, Add edge points when moving multiple envelope points(Options -> Envelope points)(off) - unchecked
         &512=1, Add edge points when moving multiple envelope points(Options -> Envelope points)(on) - checked
         
+        &1024=0, Prevent mouse edits of single envelope points from moving past other envelope points(Preferences -> Envelope Display)(off) - unchecked
+        &1024=1, Prevent mouse edits of single envelope points from moving past other envelope points(Preferences -> Envelope Display)(on) - checked
+        
     For other settings set in Preferences -> Automation, see autoreturntime, autoreturntime_action, env_autoadd, env_options, envtrimadjmode, envwritepasschg, pooledenvs
     For other settings set in Options -> Envelope points, see envattach, envclicksegmode 
-
+    For other settings as set in Preferences -> Envelope Display, see volenvrange, pitchenvrange, tempoenvmax, tempoenvmin, env_deffoc, env_ol_minh, 
+                                                                      envclicksegmode, envlanes, envtranstime, pooledenvs
     Stored in reaper.ini under the same name in the section REAPER.
     
 envattach
@@ -1430,7 +1967,7 @@ envattach
     Stored in reaper.ini under the same name in the section REAPER.
     
 envclicksegmode
-    Several settings, as set in the menu Options -> Envelope points
+    Several settings, as set in the menu Options -> Envelope points as well as in Preferences -> Envelope Display
     It is an integer-bitfield
         &1=0, unknown
         &1=1, unknown
@@ -1441,8 +1978,8 @@ envclicksegmode
         &4=0, unknown
         &4=1, unknown
         
-        &8=0, unknown
-        &8=1, unknown
+        &8=0, First click on unselected envelope can insert point a point(depends on mouse modifier settings)(off) - unchecked
+        &8=1, First click on unselected envelope can insert point a point(depends on mouse modifier settings)(on) - checked
         
         &16=0, unknown
         &16=1, unknown
@@ -1450,15 +1987,48 @@ envclicksegmode
         &32=0, unknown
         &32=1, unknown
         
-        &64=0, Envelope point selection follows time selection(off) - unchecked
-        &64=1, Envelope point selection follows time selection(on) - checked
+        &64=0, Envelope point selection follows time selection for the active envelope(off) - unchecked
+        &64=1, Envelope point selection follows time selection for the active envelope(on) - checked
+        
+        &128=0, Automatically show affected envelopes when moving media items across tracks(off) - unchecked
+        &128=1, Automatically show affected envelopes when moving media items across tracks(on) - checked
         
     For other settings set in Options -> Envelope points, see envattach, env_reduce
-    
+    For other settings as set in Preferences -> Envelope Display, see volenvrange, pitchenvrange, tempoenvmax, tempoenvmin, env_deffoc, env_ol_minh, 
+                                                                      env_reduce, envlanes, envtranstime, pooledenvs
     Stored in reaper.ini under the same name in the section REAPER.
     
 envlanes
+    Several settings, as set in Preferences -> Envelope Display
+    It is an integer-bitfield
+        &1=0, Show new envelopes in separate envelope lanes-checkbox(off) - unchecked
+        &1=1, Show new envelopes in separate envelope lanes-checkbox(on) - checked
+        
+        &2=0, Changing envelope in lane: Moves old envelope to media lane
+        &2=1, Changing envelope in lane: Hides old envelope
+        
+        &4=0, unknown
+        &4=1, unknown
+        
+        &8=0, unknown
+        &8=1, unknown
+        
+        &16=0, unknown
+        &16=1, unknown
+
+    For other settings as set in Preferences -> Envelope Display, see volenvrange, pitchenvrange, tempoenvmax, tempoenvmin, env_deffoc, env_ol_minh, 
+                                                                      env_reduce, envclicksegmode, envtranstime, pooledenvs
+    Stored in reaper.ini under the same name in the section REAPER.
+    
 envtranstime
+    Transition time for automatically created envelope edge points-inputbox, as set in Preferences -> Envelope Display
+    It is a double-float
+        0.0001 and higher; unlike in the Preferences, this value is in seconds NOT milliseconds
+        
+    For other settings as set in Preferences -> Envelope Display, see volenvrange, pitchenvrange, tempoenvmax, tempoenvmin, env_deffoc, env_ol_minh, 
+                                                                      env_reduce, envclicksegmode, envlanes, pooledenvs
+    Stored in reaper.ini under the same name in the section REAPER.
+
 envtrimadjmode
     When adding volume/pan envelopes, apply trim to envelope and reset trim-dropdownlist from the Automation-section, 
         as set in Preferences -> Automation.
@@ -1487,18 +2057,25 @@ envwritepasschg
     Stored in reaper.ini under the same name in the section REAPER.
     
 errnowarn
-    Several error-messages, that shall be shown.
+    Several error-messages, that shall be shown, as set in several dialogs, as well as in Preferences -> Audio
     It's an integer-bitfield
-        &1=0, unknown
-        &1=1, unknown
+        &1=0, Warn when unable to open audio devices(Preferences -> Audio)(on) - checked
+        &1=1, Warn when unable to open audio devices(Preferences -> Audio)(off) - unchecked
     
-        &2=0, unknown
-        &2=1, unknown
+        &2=0, MIDI devices-checkbox(Preferences -> Audio)(on) - checked
+        &2=1, MIDI devices-checkbox(Preferences -> Audio)(off) - unchecked
     
-        &4=0, Warn when errors opening surface MIDI devices, as set in Preferences -> Control/OSC/web, unchecked
-        &4=1, Warn when errors opening surface MIDI devices, as set in Preferences -> Control/OSC/web, checked
+        &4=0, Warn when errors opening surface MIDI devices(Preferences -> Control/OSC/web) - unchecked
+        &4=1, Warn when errors opening surface MIDI devices(Preferences -> Control/OSC/web) - checked
+        
+        &8=0, Warn when recording without tracks armed(off) - unchecked
+        &8=1, Warn when recording without tracks armed(on) - checked
+        
+        &16=0, Warn when changing volume envelope scaling will change envelope sound(Preferences -> Track/Send Defaults)(on) - checked
+        &16=1, Warn when changing volume envelope scaling will change envelope sound(Preferences -> Track/Send Defaults)(off) - unchecked
     
-    stored in reaper.ini under the same name in the section REAPER.
+    For other settings in Preferences -> Audio, see audiocloseinactive, audioclosestop, hwfadex, optimizesilence
+    Stored in reaper.ini under the same name in the section REAPER.
     
 fadeeditflags
     Several Fade-settings, as set in Menu View -> Crossfade Editor
@@ -1608,9 +2185,31 @@ feedbackmode
     Stored in reaper.ini under the same name in the section REAPER, when Save as default project settings has been clicked.
     
 fullscreenRectB
+    When Reaper is fullscreen, the position of the bottom of Reaper's window, as toggled by the fullscreen-action 40346
+    It is an integer
+    
+    Stored in reaper.ini under the same name in the section REAPER.
+    
 fullscreenRectL
+    When Reaper is fullscreen, the position of the left of Reaper's window, as toggled by the fullscreen-action 40346
+    Can be negative(probably -4)
+    It is an integer
+
+    Stored in reaper.ini under the same name in the section REAPER.
+ 
 fullscreenRectR
+    When Reaper is fullscreen, the position of the right of Reaper's window, as toggled by the fullscreen-action 40346
+    It is an integer
+    
+    Stored in reaper.ini under the same name in the section REAPER.
+ 
 fullscreenRectT
+    When Reaper is fullscreen, the position of the top of Reaper's window, as toggled by the fullscreen-action 40346
+    Can be negative(probably -4)
+    It is an integer
+
+    Stored in reaper.ini under the same name in the section REAPER.
+ 
 fxdenorm
     Denormalization and Security-Settings, as set in Preferences -> Compatibility
     This in an integer-bitfield.
@@ -1693,6 +2292,15 @@ gridinbg2
 groupdispmode
 guidelines2
 handzoom
+    Reverse horizontal zoom behavior when hand-scrolling-checkbox, as set in Preferences -> Mouse Modifiers
+    Only for Project marker/region lane, Arrange view, MIDI marker/region lanes-Modifiers
+    It is an integer
+        0, don't reverse(off) - unchecked
+        1, reverse(on) - checked
+
+    For other settings, as set in Preferences -> Mouse Modifiers, see itemlowerhalf_minheight, itemclickmovecurs, pooledenvs, scnotes
+    Stored in reaper.ini under the same name in the section REAPER.
+        
 help
     Stores the settings for the help-information-display under the TCP, as set in it's accompanying context-menu.
     It is an integer-bitfield.
@@ -1710,6 +2318,17 @@ help
     Stored in reaper.ini under the same name in the section REAPER.
     
 hwfadex
+    Tiny-fade-checkboxes, as set in Preferences -> Audio
+    It is an integer-bitfield
+        &1=0, Tiny fade out on playback stop(off) - unchecked
+        &1=1, Tiny fade out on playback stop(on) - checked
+        
+        &2=0, Tiny fade out on playback stop(off) - unchecked
+        &2=1, Tiny fade in on playback start(on) - checked
+        
+    For other settings in Preferences -> Audio, see audiocloseinactive, audioclosestop, errnowarn, optimizesilence
+    Stored in reaper.ini under the same name in the section REAPER.
+    
 hwoutfx_bypass
     The bypass of the Monitor-FX-button that appears in top-right corner when having multiple tabs opened.
     It is an integer
@@ -1739,15 +2358,18 @@ insertmtrack
     Stored in reaper.ini under the same name in the section REAPER.
     
 isFullscreen 
-    Stores, if Reaper is currently set to fullscreen
+    Stores, if Reaper is currently set to fullscreen as well as toggled by action 40346
     It is an integer
         0, Reaper isn't fullscreen
         1, Reaper is fullscreen
+
+    For the position of the edges of fullscreen, see fullscreenRectB, fullscreenRectL, fullscreenRectR, fullscreenRectT
         
     Stored in reaper.ini under the same name in the section REAPER.
     
 itemclickmovecurs
-    Several settings for item-clicks, as set in Preferences -> Mouse Modifiers
+    Several settings for item-clicks, as set in Preferences -> Mouse Modifiers as well as Preferences -> Editing Behavior and toggled by actions 40276, 40300
+    Only for Media item, Track Modifiers
     It is an integer-bitfield
         &1=0, unknown
         &1=1, unknown
@@ -1755,13 +2377,43 @@ itemclickmovecurs
         &2=0, unknown
         &2=1, unknown
         
-        &256=0, When drawn above media items, treat item label area the same as emptry track space(on)(Preferences -> Mouse Modifiers) - checked
-        &256=1, When drawn above media items, treat item label area the same as emptry track space(off)(Preferences -> Mouse Modifiers) - unchecked
+        &4=0, Move edit cursor to start of time selection on time selection change(Preferences->Editing Behavior)(off) - unchecked
+        &4=1, Move edit cursor to start of time selection on time selection change(Preferences->Editing Behavior)(on) - checked
+        
+        &8=0, Move edit cursor when pasting/inserting media(Preferences->Editing Behavior)(on) - checked
+        &8=1, Move edit cursor when pasting/inserting media(Preferences->Editing Behavior)(off) - unchecked
+        
+        &16=0, Move edit cursor to end of recorded items on record stop(Preferences->Editing Behavior)(off) - unchecked
+        &16=1, Move edit cursor to end of recorded items on record stop(Preferences->Editing Behavior)(on) - checked
+        
+        &32=0, Clear loop points on click in ruler(Preferences->Editing Behavior)(off) - unchecked
+        &32=1, Clear loop points on click in ruler(Preferences->Editing Behavior)(on) - checked
+        
+        &64=0, Clear time selection when edit cursor moves on click in arrange view(Preferences->Editing Behavior)(off) - unchecked
+        &64=1, Clear time selection when edit cursor moves on click in arrange view(Preferences->Editing Behavior)(on) - checked
+        
+        &128=0, Automatically delete empty tracks created by dragging items below the last track and back(Preferences->Editing Behavior)(on) - checked
+        &128=1, Automatically delete empty tracks created by dragging items below the last track and back(Preferences->Editing Behavior)(off) - unchecked
+        
+        &256=0, When drawn above media items, treat item label area the same as empty track space(on)(Preferences -> Mouse Modifiers) - checked
+        &256=1, When drawn above media items, treat item label area the same as empty track space(off)(Preferences -> Mouse Modifiers) - unchecked
     
+    For other settings, as set in Preferences -> Mouse Modifiers, see itemlowerhalf_minheight, pooledenvs, handzoom, scnotes
+    For other settings in Preferences -> Editing Behavior, see locklooptotime, relativeedges, ripplelockmode, splitautoxfade, 
+                                                               vzoommode, zoommode
     Stored in reaper.ini under the same name in the section REAPER.
         
 itemdblclk
+    unknown
+    
 itemeditpr
+    Seek playback on items move/size/fade adjustment, pre-roll-inputbox, as set in Preferences -> Seeking
+    It is an integer
+        0 to 2147483647; in milliseconds; higher values become negative
+
+    For other settings, as set in Preferences -> Seeking, see loopselpr, smoothseek, smoothseekmeas, seekmodes
+    Stored in reaper.ini under the same name in the section REAPER.
+    
 itemfade_minheight
 itemfade_minwidth
 itemfadehandle_maxwidth
@@ -1780,6 +2432,14 @@ itemicons
 itemicons_minheight
 itemlabel_minheight
 itemlowerhalf_minheight
+    Disable targeting bottom part of media item when take lane height is less than-inputbox, as set in Preferences -> Mouse Modifiers
+    Only for Media Item Bottom Half-Modifier
+    It is an integer
+        0 to 2147483647; in pixels
+        
+    For other settings, as set in Preferences -> Mouse Modifiers, see itemclickmovecurs, pooledenvs, handzoom, scnotes
+    Stored in reaper.ini under the same name in the section REAPER.
+    
 itemmixflag
     Stores the Item Mix Behavior-dropdownlist, as set in the Project Settings -> Advanced
     It is an integer.
@@ -1790,7 +2450,11 @@ itemmixflag
     Stored in reaper.ini under the same name in the section REAPER, when Save as default project settings has been clicked.
     
 itemprops
+    unknown
+    
 itemprops_timemode
+    unknown
+
 itemsnap
     Snap distance-inputbox in the Snap settings-section of Snap/grid settings, as located in menu Options -> Snap/grid -> Snap/grid settings
     It is an integer
@@ -1802,6 +2466,13 @@ itemsnap
     Stored in reaper.ini under the same name in the section REAPER.
     
 itemtexthide
+    View: Toggle show/hide item labels as toggled by action 40651(sections: Main, Media Explorer, MIDI Editor, MIDI Eventlist Editor, MIDI Inline Editor)
+    It is an integer
+        0, action is toggled on
+        1, action is toggled off
+        
+    Stored in reaper.ini under the same name in the section REAPER.
+    
 itemtimelock
     The Timebase for items/envelopes/markers-dropdownlist, as set in Project Settings -> Project Settings
     Must be an integer.
@@ -1826,7 +2497,21 @@ kbd_usealt
     Stored in reaper.ini under the same name in the section REAPER.
     
 labelitems2
+    as well as toggle actions 40258
+    
 lastthemefn5
+    The currently selected theme.
+    It is a string
+        <classic> for the classic-theme; others are path+filename.ReaperTheme
+        
+    Note: the string-representation can be accessed only using get_config_var_string(), which is only available in pre-releases of Reaper
+          at the time of writing.
+        
+    The value can be accessed as integer as well. In that case, it is a combination of the first 8 letters of the name of the pathname on bitlevel.
+    Supports only the first 8 letters.
+    
+    Stored in reaper.ini under the same name in the section REAPER.
+    
 loadlastproj
     Stores the "Open project(s) at startup"-dropdownlist-setting in the "Startup Settings"-section
     Must be an integer.
@@ -1839,7 +2524,7 @@ loadlastproj
     Stored in reaper.ini under the same name in the section REAPER.
     
 locklooptotime
-    Loop points linked to time selection, as set in the Options-menu.
+    Loop points linked to time selection, as set in the Options-menu as well as in Preferences -> Editing Behavior
     It is an integer
         0, disabled looping points to time selection
         1, enabled looping points to time selection
@@ -1904,8 +2589,49 @@ loopgranlen
                                       loopgran, maxsnaptrack, snapextraden, snapextrad, itemsnap, projgridsnapmin
 
 loopnewitems
+    Loop-checkboxes, as set in Preferences -> Media Item Defaults
+    It is an integer-bitfield
+        &1=0, unknown
+        &1=1, unknown
+        
+        &2=0, Loop source for new MIDI items(off) - unchecked
+        &2=1, Loop source for new MIDI items(on) - checked
+        
+        &4=0, Loop source for imported items(off) - unchecked
+        &4=1, Loop source for imported items(on) - checked
+        
+        &8=0, Loop source for recorded items(off) - checked
+        &8=1, Loop source for recorded items(on) - unchecked
+        
+        &16=0, Time selection auto-punch audio recording creates loopable section(only clickable when &8=1)(off) - unchecked
+        &16=1, Time selection auto-punch audio recording creates loopable section(only clickable when &8=1)(on) - checked
+        
+        &32=0, Loop source for glued items(on) - checked
+        &32=1, Loop source for glued items(off) - unchecked
+        
+    For other settings, as set in Preferences -> Media Item Defaults, see loopnewitems, splitautoxfade, autoxfade, deffadeshape, defxfadeshape, 
+                                                                          deffadelen, defsplitxfadelen
+        
+    Stored in reaper.ini under the same name in the section REAPER.
+    
 loopselpr
+    Only when repeat is enabled-pre-roll-inputbox, as set in Preferences -> Seeking
+    It is an integer
+        0 to 2147483647; in milliseconds; higher values become negative
+
+    For other settings, as set in Preferences -> Seeking, see itemeditpr, smoothseek, smoothseekmeas, seekmodes
+    Stored in reaper.ini under the same name in the section REAPER.
+    
 loopstopfx
+    Flush FX when looping-checkbox, in section Playback settings, as set in Preferences -> Playback
+    It is an integer
+        0, don't flush FX when looping(off) - unchecked
+        1, flush FX when looping(on) - checked
+        
+    For other settings in section Playback settings, as set in Preferences -> Playback, see midisendflags, runafterstop, runallonstop, 
+                                                                                            stopendofloop, stopprojlen, viewadvance
+    Stored in reaper.ini under the same name in the section REAPER.
+
 manuallat
 manuallatin
 mastermutesolo
@@ -1935,7 +2661,7 @@ maxrecent
     Stored in reaper.ini under the same name in the section REAPER.
     
 maxrecentfx
-    The Recently Added list max-textbox, as set in Preferences -> Plug-ins
+    The Recently Added list max-inputbox, as set in Preferences -> Plug-ins
     It is an integer.
         0 to 199
 
@@ -1956,8 +2682,22 @@ maxsnaptrack
     Stored in reaper.ini under the same name in the section REAPER.
     
 maxspeakgain
+    unknown
+    
 metronome_defout
+    Default metronome output-dropdownlist in the Channel naming/mapping-section, as set in Preferences -> Audio
+    The track-number; set &1024=1 additional to select only mono-channels
+    It is an integer-bitfield
+        -1, Use all project master outs
+        0 to 62, stereo pairs channel 1/2 to 63/64(maybe higher possible?)
+        1024 to 1087, channel 1 to 64(maybe higher possible?)
+        
+    For other settings in section Channel naming/mapping as set in Preferences -> Audio, see allstereopairs, metronome_defout, useinnc
+    Stored in reaper.ini under the same name in the section REAPER.
+    
 metronome_flags
+    unknown
+    
 midiccdensity
     Events per quarter note when drawing in CC lines-inputbox, as set in Preferences -> MIDI Editor
     It is an integer
@@ -1968,15 +2708,16 @@ midiccdensity
     Stored in reaper.ini under the same name in the section REAPER.
     
 mididefcolormap
-    Default note color map, as set in the Preferences -> MIDI Editor
-    It is an integer value
-    The value is a combination of the letters of the name of the colormap on bitlevel.
-    examples:
-        A,  1 0 0 0:0 0 1 0 - 0 0 0 0:0 0 0 0 (the first byte represents the bitwise representation of an A)
-        AA, 1 0 0 0:0 0 1 0 - 1 0 0 0:0 0 1 0 (the two bytes represent the bitwise representation of an A each)
+    Default note color map-inputbox, as set in the Preferences -> MIDI Editor
+    It is a string
+
+    Note: the string-representation can be accessed only using get_config_var_string(), which is only available in pre-releases of Reaper
+          at the time of writing.
+        
+    The value can be accessed as integer as well. In that case, it is a combination of the first 8 letters of the name of the pathname on bitlevel.
+    Supports only the first 8 letters.
     
-    Stored in reaper.ini under the same name in the section REAPER, where the individual bytes are transformed 
-                         into a string, like 1 0 0 0:0 0 1 0 - 1 0 0 0:0 0 1 0 is stored as AA in the reaper.ini
+    Stored in reaper.ini under the same name in the section REAPER.
     
 midieditor
     Several editor-settings, as set in Preferences -> MIDI Editor
@@ -2017,9 +2758,13 @@ midieditor
     Stored in reaper.ini under the same name in the section REAPER.
     
 midiins
+    unknown
+
 midiins_cs
+    unknown
+    
 midioctoffs
-    MIDI octave name display offset-textbox, as set in Preferences -> MIDI
+    MIDI octave name display offset-inputbox, as set in Preferences -> MIDI
     It is an integer.
         0 to 2147483646; higher values become negative; 0 based, means 0=1 octaves, 1=2 octaves, 2=3 octaves, etc
 
@@ -2030,6 +2775,7 @@ midioctoffs
     
 midiouts
     The context-menu of the MIDI outputs to make available-section, as set in Preferences -> MIDI Devices
+    Doubleclick on a device in the list.
     It is an integer
         0, Enable output(off) - unchecked
         1, Enable output(on) - checked
@@ -2041,6 +2787,7 @@ midiouts
     
 midiouts_clock
     The context-menu of the MIDI outputs to make available-section, as set in Preferences -> MIDI Devices
+    Doubleclick on a device in the list.
     Needs midiouts to be set to 1.
     It is an integer
         0, Send clock to output(off) - unchecked
@@ -2053,6 +2800,7 @@ midiouts_clock
     
 midiouts_clock_nospp
     The context-menu of the MIDI outputs to make available-section, as set in Preferences -> MIDI Devices
+    Doubleclick on a device in the list.
     Needs midiouts to be set to 1 and midiouts_clock to be set to 1.
     It is an integer
         0, Do not send SPP to output(off) - unchecked
@@ -2064,6 +2812,7 @@ midiouts_clock_nospp
     
 midiouts_llmode
     The context-menu of the MIDI outputs to make available-section, as set in Preferences -> MIDI Devices
+    Doubleclick on a device in the list.
     Needs midiouts to be set to 1.
     It is an integer
         0, Low latency outut mode (low precision)(off) - unchecked
@@ -2084,7 +2833,7 @@ midioutthread
     Stored in reaper.ini under the same name in the section REAPER.    
     
 midisendflags
-    The Reset by/Reset on-checkboxes, as set in Preferences -> MIDI Devices
+    The Reset by/Reset on-checkboxes, as set in Preferences -> MIDI Devices as well as in section Playback settings in Preferences -> Playback
     It is an integer-bitfield
         &1=0, All-notes-off(on) - checked
         &1=1, All-notes-off(off) - unchecked
@@ -2095,27 +2844,31 @@ midisendflags
         &4=0, unknown
         &4=1, unknown
         
-        &8=0, unknown
-        &8=1, unknown
+        &8=0, Send MIDI note-offs when un-record-arming a track(Preferences -> Playback)(on) - checked
+        &8=1, Send MIDI note-offs when un-record-arming a track(Preferences -> Playback)(off) - unchecked
         
-        &16=0, unknown
-        &16=1, unknown
+        &16=0, Reset MIDI CC/pitch on: playback start(Preferences -> Playback)(on) - checked
+        &16=1, Reset MIDI CC/pitch on: playback start(Preferences -> Playback)(off) - unchecked
         
-        &32=0, unknown
-        &32=1, unknown
+        &32=0, Reset MIDI CC/pitch on: playback stop(Preferences -> Playback)(off) - unchecked
+        &32=1, Reset MIDI CC/pitch on: playback stop(Preferences -> Playback)(on) - checked
         
         &64=0, Play(on) - checked
         &64=1, Play(off) - unchecked
         
         &128=0, Stop/stopped seek(off) - unchecked
         &128=1, Stop/stopped seek(on) - checked
+        
+        &256=0, Reset MIDI CC/pitch on: playback loop/skip(on) - checked
+        &256=1, Reset MIDI CC/pitch on: playback loop/skip(off) - unchecked
     
     For other settings in Preferences -> MIDI Devices, see midioutthread, midiouts, midiouts_clock, midiouts_clock_nospp, midiouts_llmode 
-        
+    For other settings in section Playback settings, as set in Preferences -> Playback, see loopstopfx, runafterstop, runallonstop, 
+                                                                                            stopendofloop, stopprojlen, viewadvance
     Stored in reaper.ini under the same name in the section REAPER.    
 
 miditicksperbeat
-    Ticks per quarter note for new MIDI items-textbox, as set in Preferences -> MIDI
+    Ticks per quarter note for new MIDI items-inputbox, as set in Preferences -> MIDI
     It is an integer.
         1 to 2147483647; default 960
 
@@ -2175,7 +2928,7 @@ mixerflag
     
 mixeruiflag
     Several entries, as set in the mixer-context-menu
-    It is an integer-bitfield
+    It is an integer-bitfield as well as toggled by actions 40081, 40198
         &1=0, Show normal top level tracks(off) - unchecked
         &1=1, Show normal top level tracks(on) - checked
         
@@ -2200,7 +2953,7 @@ mixeruiflag
     For other mixer-context-menu-settings, see showctinmix, mixerflag and mixrowflags 
     
 mixrowflags
-    Several entries, as set in the mixer-context-menu
+    Several entries, as set in the mixer-context-menu as well as toggled by actions 40371, 40372, 40389
     It is an integer-bitfield
         &1=0, Show multiple rows of tracks when size permits(on) - checked
         &1=1, Show multiple rows of tracks when size permits(off) - unchecked
@@ -2232,6 +2985,8 @@ mixrowflags
     For other mixer-context-menu-settings, see showctinmix, mixerflag and mixeruiflag 
     
 mousemovemod
+    unknown
+
 mousewheelmode
     Several settings, as set in Preferences -> Mouse Modifiers as well as Preferences -> Keyboard/Multitouch
     It is an integer-bitfield
@@ -2388,6 +3143,14 @@ multitouch_zoom_gear
     Stored in reaper.ini under the same name in the section REAPER.
     
 mutefadems10
+    Track mute fade-inputbox in the section Mute settings, as set in Preferences -> Mute/Solo
+    The value is in milliseconds*10!
+    It is an integer
+        0 to 1000
+        
+    For other settings set in section Mute settings in Preferences -> Mute/Solo, see automute, automuteflags, automuteval, norunmute
+    Stored in reaper.ini under the same name in the section REAPER.
+    
 mvu_rmsgain
     The Display gain, as set in the RMS metering settings-section of the Master VU settings-dialog, opened when right-clicking the Master-VU.
     It is an integer
@@ -2442,6 +3205,8 @@ mvu_rmssize
     
 nativedrawtext
 newfnopt
+    unknown
+    
 newprojdo
     Several "new project"-settings from the Project settings-section, as set in Preferences -> Project.
     It is an integer-bitfield
@@ -2457,6 +3222,21 @@ newprojdo
     Stored in reaper.ini under the same name in the section REAPER.
     
 newtflag
+    The Show in mixer, Main(parent)send and Free item positioning-checkboxes in section Tracks, as set in Preferences -> Track / Send Defaults
+    It is an integer-bitfield
+        &1=0, Show in mixer(off) - unchecked
+        &1=1, Show in mixer(on) - checked
+        
+        &2=0, Main (parent) send(off) - unchecked
+        &2=1, Main (parent) send(on) - checked
+        
+        &4=0, Free item positioning(off) - unchecked
+        &4=1, Free item positioning(on) - checked
+
+    For other settings of section Tracks from Preferences -> Track/Send Defaults, see defautomode, errnowarn, volenvrange, deftrackrecinput, defenvs, deftrackrecflags, deftrackvol, defvzoom, splitautoxfade, vzoom2
+    
+    Stored in reaper.ini under the same name in the section REAPER.
+    
 nometers
     Pre-fader metering, as set in the menu Options
     It is an integer-bitfield
@@ -2496,6 +3276,17 @@ nometers
     Stored in reaper.ini under the same name in the section REAPER.
     
 norunmute
+    Do not process muted tracks(muted tracks take no CPU time, etc)-checkbox in section Mute settings, as set in Preferences -> Mute/Solo
+    It is an integer-bitfield
+        &1=0, Do not process(off) - unchecked
+        &1=1, process(on) - checked
+        
+        &268.435.456=0, unknown
+        &268.435.456=1, unknown, might be set during rendering
+        
+    For other settings set in section Mute settings in Preferences -> Mute/Solo, see automute, automuteflags, automuteval, mutefadems10
+    Stored in reaper.ini under the same name in the section REAPER, but not when &268.435.456 gets added
+    
 offlineinact
     Set media items offline when application is not active and automatically rebuild peaks-settings, as set in Preferences -> Media.
     This is not(!) located in Preferences -> Appearances-Media!
@@ -2504,7 +3295,7 @@ offlineinact
         &1=1, Checkbox is unchecked(media items not offline)
         
         &2=0, Automatically rebuild peaks - checked
-        &2=0, Automatically rebuild peaks - unchecked
+        &2=1, Automatically rebuild peaks - unchecked
         
     For other settings, set in the preferences -> Media, see showpeaksbuild, copyimpmedia, relativeedges, applyfxtail, itemfxtail, peakcachegenmode, 
                                                              altpeaks, showpeaks, peakcachegenrs, insertmtrack, opencopyprompt
@@ -2512,7 +3303,7 @@ offlineinact
     Stored in reaper.ini under the same name in the section REAPER.
     
 opencopyprompt
-    Opening Midi-file-settings as well as some opening Media Items-settings, as set in Preferences -> MIDI and Preferences -> Media
+    Opening Midi-file-settings as well as some opening Media Items-settings, as set in Preferences -> MIDI and Preferences -> Media or the Consolidate Tracks-dialog.
     This is not(!) located in Preferences -> Appearances-Media!
     It is an integer.
         &1=0, Prompt to confirm filename on "open copy in editor" - unchecked
@@ -2533,6 +3324,9 @@ opencopyprompt
             0 0, As a multichannel item on a single track
             1 0, As single-channel items on multiple tracks
             0 1, Always prompt when importing multichannel MIDI
+            
+        &64=0, Export MIDI as: reference in .RPP-file(for export to REAPER only)(Consolidate Tracks)
+        &64=1, Export MIDI as: .MID file(Consolidate Tracks)
         
         &256=0, Always prompt to import tempo from MIDI files with simple tempo maps (holding ctrl toggles) - unchecked
         &256=1, Always prompt to import tempo from MIDI files with simple tempo maps (holding ctrl toggles) - checked
@@ -2555,6 +3349,14 @@ opennotes
     Stored in reaper.ini under the same name in the section REAPER only, when Save as default project settings is clicked.
         
 optimizesilence
+    Reduce CPU use of silent tracks during playback (experimental)-checkbox, as set in Preferences -> Audio
+    It is an integer
+        0, Don't reduce CPU use(off) - unchecked
+        1, Reduce CPU use(on) - checked
+    
+    For other settings in Preferences -> Audio, see audiocloseinactive, audioclosestop, errnowarn, hwfadex
+    Stored in reaper.ini under the same name in the section REAPER.
+    
 pandispmode
 panlaw
     The Pan law-setting/dropdownlist in the Pan law/mode-section, as set in Project Settings -> Advanced
@@ -2599,19 +3401,32 @@ peakcachegenmode
     Stored in reaper.ini under the same name in the section REAPER.
     
 peakcachegenrs
-    The Desired cache resolution-textbox, a set in Preferences -> Media.
+    The Desired cache resolution-inputbox, a set in Preferences -> Media.
     This is not(!) located in Preferences -> Appearances-Media!
     It is an integer.
         0 to 2147483647; higher values become negative; default is 300
 
     For other Media-settings, set in the preferences -> Media, see copyimpmedia, relativeedges, applyfxtail, itemfxtail, peakcachegenmode, 
                                                                    showpeaksbuild, altpeaks, showpeaks, offlineinact, insertmtrack, opencopyprompt
-                                                             
     Stored in reaper.ini under the same name in the section REAPER.
     
 peakrecbm
 peaksedges
 pitchenvrange
+    Per-take pitch envelope range-inputbox, as set in Preferences -> Envelope Display
+    It is an integer
+        1 to 2147483647; 
+            add 256 for 1 semitone-snap,
+            add 512 for 50 cent-snap,
+            add 768 for 25 cent-snap,
+            add 1024 for 10 cent-snap,
+            add 1280 for 5 cent-snap,
+            add 1537 for 1 cent-snap.
+    
+    For other settings as set in Preferences -> Envelope Display, see volenvrange, tempoenvmax, tempoenvmin, env_deffoc, env_ol_minh, 
+                                                                      env_reduce, envclicksegmode, envlanes, envtranstime, pooledenvs
+    Stored in reaper.ini under the same name in the section REAPER.
+    
 playcursormode
 playrate
     The current master-playrate, as set in the transport-area.
@@ -2662,7 +3477,7 @@ pooledenvattach
     Stored in reaper.ini under the same name in the section REAPER.
         
 pooledenvs
-    Several settings from the Automation items-section, as set in Preferences -> Automation.
+    Several settings from the Automation items-section, as set in Preferences -> Automation as well as in Preferences -> Envelope Display and in Preferences -> Mouse Modifiers(only Automation item and Automation item edge-Modifiers)
     It is an integer-bitfield
         &1=0, Editing baseline/amplitude in properties dialog affects pooled copies(off) - unchecked
         &1=1, Editing baseline/amplitude in properties dialog affects pooled copies(on) - checked
@@ -2676,8 +3491,8 @@ pooledenvs
         &8=0, unknown
         &8=1, unknown
         
-        &16=0, unknown
-        &16=0, unknown
+        &16=0, Automatically append envelope name to automation item label(Preferences -> Envelope Display)(on) - checked
+        &16=1, Automatically append envelope name to automation item label(Preferences -> Envelope Display)(off) - unchecked
         
         &32=0, Pool source data when pasting automation items(off) - unchecked
         &32=1, Pool source data when pasting automation items(on) - checked
@@ -2685,17 +3500,27 @@ pooledenvs
         &64=0, When copying with media items(on) - checked
         &64=1, When copying with media items(off) - unchecked
         
-        &128=0, unknown
-        &128=1, unknown
+        &128=0, Edits affect all pooled automation items at the same time position-checkbox(Preferences -> Mouse Modifiers)(off) - unchecked
+        &128=1, Edits affect all pooled automation items at the same time position-checkbox(Preferences -> Mouse Modifiers)(off) - checked
         
         &256=0, Trim content behind automation items when editing or writing automation(off) - unchecked
         &256=1, Trim content behind automation items when editing or writing automation(on) - checked
         
     For other settings set in Preferences -> Automation, see autoreturntime, autoreturntime_action, env_autoadd, env_options, env_reduce, envtrimadjmode, envwritepasschg
-
+    For other settings as set in Preferences -> Envelope Display, see volenvrange, pitchenvrange, tempoenvmax, tempoenvmin, env_deffoc, env_ol_minh, 
+                                                                      env_reduce, envclicksegmode, envlanes, envtranstime
+    For other settings, as set in Preferences -> Mouse Modifiers, see itemlowerhalf_minheight, itemclickmovecurs, handzoom, scnotes
     Stored in reaper.ini under the same name in the section REAPER.
     
 prebufperb
+    prebuffer-inputbox, as set in Preferences -> Buffering
+    It is an integer
+        0 to 100; in percent; default is 100
+
+    For other settings as set in Preferences -> Buffering, see audioasync, autonbworkerthreads, threadpr, workbehvr, workbuffxuims, 
+                                                               workbufmsex, workrender, workthreads
+    Stored in reaper.ini under the same name in the section REAPER.
+    
 preroll
     The several preroll-settings, as set in the Pre-Roll-section of the "Metronome and pre-roll settings"-dialog(also options-menu)
     It is an integer-bitfield
@@ -2924,7 +3749,7 @@ projmaxlenuse
     
 projmeaslen
     The time signature-measure length, as set in Project Settings -> Project Settings.
-    This is the first of the two textboxes!
+    This is the first of the two inputboxes!
     Only integer allowed.
         1 to 2147483647
         
@@ -2952,7 +3777,7 @@ projmetrocountin
     Negative values are allowed
     
 projmetroen
-    Sets metronome-settings, as set in the options-menu and the "Metronome Preroll Settings"-dialog(also options-menu)
+    Sets metronome-settings, as set in the options-menu and the "Metronome Preroll Settings"-dialog(also options-menu) as well as toggled by actions 40364
     Its an integer bitfield.
         &1=0, Metronome disabled
         &1=1, Metronome enabled
@@ -2995,6 +3820,8 @@ projmetrov2
         5e-051 to 1.9905358527675; 0.5 for 0dB
         
 projmidieditor
+    unknown
+    
 projpeaksgain
     Display gain-fader, as set in Peaks Display Settings- dialog in Menu Options -> Peaks Display Settings
     It is a double-float
@@ -3016,7 +3843,7 @@ projrecforopencopy
     Stored in reaper.ini under the same name in the section REAPER, when Save as default project settings has been clicked.
     
 projrecmode
-    The selected Record mode of the project, as set in the transport-context-menu.
+    The selected Record mode of the project, as set in the transport-context-menu as well as toggled by action 40076, 40252, 40253
     It is an integer.
         0, Record mode: auto-punch selected items
         1, Record mode: normal
@@ -3116,14 +3943,14 @@ projrenderstems
         32, Selected media items
     
 projripedit
-    The ripple-edit-state of the current project.
+    The ripple-edit-state of the current project as well as toggled by actions 40310
     It's an integer.
         0, no ripple-edit
         1, Ripple edit per track
         2, Ripple edit all tracks
     
 projsellock
-    The settings from the Lock Settings-dialog, as set by the Options -> Locking-menu as well as the Lock Button in the Main toolbar.
+    The settings from the Lock Settings-dialog, as set by the Options -> Locking-menu as well as the Lock Button in the Main toolbar as well as toggled by action 40573, 40576, 40579, 40582, 40585, 40588, 40591, 40594, 40597, 40600, 40629
     It is an integer-bitfield
         &1=0, Time selection(off) - unchecked
         &1=1, Time selection(on) - checked
@@ -3206,7 +4033,7 @@ projshowgrid
             0 1, Snap both start/end
         
         &8192=0, Snap cursor to edges of media items on any track(off) - unchecked
-        &8192=0, Snap cursor to edges of media items on any track(on) - checked
+        &8192=1, Snap cursor to edges of media items on any track(on) - checked
         
         &16384=0, unknown
         &16384=1, unknown
@@ -3224,7 +4051,7 @@ projshowgrid
                                       projgridswing, loopgran, maxsnaptrack,snapextraden, snapextrad, itemsnap
     
 projsmpteahead
-    The Synchronize by seeking ahead-textbox, behind the accompanying Configure-button, as set in Project Settings -> Advanced
+    The Synchronize by seeking ahead-inputbox, behind the accompanying Configure-button, as set in Project Settings -> Advanced
     It is an integer.
         0 to 2147483647; 1000 = default
         
@@ -3235,7 +4062,7 @@ projsmpteahead
     Stored in reaper.ini under the same name in the section REAPER, when Save as default project settings has been clicked.
     
 projsmptefw_rec
-    The Stop recording on lack of time code after-textbox, behind the accompanying Configure-button, as set in Project Settings -> Advanced
+    The Stop recording on lack of time code after-inputbox, behind the accompanying Configure-button, as set in Project Settings -> Advanced
     It is an integer.
         0 to 2147483647; higher values become negative ones; 0=never
     
@@ -3262,7 +4089,7 @@ projsmpteinput
     Stored in reaper.ini under the same name in the section REAPER, when Save as default project settings has been clicked.
     
 projsmptemaxfree
-    The Freewheel on missing time code for up to-textbox, behind the accompanying Configure-button, as set in Project Settings -> Advanced
+    The Freewheel on missing time code for up to-inputbox, behind the accompanying Configure-button, as set in Project Settings -> Advanced
     It is an integer.
         0 to 2147483647; 0 = forever
         
@@ -3273,9 +4100,9 @@ projsmptemaxfree
     Stored in reaper.ini under the same name in the section REAPER, when Save as default project settings has been clicked.
     
 projsmpteoffs
-    The Offset incoming timecode by-textbox, behind the accompanying Configure-button, as set in Project Settings -> Advanced
+    The Offset incoming timecode by-inputbox, behind the accompanying Configure-button, as set in Project Settings -> Advanced
     It is a double-float
-        0 to 1e+305; in seconds(yes, even though the textbox in the dialog asks for milliseconds, this value is in seconds!)
+        0 to 1e+305; in seconds(yes, even though the inputbox in the dialog asks for milliseconds, this value is in seconds!)
         
     For other settings in the Project -> Advanced, see projsmpterate, projsmptesync, itemmixflag, projmaxlenuse, panmode, projintmix, projsmptemaxfree, 
                                                        projsmpteresync_rec, projmaxlen, feedbackmode, projsmpteahead, projsmpteresync, projsmpteskip, 
@@ -3311,7 +4138,7 @@ projsmpterateuseproj
     Stored in reaper.ini under the same name in the section REAPER, when Save as default project settings has been clicked.
     
 projsmpteresync
-    Re-synchronize if drift exceeds-textbox, as set in the Configure-timecode-settings in Project Settings -> Advanced
+    Re-synchronize if drift exceeds-inputbox, as set in the Configure-timecode-settings in Project Settings -> Advanced
     It is an integer
         0 to 2147483647; 0=never
 
@@ -3322,7 +4149,7 @@ projsmpteresync
     Stored in reaper.ini under the same name in the section REAPER, when Save as default project settings has been clicked.
     
 projsmpteresync_rec
-    Stop recording if drift exceeds-textbox, as set in the Configure-timecode-settings in Project Settings -> Advanced
+    Stop recording if drift exceeds-inputbox, as set in the Configure-timecode-settings in Project Settings -> Advanced
     It is an integer
         0 to 2147483647; higher numbers become negative; 0=never
 
@@ -3333,7 +4160,7 @@ projsmpteresync_rec
     Stored in reaper.ini under the same name in the section REAPER, when Save as default project settings has been clicked.
     
 projsmpteskip
-    Skip/drop frames if drift exceeds-textbox, as set in the Configure-timecode-settings in Project Settings -> Advanced
+    Skip/drop frames if drift exceeds-inputbox, as set in the Configure-timecode-settings in Project Settings -> Advanced
     It is an integer
         0 to 2147483647; 0=never
 
@@ -3344,7 +4171,7 @@ projsmpteskip
     Stored in reaper.ini under the same name in the section REAPER, when Save as default project settings has been clicked.
     
 projsmptesync
-    The External timecode synchronization-settings and the settings behind the accompanying Configure-button, as set in Project Settings -> Advanced
+    The External timecode synchronization-settings and the settings behind the accompanying Configure-button, as set in Project Settings -> Advanced as well as toggled by action 40620
     It's an integer-bitfield.
         &1=0, External timecode synchronization/Enable synchronization to timecode - unchecked
         &1=1, External timecode synchronization/Enable synchronization to timecode - checked
@@ -3391,7 +4218,7 @@ projsrateuse
     Stored in reaper.ini under the same name in the section REAPER, when Save as default project settings has been clicked.
     
 projtakelane
-    The Take-lane-settings, as set in the Options-menu.
+    The Take-lane-settings, as set in the Options-menu or as toggled by action 40435, 40507
     It is an integer-bitfield
         &1=0, Show all takes in lane (when room)(off) - unchecked
         &1=1, Show all takes in lane (when room)(on) - checked
@@ -3402,7 +4229,7 @@ projtakelane
     For other lane-relevant settings, see takelanes, autoxfade
     
 projtimemode
-    The shown-time-unit in the ruler-area, as set in the ruler-context-menu.
+    The shown-time-unit in the ruler-area, as set in the ruler-context-menu as well as toggled by actions 40365, 40366, 40367, 40368, 40369, 40370, 41916, 41918, 41973
     It is an integer
         -1, Use ruler time unit
         0, Minutes:Seconds
@@ -3414,7 +4241,7 @@ projtimemode
         8, Absolute Frames
         
 projtimemode2
-    The shown-time-unit in the transport-area, as set in the transport-context-menu.
+    The shown-time-unit in the transport-area, as set in the transport-context-menu as well as toggled by action 40410, 40411, 40412, 40413, 40414, 40534, 41972
     It is an integer
         -1, Use ruler time unit
         0, Minutes:Seconds
@@ -3442,7 +4269,7 @@ projtrackgroupdisabled
     
 projtsdenom
     The time signature-denominator of the project, as set in the Project Settings -> Project Settings
-    The second of the two textboxes!
+    The second of the two inputboxes!
     Must be an integer.
         1 to 128
         
@@ -3490,12 +4317,80 @@ projvidw
     Stored in reaper.ini under the same name in the section REAPER, when Save as default project settings has been clicked.
     
 promptendrec
+    as well as in the dialog opened when finishing recording
+    
 psmaxv
+    Edit: Move CC events right 1 pixel, as triggered by actions 40673 and 40676(all sections)
+    The purpose of it is unknown but seems to be connected to MIDI-stuff.
+    It is a double float
+    
+    Stored in reaper.ini under the same name in the section REAPER.
+    
 psminv
+    Edit: Increase value a little bit for CC events, as triggered by actions 40673 and 40676(all sections)
+    The purpose of it is unknown but seems to be connected to MIDI-stuff.
+    It is a double float
+    
+    Stored in reaper.ini under the same name in the section REAPER.
+    
 quantflag
+    Several settings, as set in Quantize Item Positions(action 40316)
+    It is an integer-bitfield
+        &1=0, Move grouped items with selected items(off) - unchecked
+        &1=1, Move grouped items with selected items(on) - checked
+        
+        &2=0, Extend start of items to overlap with earlier items by-checkbox(off)- unchecked
+        &2=1, Extend start of items to overlap with earlier items by-checkbox(on)- checked
+
+        &4=0, Shorten earlier items if quantized items overlap by more than-checkbox(off) - unchecked
+        &4=1, Shorten earlier items if quantized items overlap by more than-checkbox(on) - checked
+        
+        &8=0, Quantize item ends and stretch item to fit(off) - unchecked
+        &8=1, Quantize item ends and stretch item to fit(on) - checked
+    
+    For other Quantize Item Positions-settings, see quantolms, quantolms2, quantsize2
+    Stored in reaper.ini under the same name in the section REAPER.
+    
 quantolms
+    Extend start of items to overlap with earlier items by-inputbox, as set in Quantize Item Positions(action 40316)
+    It is an integer
+        0 to 2147483647; in milliseconds; higher values become negative;
+    
+    For other Quantize Item Positions-settings, see quantolms2, quantflag, quantsize2
+    Stored in reaper.ini under the same name in the section REAPER.
+    
 quantolms2
+    Shorten earlier items if quantized items overlap by more than-inputbox, as set in Quantize Item Positions(action 40316)
+    It is an integer
+        0 to 2147483647; in milliseconds; higher values become negative;
+    
+    For other Quantize Item Positions-settings, see quantolms, quantflag, quantsize2
+    Stored in reaper.ini under the same name in the section REAPER.
+    
 quantsize2
+    Quantize to-dropdown/inputlist, as set in Quantize Item Positions(action 40316)
+    It is a double-float.
+        0.00390625(1/256)
+        0.0078125(1/128)
+        0.015625(1/64)
+        0.020833333333333(1/32T)
+        0.03125(1/32)
+        0.041666666666667(1/16T)
+        0.0625(1/16)
+        0.083333333333333(1/8T)
+        0.125(1/8)
+        0.16666666666667(1/4T)
+        0.25(1/4)
+        0.5(1/2)
+        1.0(1)
+        2.0(2)
+        4.0(4)
+        other values are possible as well, with minimum 1/256
+
+    For other Quantize Item Positions-settings, see quantolms, quantolms2, quantflag
+    Stored in reaper.ini under the same name in the section REAPER.        
+
+
 rbn
     Some MIDI-settings, as set in Preferences -> MIDI settings as well in the Transport-context-menu
     It is an integer-bitfield.
@@ -3601,10 +4496,16 @@ reccfg
         2004250731, WavPack lossless compressor
     
 recfile_wildcards
+    Filename format for recorded files-inputbox, as set in Preferences -> Recording
+    This is also the place, where you can store the wildcard-patterns for filenames
+    It is a string
+    
+    Stored in reaper.ini under the same name in the section REAPER.
+    
 recopts
 recupdatems
 relativeedges
-    Duplicate take FX when splitting items-checkbox, as set in the Preferences -> Media
+    Duplicate take FX when splitting items-checkbox, as set in the Preferences -> Media as well as in Preferences -> Editing Behavior
     This is not(!) located in Preferences -> Appearances-Media!
     It is an integer-bitfield.
         &1=0, unknown
@@ -3618,10 +4519,26 @@ relativeedges
         
         &8=0, Duplicate take FX when splitting items-checkbox - checked
         &8=1, Duplicate take FX when splitting items-checkbox - unchecked
-
+        
+        &16=0, unknown
+        &16=1, unknown
+        
+        &32=0, Allow dual trim (edit shared media item edges) only if both items are selected(Preferences -> Editing Behavior)(off) - unchecked
+        &32=1, Allow dual trim (edit shared media item edges) only if both items are selected(Preferences -> Editing Behavior)(on) - checked
+        
+        &64=0, unknown
+        &64=1, unknown
+        
+        &128=0, Dragging the source start offset of the active take adjusts the offset for all takes(Preferences -> Editing Behavior)(off) - unchecked
+        &128=1, Dragging the source start offset of the active take adjusts the offset for all takes(Preferences -> Editing Behavior)(on) - checked
+        
+        &256=0, If no items are selected, some split/trim/delete actions affect all items at the edit cursor(Preferences -> Editing Behavior)(on) - checked
+        &256=1, If no items are selected, some split/trim/delete actions affect all items at the edit cursor(Preferences -> Editing Behavior)(off) - unchecked
+        
     For other Media-settings, set in the preferences -> Media, see showpeaksbuild, copyimpmedia, applyfxtail, itemfxtail, peakcachegenmode, 
                                                                    altpeaks, showpeaks, peakcachegenrs, offlineinact, insertmtrack, opencopyprompt
-                                                             
+    For other settings in Preferences -> Editing Behavior, see itemclickmovecurs, locklooptotime, ripplelockmode, splitautoxfade, 
+                                                               vzoommode, zoommode
     Stored in reaper.ini under the same name in the section REAPER.
     
 relsnap
@@ -3635,7 +4552,28 @@ relsnap
                                       maxsnaptrack, snapextraden, snapextrad, itemsnap, projgridsnapmin
     
 renderaheadlen
+    Render-ahead-inputbox in the FX processing/multiprocessing settings, as set in Preferences -> Buffering.
+    Affects renderaheadlen2 as well!
+    It is an integer
+        0 to 5000; in milliseconds; default is 200
+        
+    For other settings in section FX processing/multiprocessing as set in Preferences -> Buffering, see renderaheadlen2, syncsmpuse, 
+                                                                                                        syncsmpmax2, workrender
+
+    Stored in reaper.ini under the same name in the section REAPER.
+    
 renderaheadlen2
+    Is influenced by renderaheadlen. If renderaheadlen is less than 200, then renderaheadlen2 is half of it. If renderaheadlen is higher than 200,
+    then renderaheadlen2 is maximum 100.
+    Affects renderaheadlen as well!
+    It is an integer
+        0 to 100; in milliseconds
+        
+    For other settings in section FX processing/multiprocessing as set in Preferences -> Buffering, see renderaheadlen2, syncsmpuse, 
+                                                                                                        syncsmpmax2, workrender
+
+    Stored in reaper.ini under the same name in the section REAPER.
+
 renderbsnew
 rendercfg 
     The render-format set in the render-dialog
@@ -3673,9 +4611,12 @@ renderclosewhendone
         &16=1, Silently increment filenames to avoid overwriting - checked
     
 renderqdelay
+    unknown
+        41836
+        
 rendertail
 rendertaillen
-    The render-tail-length(in milliseconds)-textbox, as set in the Render to File-dialog.
+    The render-tail-length(in milliseconds)-inputbox, as set in the Render to File-dialog.
     It is an integer.
         0 to 2147483647; in milliseconds
         
@@ -3719,13 +4660,13 @@ rewireslave
         &2=0, Send loop point/repeat change requests to master -> unchecked
         &2=1, Send loop point/repeat change requests to master -> checked
     
-    For the "Play project n audio blocks early (usually 0)"-textbox, see rewireslavedelay.
+    For the "Play project n audio blocks early (usually 0)"-inputbox, see rewireslavedelay.
     For other ReWire-settings, see userewire and runallonstop
     
     Stored in reaper.ini under the same name in the section REAPER only, when Save as default project settings is clicked(That button is in Project Settings only)
     
 rewireslavedelay
-    The "Play project n audio blocks early (usually 0)"-textbox in the ReWire-Slave-Settings, as set in the ReWire-section of Preferences -> ReWire/DX; 
+    The "Play project n audio blocks early (usually 0)"-inputbox in the ReWire-Slave-Settings, as set in the ReWire-section of Preferences -> ReWire/DX; 
      You must click the "ReWire slave project settings"-button, to access the settings-dialog.
     It is an integer
         0 to 2147483647; audioblocks
@@ -3761,7 +4702,21 @@ rfprojfirst
     Stored in reaper.ini under the same name in the section REAPER.
     
 rightclickemulate
+    unknown
+    
 ripplelockmode
+    Locked item ripple editing behavior-dropdownlist, as set in Preferences -> Editing Behavior
+    It is an integer
+        0, Locked items interrupt ripple
+        1, Locked items interrupt ripple per-track
+        2, Locked items are unaffected by ripple
+        3, Locked items are affected by ripple (lock ignored)
+    
+    For other settings in Preferences -> Editing Behavior, see itemclickmovecurs, locklooptotime, relativeedges, splitautoxfade, 
+                                                               vzoommode, zoommode
+                                                               
+    Stored in reaper.ini under the same name in the section REAPER.
+    
 rulerlayout
     The ruler layout-settings, as set in the Ruler layout-section of the Ruler context-menu as well as with actions in the actions-dialog
     It is an integer bitfield
@@ -3787,13 +4742,32 @@ rulerlayout
         &64=1, "Ruler: Display time signature changes as gridlines in arrange view" 42329 (state off)
     
 runafterstop
+    Run FX for-inputbox in section Playback settings, as set in Preferences -> Playback
+    It is an integer 
+        0 to 2147483647; in milliseconds; higher values become negative
+        
+    For other settings in section Playback settings, as set in Preferences -> Playback, see loopstopfx, midisendflags, runallonstop, 
+                                                                                            stopendofloop, stopprojlen, viewadvance
+    Stored in reaper.ini under the same name in the section REAPER.
+    
 runallonstop
-    Several settings regarding stopping fx.
+    Several settings regarding stopping fx, as set eg in section Playback settings in Preferences -> Playback as well as in section ReWire in Preferences -> ReWire/DX 
     It is an integer-bitfield.
-        &1=0, "Run FX on stop when ReWire devices are active" unchecked, as set in the ReWire-section as set in the Preferences -> ReWire/DX 
-        &1=1, "Run FX on stop when ReWire devices are active" checked, as set in the ReWire-section as set in the Preferences -> ReWire/DX 
+        &1=0, Run FX when stopped(Preferences -> Playback)(off) - unchecked
+        &1=1, Run FX when stopped(Preferences -> Playback)(on) - checked
+        
+        &2=0, "Run FX on stop when ReWire devices are active" unchecked, as set in the ReWire-section as set in the Preferences -> ReWire/DX 
+        &2=1, "Run FX on stop when ReWire devices are active" checked, as set in the ReWire-section as set in the Preferences -> ReWire/DX
+        
+        &4=0, unknown
+        &4=1, unknown
+        
+        &8=0, Flush FX on stop(Preferences -> Playback)(off) - unchecked
+        &8=1, Flush FX on stop(Preferences -> Playback)(on) - checked
     
     For other settings in the ReWire-section of Preferences -> ReWire/DX, see userewire, rewireslave and rewireslavedelay.
+    For other settings in section Playback settings, as set in Preferences -> Playback, see loopstopfx, midisendflags, runafterstop,
+                                                                                            stopendofloop, stopprojlen, viewadvance
     
     Stored in reaper.ini under the same name in the section REAPER.
     
@@ -3873,13 +4847,13 @@ scnameedit
     Stored in reaper.ini under the same name in the section REAPER.
     
 scnotes
-    Use all MIDI inputs-checkbox, as set Scale Finder located in View -> Scale Finder
+    Use all MIDI inputs-checkbox, as set Scale Finder located in View -> Scale Finder as well as in Preferences -> Mouse Modifiers(only MIDI CC event and MIDI CC lane-Modifiers).
     It is an integer-bitfield
         &1=0, unknown
         &1=1, unknown
         
-        &2=0, unknown
-        &2=1, unknown
+        &2=0, Allow selecting a single event in a CC lane with a mouse click(on) - checked
+        &2=1, Allow selecting a single event in a CC lane with a mouse click(off) - unchecked
         
         &4=0, unknown
         &4=1, unknown
@@ -3887,8 +4861,14 @@ scnotes
         &8=0, Use all MIDI inputs(on) - checked
         &8=1, Use all MIDI inputs(off) - unchecked
     
+    For other settings, as set in Preferences -> Mouse Modifiers, see itemlowerhalf_minheight, itemclickmovecurs, pooledenvs, handzoom
+    
 scoreminnotelen
+    unknown
+    
 scorequant
+    unknown
+
 screenset_as_views
     The settings behind the Edit fields-Button, as set in Screensets/Layouts located in menu View -> Screensets/Layouts
     It is an integer
@@ -3946,12 +4926,124 @@ screenset_autosave
     Stored in reaper.ini under the same name in the section REAPER.
         
 scrubloopend
+    Looped-segment mode to:-inputbox in section Scrub/jog settings, as set in Preferences -> Playback
+    It is an integer
+        -2147483647 to 2147483647; in milliseconds
+        
+    For other settings in section Scrub/jog settings, as set in Preferences -> Playback, see scrubloopstart, scrubmode, scrubrelgain
+    Stored in reaper.ini under the same name in the section REAPER.
+    
 scrubloopstart
+    Looped-segment mode in section Scrub/jog settings, as set in Preferences -> Playback
+    It is an integer
+        -2147483647 to 2147483647; in milliseconds
+        
+    For other settings in section Scrub/jog settings, as set in Preferences -> Playback, see scrubloopend, scrubmode, scrubrelgain
+    Stored in reaper.ini under the same name in the section REAPER.
+    
 scrubmode
+    Several setting-checkboxes/dropdownlist in section Scrub/jog settings, as set in Preferences -> Playback
+    It is an integer-bitfield
+        &1=0, When moving edit cursor via action or control surface-dropdownlist -> Do not scrub
+        &1=1, When moving edit cursor via action or control surface-dropdownlist -> Scrub
+        
+        &2=0, Only play selected track when scrubbing/jogging-checkbox(off) - unchecked
+        &2=1, Only play selected track when scrubbing/jogging-checkbox(on) - checked
+        
+        &4=0, Limit scrub rate to 1.0x(on) - checked
+        &4=1, Limit scrub rate to 1.0x(off) - unchecked
+        
+        &8=0, unknown
+        &8=1, unknown
+        
+        &16=0, Limit jog rate to 1.0x-checkbox(off) - unchecked
+        &16=1, Limit jog rate to 1.0x-checkbox(on) - checked
+        
+        &32=0, unknown
+        &32=1, unknown
+        
+        &64=0, Faster responding jog-checkbox(off) - unchecked
+        &64=1, Faster responding jog-checkbox(on) - checked
+        
+        &128=0, unknown
+        &128=1, unknown
+
+        &256=0, Limit jog rate when near cursor-checkbox(off) - unchecked
+        &256=1, Limit jog rate when near cursor-checkbox(on) - checked
+        
+        &512=0, Engage scrub when playing (stopping playback)(off) - unchecked
+        &512=1, Engage scrub when playing (stopping playback)(on) - checked
+        
+    For other settings in section Scrub/jog settings, as set in Preferences -> Playback, see scrubloopend, scrubloopstart, scrubrelgain
+    Stored in reaper.ini under the same name in the section REAPER.
+    
 scrubrelgain
+    Scrub-mode controller sensitivity in section Scrub/jog settings, as set in Preferences -> Playback
+    It is a double-float
+        0.001 and higher
+        
+    For other settings in section Scrub/jog settings, as set in Preferences -> Playback, see scrubloopend, scrubloopstart, scrubmode
+    Stored in reaper.ini under the same name in the section REAPER.
+    
 seekmodes
+    Several Seek-settings, as set in Preferences -> Seeking
+    It is an integer-bitfield
+        &1=0, Top ruler-checkbox(off) - unchecked
+        &1=1, Top ruler-checkbox(on) - checked
+        
+        &2=0, Empty areas below tracks-checkbox(off) - unchecked
+        &2=1, Empty areas below tracks-checkbox(on) - checked
+        
+        &4=0, Empty areas of tracks-checkbox(off) - unchecked
+        &4=1, Empty areas of tracks-checkbox(on) - checked
+        
+        &8=0, Seek on loop point change-checkbox(off) - unchecked
+        &8=1, Seek on loop point change-checkbox(on) - checked
+        
+        &16=0, Only when repeat is enabled-checkbox(off) - unchecked
+        &16=1, Only when repeat is enabled-checkbox(on) - checked
+        
+        &32=0, Playback position follows project timebase (time or beats) when changing tempo-checkbox(off) - unchecked
+        &32=1, Playback position follows project timebase (time or beats) when changing tempo-checkbox(on) - checked
+        
+        &64=0, unknown
+        &64=1, unknown
+        
+        &128=0, unknown
+        &128=1, unknown
+        
+        &256=0, unknown
+        &256=1, unknown
+        
+        &512=0, unknown
+        &512=1, unknown
+        
+        &1024=0, unknown
+        &1024=1, unknown
+        
+        &4096=0, unknown
+        &4096=1, unknown
+        
+        &8192=0, unknown
+        &8192=1, unknown
+        
+        &16384=0, unknown
+        &16384=1, unknown
+        
+        &32768=0, unknown
+        &32768=1, unknown
+        
+        &65536=0, Seek playback on item move/size/fade adjustment, pre roll-checkbox(off) - unchecked
+        &65536=1, Seek playback on item move/size/fade adjustment, pre roll-checkbox(on) - checked
+        
+    For other settings, as set in Preferences -> Seeking, see itemeditpr, loopselpr, smoothseek, smoothseekmeas
+    Stored in reaper.ini under the same name in the section REAPER.
+    
+    
 selitem_tintalpha
 selitemtop
+    unknown
+    
 showctinmix
     Scroll view when tracks activated-entry, as set in the Mixer-context-menu.
     It is an integer
@@ -3962,7 +5054,7 @@ showctinmix
     
 showlastundo
 showmaintrack
-    Show master track, as set in the TrackControlPanel-context menu.
+    Show master track, as set in the TrackControlPanel-context menu as well as toggled by action 40075
     It is an integer
         0, don't show master track - unchecked
         1, show master track - checked
@@ -4024,17 +5116,33 @@ showpeaksbuild
     
 showrecitems
 slidermaxv
+    unknown
+    
 sliderminv
+    unknown
+
 slidershex
 smoothseek
-    Smooth seeking(seeks at end of measure)-setting, as set in the Transport-context-menu.
-    It is an integer.
-        0, no smooth seeking - unchecked
-        1, smooth seeking - checked
+    Smooth seeking(seeks at end of measure)-setting, as set in the Transport-context-menu as well as in Preferences -> Seeking and toggled by action 40390
+    It is an integer-bitfield.
+        &1=0, Do not change playback position immediately when seeking (smooth seek)(off) - unchecked
+        &1=1, Do not change playback position immediately when seeking (smooth seek)(on) - checked
         
+        &2=0, Play to end of x more measures before seeking-radiobutton
+        &2=1, Play to next projectmarker, end of current region, or start of next region, before seeking-radiobutton
+        
+    For other settings, as set in Preferences -> Seeking, see itemeditpr, loopselpr, smoothseekmeas, seekmodes
+       
     Stored in reaper.ini under the same name in the section REAPER.
     
 smoothseekmeas
+    Play to end of x more measures-inputbox, as set in Preferences -> Seeking
+    It is an integer
+        0 to 2147483647; in measures, higher values become negative
+        
+    For other settings, as set in Preferences -> Seeking, see itemeditpr, loopselpr, smoothseek, seekmodes
+    Stored in reaper.ini under the same name in the section REAPER.
+    
 snapextrad
     Snap media items apart by-inputbox in the section Snap settings, as set in Snap/Grid Settings located in 
         menu Options -> Snap/grid -> Snap/grid settings
@@ -4059,6 +5167,14 @@ snapextraden
     Stored in reaper.ini under the same name in the section REAPER.
     
 solodimdb10
+    Solo in front dimming-inputbox in section Solo settings, as set in Preferences -> Mute/Solo
+    It is the dB-value*10
+    It is an integer
+        -2147483648(-214748364.8dB) to -10(-1dB)
+        
+    For other settings set in section Solo Settings, in Preferences -> Mute/Solo, see solodimdb10, soloip
+    Stored in reaper.ini under the same name in the section REAPER.
+        
 solodimen
     Solo in front-setting, as set in the menu Options.
     It is an integer
@@ -4068,6 +5184,17 @@ solodimen
     Stored in reaper.ini under the same name in the section REAPER.
     
 soloip
+    Several settings in the section Solo settings, as set in Preferences -> Mute/Solo
+    It is an integer-bitfield
+        &1=0, Solos default to in-place solo (alt+click for ignore-routing solo)(off) - unchecked
+        &1=1, Solos default to in-place solo (alt+click for ignore-routing solo)(on) - checked
+        
+        &2=0, Parent and hardware sends unsoloed when a soloed-in-place track sends to another soloed(off) - unchecked
+        &2=1, Parent and hardware sends unsoloed when a soloed-in-place track sends to another soloed(on) - checked
+        
+    For other settings set in section Solo Settings, in Preferences -> Mute/Solo, see solodimdb10, soloip
+    Stored in reaper.ini under the same name in the section REAPER.
+    
 specpeak_alpha
     Stores the Opacity-fader for Spectral Peaks, as set in the Peaks Display Settings from View -> Peaks Display Settings
     It is an integer
@@ -4140,23 +5267,75 @@ specpeak_na
     Stored in reaper.ini under the same name in the section REAPER.
     
 splitautoxfade
+    Several checkboxes, as set in Preferences -> Media Item Defaults as well as Preferences -> Editing Behavior
+    &1 can be influenced by defenvs(&32768) as well!
+    It is an integer-bitfield
+        &1=0, Overlap and crossfade items when splitting-length-checkbox(off) - unchecked
+        &1=1, Overlap and crossfade items when splitting-length-checkbox(on) - checked
+        
+        &2=0, Enable automatic fade-in/fade-out and autocrossfade for MIDI note velocity(off) - unchecked
+        &2=1, Enable automatic fade-in/fade-out and autocrossfade for MIDI note velocity(on) - checked
+        
+        &4=0, Crossfades stay together during fade edits when trim content behind media items is enabled(Preferences -> Editing Behavior)(off) - unchecked
+        &4=1, Crossfades stay together during fade edits when trim content behind media items is enabled(Preferences -> Editing Behavior)(on) - checked
+        
+        &8=0, Create automatic fade-in/fade-out for new items, length-checkbox(on) - checked
+        &8=1, Create automatic fade-in/fade-out for new items, length-checkbox(off) - unchecked
+        
+        &16=0, Right click on crossfade sets fade shape for only one side of the crossfade(shift toggles)(off) - unchecked
+        &16=1, Right click on crossfade sets fade shape for only one side of the crossfade(shift toggles)(on) - checked
+        
+    For other settings, as set in Preferences -> Media Item Defaults, see loopnewitems, autoxfade, deffadeshape, defxfadeshape, 
+                                                                          deffadelen, defsplitxfadelen
+    For other settings in Preferences -> Editing Behavior, see itemclickmovecurs, locklooptotime, relativeedges, ripplelockmode, 
+                                                               vzoommode, zoommode
+    Stored in reaper.ini under the same name in the section REAPER.
+        
 stopendofloop
-    Stop playback at end of loop if repeat is disabled-setting, as set in the Transport-context-menu
+    Stop playback at end of loop if repeat is disabled-setting, as set in the Transport-context-menu as well as in section Playback settings of Preferences -> Playback as well as in the section Playback settings, as set in Preferences -> Playback
     It is an integer
         0, dont stop - unchecked
         1, stop - checked
     
+    For other settings in section Playback settings, as set in Preferences -> Playback, see loopstopfx, midisendflags, runafterstop, runallonstop, 
+                                                                                            stopprojlen, viewadvance
     Stored in reaper.ini under the same name in the section REAPER.
         
 stopprojlen
+    Stop/repeat playback at end of project-checkbox, as set in section Playback settings, as set in Preferences -> Playback
+    It is an integer
+        0, don't stop/repeat playback at end of project(off) - unchecked
+        1, stop/repeat playback at end of project(on) - checked
+        
+    For other settings in section Playback settings, as set in Preferences -> Playback, see loopstopfx, midisendflags, runafterstop, runallonstop, 
+                                                                                            stopendofloop, viewadvance
+    Stored in reaper.ini under the same name in the section REAPER.
+                                                                   
 syncsmpmax2
+    Allow live FX multiprocessing on-inputbox in section FX processing/multiprocessing settings, as set in Preferences -> Buffering.
+    It is an integer
+        2 to 999999999; number of cpus; 0 seems to be the existing count of all cpus in the system
+        
+    For other settings in section FX processing/multiprocessing as set in Preferences -> Buffering, see renderaheadlen, renderaheadlen2, 
+                                                                                                        syncsmpuse, workrender
+    Stored in reaper.ini under the same name in the section REAPER.
+    
 syncsmpuse
+    Allow live FX multiprocessing on-checkbox, as set in Preferences -> Buffering
+    It is an integer
+        0, don't allow(off) - unchecked
+        1, allow(on) - checked
+        
+    For other settings in section FX processing/multiprocessing as set in Preferences -> Buffering, see renderaheadlen, renderaheadlen2, 
+                                                                                                        workrender, syncsmpmax2
+    Stored in reaper.ini under the same name in the section REAPER.
+    
 tabtotransflag
-    Several checkboxes, as set in Transient Detection Settings located in the View-menu or 
+    Several checkboxes, as set in Transient Detection Settings located in the View-menu or Preferences -> Editing Behavior and in 
         Preferences -> Editing Behavior -> Adjust sensitivity-Button
     It is an integer bitfield
-        &1=0, unknown
-        &1=1, unknown
+        &1=0, Tab through MIDI notes(Preferences -> Editing Behavior)(off) - unchecked
+        &1=1, Tab through MIDI notes(Preferences -> Editing Behavior)(on) - checked
         
         &2=0, Use zero crossings (not as precise but prevents clicks)(off) - unchecked
         &2=1, Use zero crossings (not as precise but prevents clicks)(on) - checked
@@ -4167,8 +5346,8 @@ tabtotransflag
         &8=0, Media items selection follows tab-to-transient(off) - unchecked
         &8=1, Media items selection follows tab-to-transient(on) - checked
         
-        &16=0, unknown
-        &16=1, unknown
+        &16=0, Treat media item edges as transients(Preferences -> Editing Behavior)(off) - unchecked
+        &16=1, Treat media item edges as transients(Preferences -> Editing Behavior)(on) - checked
         
         &32=0, Move by at least 1 pixel when navigating by transients(off) - unchecked
         &32=1, Move by at least 1 pixel when navigating by transients(on) - checked
@@ -4178,7 +5357,7 @@ tabtotransflag
     Stored in reaper.ini under the same name in the section REAPER.
     
 takelanes
-    Some take-lane-settings, as set in the menu Options -> Take lane behavior
+    Some take-lane-settings, as set in the menu Options -> Take lane behavior as well as togled by action 40249
     It is an integer-bitfield
         &1=0, unknown
         &1=1, unknown
@@ -4200,8 +5379,33 @@ takelanes
     
 tcpalign
 templateditcursor
+    Offset track template items by edit cursor, as toggled by action 41722(Main section)
+    It is an integer
+        0, toggle-state off
+        1, toggle-state on
+        
+    Stored in reaper.ini under the same name in the section REAPER.
+    
 tempoenvmax
+    Project tempo map envelope display max-inputbox, as set in Preferences -> Envelope Display
+    It is an integer
+        2 to 2147483647; in bpm; must be bigger than tempoenvmin
+        
+    For other settings as set in Preferences -> Envelope Display, see volenvrange, pitchenvrange, tempoenvmin, env_deffoc, env_ol_minh, 
+                                                                      env_reduce, envclicksegmode, envlanes, envtranstime, pooledenvs
+    
+    Stored in reaper.ini under the same name in the section REAPER.
+    
 tempoenvmin
+    Project tempo map envelope display min-inputbox, as set in Preferences -> Envelope Display
+    It is an integer
+        1 to 2147483647; in bpm
+        
+    For other settings as set in Preferences -> Envelope Display, see volenvrange, pitchenvrange, tempoenvmax, env_deffoc, env_ol_minh, 
+                                                                      env_reduce, envclicksegmode, envlanes, envtranstime, pooledenvs
+    
+    Stored in reaper.ini under the same name in the section REAPER.
+    
 tempoenvtimelock
     Set the timebase for tempo/time signature envelopes, as set in the Project Settings -> Project Settings
     It is an integer.
@@ -4214,9 +5418,24 @@ tempoenvtimelock
     
 textflags
 threadpr
+    Thread priority-dropdownlist, as set in Preferences -> Buffering
+    It is an integer
+        0, Idle
+        1, Below Normal
+        2, Normal
+        3, Above Normal
+        4, Highest(recommended)
+        5, Time Critical
+        
+    For other settings as set in Preferences -> Buffering, see audioasync, autonbworkerthreads, prebufperb, workbehvr, workbuffxuims, 
+                                                               workbufmsex, workrender, workthreads
+    Stored in reaper.ini under the same name in the section REAPER.
+    
 timeseledge
 tinttcp
 titlebarreghide
+    unknown
+    
 tooltipdelay
 tooltips
 trackitemgap
@@ -4237,7 +5456,7 @@ trackselonmouse
     Stored in reaper.ini under the same name in the section REAPER.
     
 transflags
-    Certain settings for the transport-area, as set in the context-menu of the transport-area, as well as the transport home/end-context-menu and Preferences -> Mouse.
+    Certain settings for the transport-area, as set in the context-menu of the transport-area, as well as the transport home/end-context-menu and Preferences -> Mouse as well as toggled by action 40533
     It is an integer-bitfield
         &1=0, Show playrate control on - checked
         &1=1, Show playrate control off - unchecked
@@ -4301,6 +5520,8 @@ trimmidionsplit
     Stored in reaper.ini under the same name in the section REAPER.
     
 tsmarker
+    unknown
+    
 undomask
     The "Include Selection" in the "Undo settings"-section, as set in Preferences -> General
     Is an integer-bitfield.
@@ -4356,6 +5577,17 @@ usedxplugs
     Stored in reaper.ini under the same name in the section REAPER.
     
 useinnc
+    The Input/Output-channel name aliasing-checkboxes in the section Channel naming/mapping
+    It is an integer-bitfield
+        &1=0, Input channel name aliasing/remapping-checkbox(off) - unchecked
+        &1=1, Input channel name aliasing/remapping-checkbox(on) - checked
+    
+        &2=0, Input channel name aliasing/remapping-checkbox(off) - unchecked
+        &2=1, Input channel name aliasing/remapping-checkbox(on) - checked
+    
+    For other settings in section Channel naming/mapping as set in Preferences -> Audio, see allstereopairs, metronome_defout
+    Stored in reaper.ini under the same name in the section REAPER.
+    
 userewire
     The Reqire-section-settings, as set in Preferences -> ReWire/DX
     It is an integer-bitfield
@@ -4420,22 +5652,36 @@ video_colorspace
         &1024=0, Disable high-resolution peaks for video items - unchecked
         &1024=1, Disable high-resolution peaks for video items - checked
         
-    For video output delay, see video_delayms.
+    For other video-settings, see video_decprio, video_delayms
     
     Stored in reaper.ini under the same name in the section REAPER.
 
 video_decprio
+    Video decoder priority-inputbox, as set in section Video of Preferences -> Video/REX/Misc
+    It is a string
+    
+    Note: the string-representation can be accessed only using get_config_var_string(), which is only available in pre-releases of Reaper
+          at the time of writing.
+        
+    The value can be accessed as integer as well. In that case, it is a combination of the first 8 letters of the name of the pathname on bitlevel.
+    Supports only the first 8 letters.
+    
+    For other video-settings, see video_colorspace, video_delayms
+    
+    Stored in reaper.ini under the same name in the section REAPER, but only if it differs from the default settings: 
+        vlc ffmpeg qt:mov,qt,m4v,mp4 dshow:!mov,!mp4,!m4v,!qt (on Windows)
+    
 video_delayms
     Video output delay in milliseconds, as set in the Video-section of Preferences -> Video/REX/Misc
     It is an integer.
         0 to 2147483647
     
-    For other video-settings, see video_colorspace.
+    For other video-settings, see video_colorspace, video_decprio
     
     Stored in reaper.ini under the same name in the section REAPER.
     
 viewadvance
-    Settings of the advancement of the arrangeview(scrolling), as set in the Transport-context-menu.
+    Settings of the advancement of the arrangeview(scrolling), as set in the Transport-context-menu as well as in section Playback settings in Preferences -> Playback and toggled by actions 40036, 40262
     It is an integer-bitfield.
         &1=0, Automatically scroll view during playback(off) - unchecked
         &1=1, Automatically scroll view during playback(on) - checked
@@ -4443,18 +5689,39 @@ viewadvance
         &2=0, unknown
         &2=1, unknown
         
-        &4=0, unknown
-        &4=1, unknown
+        &4=0, Don't autoscroll view(when enabled) when viewing other parts of project(Preferences -> Playback)(on) - checked
+        &4=1, Don't autoscroll view(when enabled) when viewing other parts of project(Preferences -> Playback)(off) - unchecked
         
-        &8=0, unknown
-        &8=1, unknown
+        &8=0, Scroll view to edit cursor on stop(Preferences -> Playback)(off) - unchecked
+        &8=1, Scroll view to edit cursor on stop(Preferences -> Playback)(on) - checked
 
         &16=0, Continuous scrolling(off) - unchecked
         &16=1, Continuous scrolling(on) - checked
 
+    For other settings in section Playback settings, as set in Preferences -> Playback, see loopstopfx, midisendflags, runafterstop, runallonstop, 
+                                                                                            stopendofloop, stopprojlen
     Stored in reaper.ini under the same name in the section REAPER.
     
 volenvrange
+    The scaling for new envelopes, as set in Preferences Track/Send Defaults.
+    It is an integer-bitfield
+        &1 and &4, the Volume envelope range-dropdownlist
+            1 0, -inf..+0dB
+            0 0, -inf..+6dB
+            0 1, -inf..+12dB
+            1 1, -inf..+24dB
+    
+        &2=0, Amplitude scaling
+        &2=1, Volume fader scaling
+        
+    For other settings of section Tracks from Preferences -> Track/Send Defaults, see defautomode, errnowarn, defenvs, deftrackrecflags, deftrackvol,
+                                                                                      defvzoom, newtflag, splitautoxfade, deftrackrecinput, vzoom2
+                                                                                      
+    For other settings as set in Preferences -> Envelope Display, see pitchenvrange, tempoenvmax, tempoenvmin, env_deffoc, env_ol_minh, 
+                                                                      env_reduce, envclicksegmode, envlanes, envtranstime, pooledenvs
+    
+    Stored in reaper.ini under the same name in the section REAPER.
+    
 vstbr64
     The VST bridging/firewall-dropdownlist, as set in Preferences -> Compatibility.
     It is an integer
@@ -4468,6 +5735,8 @@ vstbr64
     Stored in reaper.ini under the same name in the section REAPER.
     
 vstfolder_settings
+    unknown
+    
 vstfullstate
     The settings for VST-plugins, as set in Preferences -> VST, as well as in Preferences -> Compatibility as well as in the Add FX to Track-dialog -> Options
     It is an integer bitfield.
@@ -4528,6 +5797,7 @@ vstfullstate
     For setting anticipative FX disabled, see workrender
     For other settings in Preferences -> Compatibility, see fxdenorm
     For Bridging and Firewall-Settings, as set in Preferences -> Compatibility, see vstbr64
+    For ARA-settings, see ara.
     
     Stored in reaper.ini under the same name in the section REAPER.
     
@@ -4537,10 +5807,13 @@ vumaxvol
 vuminvol
 vuupdfreq
 vzoom2
-    Current state of the vertical zoom.
+    Current state of the vertical zoom as well as toggled by actions 40110 and 40113
+    Can be set but will not update arrange view; even if you use UpdateArrange() !
     Must be an integer.
-        0(minimum zoom) to 40(maximum zoom) 
+        0(minimum zoom) to 40(maximum zoom); defaults are: 2(Small), 6(Medium), 16(Large)
 
+    To set the default trackheight in new projects(default-zoom), see defvzoom
+        
     For the current horizontal-zoom-factor, see zoom
     
 vzoommode
@@ -4559,16 +5832,95 @@ warnmaxram64
     The "warn when REAPER's memory reaches x megabytes (0 to never warn)"-checkbox, as set in Preferences -> General
     Is an integer
         0, never warn
-        1 to 2147483647; higher values produced negative values
+        1 to 2147483647; in megabytes; higher values become negative values
     
     Stored in reaper.ini under the same name in the section REAPER.
     
 workbehvr
+    Behavior-dropdownlist, as set in Preferences -> Buffering
+    It is an integer
+       -1, Automatic(experimental)
+        0, 0 - Relaxed
+        1, 1
+        2, 2
+        3, 3
+        4, 4 - Default
+        5, 5
+        6, 6
+        7, 7
+        8, 8 - Aggressive
+        9, 9
+        10, 10
+        11, 11
+        12, 12
+        13, 13
+        14, 14
+        15, 15  Very Aggressive
+        
+    For other settings as set in Preferences -> Buffering, see audioasync, autonbworkerthreads, prebufperb, threadpr, workbuffxuims, 
+                                                               workbufmsex, workrender, workthreads
+    Stored in reaper.ini under the same name in the section REAPER.
+
+    
 workbuffxuims
+    Media buffer size when per-take FX UI open-inputbox, as set in Preferences -> Buffering
+    It is an integer
+        0 to 1200; in milliseconds; default is 200
+
+    For other settings as set in Preferences -> Buffering, see audioasync, autonbworkerthreads, prebufperb, threadpr, workbehvr, 
+                                                               workbufmsex, workrender, workthreads
+    Stored in reaper.ini under the same name in the section REAPER.
+    
 workbufmsex
+    Media buffer size-inputbox, as set in Preferences -> Buffering
+    It is an integer 
+        0 to 6000; in milliseconds; default is 1200
+        
+    For other settings as set in Preferences -> Buffering, see audioasync, autonbworkerthreads, prebufperb, threadpr, workbehvr, workbuffxuims, 
+                                                               workrender, workthreads
+    Stored in reaper.ini under the same name in the section REAPER.
+    
 workrender
+    Several render-settings, as set in Preferences -> Rendering as well as Preferences -> Buffering.
+    It is an integer-bitfield
+        &1=0, Anticipative FX processing - superior multiprocessing and lower interface latencies-checkbox(the section, Preferences -> Buffering)(enables renderaheadlen and workrender&2/&16)(off) - unchecked
+        &1=1, Anticipative FX processing - superior multiprocessing and lower interface latencies-checkbox(the section, Preferences -> Buffering)(enables renderaheadlen and workrender&2/&16)(on) - checked
+        
+        &2=0, Allow on tracks without FX-checkbox(the section, Preferences -> Buffering)(off) - unchecked
+        &2=1, Allow on tracks without FX-checkbox(the section, Preferences -> Buffering)(on) - checked
+        
+        &4=0, unknown
+        &4=1, unknown
+        
+        &8=0, unknown
+        &8=1, unknown
+        
+        &16=0, Allow on tracks with open MIDI editors-checkbox(the section, Preferences -> Buffering)(on) - checked
+        &16=1, Allow on tracks with open MIDI editors-checkbox(the section, Preferences -> Buffering)(off) - unchecked
+        
+        &32=0, unknown
+        &32=1, unknown
+
+        &64=0, unknown
+        &64=1, unknown
+        
+        &128=0, unknown
+        &128=1, unknown
+        
+        &256=0, Disable media buffering for tracks that are selected(Preferences -> Buffering)(off) - unchecked
+        &256=1, Disable media buffering for tracks that are selected(Preferences -> Buffering)(on) - checked
+        
+        &512=0, Disable media buffering for tracks with open MIDI editors(recommended)(Preferences -> Buffering)(on) - checked
+        &512=1, Disable media buffering for tracks with open MIDI editors(recommended)(Preferences -> Buffering)(off) - unchecked
+        
+    For other settings as set in Preferences -> Buffering, see audioasync, autonbworkerthreads, prebufperb, threadpr, workbehvr, workbuffxuims, 
+                                                               workbufmsex, workthreads
+    For other settings in section FX processing/multiprocessing as set in Preferences -> Buffering, see renderaheadlen, renderaheadlen2, 
+                                                                                                        syncsmpuse, syncsmpmax2
+    Stored in reaper.ini under the same name in the section REAPER.
+    
 workset_max
-    The Set process working set size-minimum textbox, as set in Reaper -> General -> Advanced UI/system tweaks
+    The Set process working set size-minimum inputbox, as set in Reaper -> General -> Advanced UI/system tweaks
     It is an integer value
         0 to 2147483647; higher values become negative
     
@@ -4576,7 +5928,7 @@ workset_max
     Stored in reaper.ini under the same name in the section REAPER.
     
 workset_min
-    The Set process working set size-minimum textbox, as set in Reaper -> General -> Advanced UI/system tweaks
+    The Set process working set size-minimum inputbox, as set in Reaper -> General -> Advanced UI/system tweaks
     It is an integer value
         0 to 2147483647; higher values become negative
 
@@ -4592,6 +5944,15 @@ workset_use
     Stored in reaper.ini under the same name in the section REAPER.
     
 workthreads
+    Audio reading/processing threads-inputbox, as set in Preferences -> Buffering
+    It is an integer
+        0, turns all buffering FX/processing and thread-priority off
+        1 to 2147483647; higher values become negative
+        
+    For other settings as set in Preferences -> Buffering, see audioasync, autonbworkerthreads, prebufperb, threadpr, workbehvr, workbuffxuims, 
+                                                               workbufmsex, workrender
+    Stored in reaper.ini under the same name in the section REAPER.
+    
 zoom
     The current horizontal zoom-factor
     It's a double-float
@@ -4608,6 +5969,7 @@ zoommode
         3, Mouse cursor
         
     For vertical zoom center, see vzoommode
+    Stored in reaper.ini under the same name in the section REAPER.
     
 zoomshowarm
 
@@ -4615,7 +5977,6 @@ zoomshowarm
 # these are reported to work, though I couldn't verify them. Probably formerly used, but deprecated variables.
 
 asio_bsize
-bigwndframes
 ccresettab
 defrecpath
 lazyupds
