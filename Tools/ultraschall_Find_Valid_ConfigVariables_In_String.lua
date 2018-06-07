@@ -54,3 +54,4 @@ end
 
 if int_line=="" then reaper.MB("nothing found","",0) 
 else reaper.CF_SetClipboard(int_line) end
+

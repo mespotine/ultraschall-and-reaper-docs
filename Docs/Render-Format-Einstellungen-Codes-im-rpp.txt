@@ -1,0 +1,467 @@
+compiled by Meo Mespotine(mespotine.de) for the ultraschall.fm-project
+
+Introduction:
+    This is a collection of the render-cfg-codes, as stored into .rpp-project-files.
+    Some formats have specific codes(like DDP), others follow a certain scheme.
+    The latter is described in a matrix like the following example for FLAC:
+
+    First, there's a string with all symbols, that always stay the same with all encoder-settings, with . for each character, 
+    that can be changed in the string.
+        Y2FsZh.AAAA.AAAA 
+    These . are placeholders for characters or strings, that signal Reaper changes in the Audio-Format.
+    
+    The next lines tell you, which string/characters shall replace the individual dots. in the render-string.
+    ------.--------- signals the Bitrate, like g for 24bit
+    -----------.---- signals the encoding-speed, with F for default encoding-speed.
+
+    So if you want to set renderstring to FLAC with 24bit and default encoding speed, the string
+        Y2FsZh.AAAA.AAAA 
+     becomes
+        Y2FsZhgAAAAFAAAA
+    This way, you can construct yourself your own render-string. You will find all other settings for FLAC later in this document.
+    To insert a render-string, look into your rpp-file for the following section:
+   
+        <RENDER_CFG
+            ZXZhdxAhAQ==
+        >
+
+    Just replace the string in the middle with the one you've constructed. This, in combination with the action 
+        41824 - File: Render project, using the most recent render settings
+    can be used, to create your own rendering-functions in Lua, Python or EEL.
+    
+    These strings can also be used for creation of render-preset-entries in the reaper-render.ini.
+    To insert a render-string, look into your reaper-render.ini for the following entry
+    
+        <RENDERPRESET MP3 44100 2 0 1 7 0
+            bDNwbYAAAAABAAAABQAAAP////8EAAAAgAAAAAAAAAA=
+        >
+        
+    and replace the string in the middle with your own created one.
+    
+    The documentation is still missing m4a(mac-only), OGG VORBIS, Audio-CD-image, Video(GIF) and Video(LCF).
+
+
+
+The Formats and their Descriptions:
+  AIFF:
+    ZmZpYQgAAA== - 8 bit PCM
+    ZmZpYRAAAA== - 16 bit PCM
+    ZmZpYRgAAA== - 24 bit PCM
+    ZmZpYSAAAA== - 32 bit PCM
+    
+    
+  WAV:
+    Some of the settings concentrate on one placeholder in the render-string. These are just added values, means: when I write, 
+    set 2 letters higher, that means, you shall count the letters forward by the order of the alphabet: A->C is two letters 
+    forward from the A.
+    In some cases, you would need to add higher than Z, in that case, the alphabet starts counting again with small letters like a,b,c,etc.
+    So, when I say, count two letters forward, this could mean: Z -> b (Z, a, b).
+    
+    This is confusing at the beginning but take some time to get your head around it.
+    
+        ZXZhdwgBAQ==
+        -----..----- Wav bit depth: wg(8 bit PCM), xA(16 bit PCM), xg(24 bit PCM), yA(32 bit FP), 0A(64 bit FP), wQ(4 bit IMA ADPCM), wI(2 bit cADPCM)
+        -------...-- Large Files: BAA(Auto WAV/Wave64), BAQ(Auto WAV/RF64), DAA(Force WAV), BAg(Force Wave64), BAw(Force RF64)
+        -------.---- Write BWF ('btext') chunk: Checkbox enabled: Set one letter lower, than was set in "Large Files": B->A, D->C
+        -------.---- Include project filename in BWF data: Checkbox enabled: Set four letters higher, than was set in "Write BWF": C->G, A->E
+                         you can also set Include project filename with Write BWF disabled. In that case, set the letter one higher, though
+                         this setting will probably be ignored by Reaper, as this greyes out the Include project filename-checkbox in the
+                         render-dialog.                      
+
+        -------.---- Include marker dropdownlist; only one of the entries from the dropdownlist is selectable
+                         Do not include markers or regions: keep the value.
+                         Markers + regions - set 8 letters higher: B->J, etc
+                         Markers + regions starting with # - set 24 letters higher (B->Z)
+
+                      Include marker dropdownlist(continuation); still only one of all entries from the dropdownlist is selectable, but
+                      these entries need two characters to be altered in the render-string.
+        -------..---    Markers only - set the first letter one higher(A->B) and the second eight higher(B->J)
+                        Markers starting with # only - set the first letter one higher(A->B) and the second 24 higher(B->Z)
+                        Regions only - set the first letter two higher(A->C) and the second eight higher(B->J)
+                        Regions starting with # only - set the first letter two higher(A->C) and the second 24 higher(B->Z)
+        
+        -------.---- Embed project tempo (use with care): add 32 to the letter (B->h)
+
+        
+  DDP:
+    IHBkZA= - DDP
+
+
+  FLAC:
+  Format-matrix:
+    Y2FsZh.AAAA.AAAA 
+    ------.--------- Bitrate: g(24 Bit), c(23/24 Bit), Y(22/24 Bit), U(21/24 Bit), Q(20/24 Bit), M(19/24 Bit), I(18/24 Bit), E(17/24Bit), A(16 Bit)
+    -----------.---- Encoding Speed: I(8 - slowest), H(7), G(6), F(5 - default), E(4), D(3), C(2), B(1), A(0 - fastest)
+
+    These are all possible renderstrings for FLAC:
+    24Bit:
+        Y2FsZhgAAAAIAAAA - 8 - Slowest
+        Y2FsZhgAAAAHAAAA - 7
+        Y2FsZhgAAAAGAAAA - 6
+        Y2FsZhgAAAAFAAAA - 5 - Default
+        Y2FsZhgAAAAEAAAA - 4
+        Y2FsZhgAAAADAAAA - 3
+        Y2FsZhgAAAACAAAA - 2
+        Y2FsZhgAAAABAAAA - 1
+        Y2FsZhgAAAAAAAAA - 0 - Fastest
+
+    23/24Bit:
+        Y2FsZhcAAAAIAAAA - 8 - Slowest
+        Y2FsZhcAAAAHAAAA - 7
+        Y2FsZhcAAAAGAAAA - 6
+        Y2FsZhcAAAAFAAAA - 5 - Default
+        Y2FsZhcAAAAEAAAA - 4
+        Y2FsZhcAAAADAAAA - 3
+        Y2FsZhcAAAACAAAA - 2
+        Y2FsZhcAAAABAAAA - 1
+        Y2FsZhcAAAAAAAAA - 0 - Fastest
+
+    22/24Bit:
+        Y2FsZhYAAAAIAAAA - 8 - Slowest
+        Y2FsZhYAAAAHAAAA - 7
+        Y2FsZhYAAAAGAAAA - 6
+        Y2FsZhYAAAAFAAAA - 5 - Default
+        Y2FsZhYAAAAEAAAA - 4
+        Y2FsZhYAAAADAAAA - 3
+        Y2FsZhYAAAACAAAA - 2
+        Y2FsZhYAAAABAAAA - 1
+        Y2FsZhYAAAAAAAAA - 0 - Fastest
+
+    21/24Bit:
+        Y2FsZhUAAAAIAAAA - 8 - Slowest
+        Y2FsZhUAAAAHAAAA - 7
+        Y2FsZhUAAAAGAAAA - 6
+        Y2FsZhUAAAAFAAAA - 5 - Default
+        Y2FsZhUAAAAEAAAA - 4
+        Y2FsZhUAAAADAAAA - 3
+        Y2FsZhUAAAACAAAA - 2
+        Y2FsZhUAAAABAAAA - 1
+        Y2FsZhUAAAAAAAAA - 0 - Fastest
+
+    20/24Bit:
+        Y2FsZhQAAAAIAAAA - 8 - Slowest
+        Y2FsZhQAAAAHAAAA - 7
+        Y2FsZhQAAAAGAAAA - 6
+        Y2FsZhQAAAAFAAAA - 5 - Default
+        Y2FsZhQAAAAEAAAA - 4
+        Y2FsZhQAAAADAAAA - 3
+        Y2FsZhQAAAACAAAA - 2
+        Y2FsZhQAAAABAAAA - 1
+        Y2FsZhQAAAAAAAAA - 0 - Fastest
+
+    19/24Bit:
+        Y2FsZhMAAAAIAAAA - 8 - Slowest
+        Y2FsZhMAAAAHAAAA - 7
+        Y2FsZhMAAAAGAAAA - 5
+        Y2FsZhMAAAAFAAAA - 5 - Default
+        Y2FsZhMAAAAEAAAA - 4
+        Y2FsZhMAAAADAAAA - 3
+        Y2FsZhMAAAACAAAA - 2
+        Y2FsZhMAAAABAAAA - 1
+        Y2FsZhMAAAAAAAAA - 0 - Slowest
+
+    18/24Bit:
+        Y2FsZhIAAAAIAAAA - 8 - Slowest
+        Y2FsZhIAAAAHAAAA - 7
+        Y2FsZhIAAAAGAAAA - 6
+        Y2FsZhIAAAAFAAAA - 5 - Default
+        Y2FsZhIAAAAEAAAA - 4
+        Y2FsZhIAAAADAAAA - 3
+        Y2FsZhIAAAACAAAA - 2
+        Y2FsZhIAAAABAAAA - 1
+        Y2FsZhIAAAAAAAAA - 0 - Fastest
+
+
+  MP3:
+    Each format (maximum bitrate, VBR, ABR and CBR) has it's own render-string. With the exception of Maximum bitrate/quality, you can set the 
+    encoding quality, as shown in render-matrix. This position is the same for VBR, ABR and CBR, even if they have different render-strings.
+    
+    Format-matrix
+    ----------------..-------------------------- Encoding Quality CQ(fastest encode), Bw, BQ, Ag, AA(maximum slow); only available for VBR, ABR & CBR.
+    
+
+    Maximum bitrate/quality:
+        bDNwbUABAAABAAAACgAAAP////8EAAAAQAEAAAAAAAA=
+        
+    VBR:
+        bDNwbSAAAAABAAAA..AAAAAAAAAAAAAAQAEAAAAAAAA= - the encoding quality, refer the format-matrix above for the values to insert here
+
+      The following strings have slowest encoding-quality set:        
+        bDNwbSAAAAABAAAAAAAAAAAAAAAAAAAAQAEAAAAAAAA= - 100(Best) Quality - maximum encode
+        bDNwbSAAAAABAAAAAAAAAAAAAAABAAAAQAEAAAAAAAA= - 90 Quality - maximum encode
+        bDNwbSAAAAABAAAAAAAAAAAAAAACAAAAQAEAAAAAAAA= - 80 Quality - maximum encode
+        bDNwbSAAAAABAAAAAAAAAAAAAAADAAAAQAEAAAAAAAA= - 70 Quality - max encode
+        bDNwbSAAAAABAAAAAAAAAAAAAAAEAAAAQAEAAAAAAAA= - 60 Quality - max encode
+        bDNwbSAAAAABAAAAAAAAAAAAAAAFAAAAQAEAAAAAAAA= - 50 Quality - max encode
+        bDNwbSAAAAABAAAAAAAAAAAAAAAGAAAAQAEAAAAAAAA= - 40 Quality - max encode
+        bDNwbSAAAAABAAAAAAAAAAAAAAAHAAAAQAEAAAAAAAA= - 30 Quality - max encode
+        bDNwbSAAAAABAAAAAAAAAAAAAAAIAAAAQAEAAAAAAAA= - 20 Quality - max encode
+        bDNwbSAAAAABAAAAAAAAAAAAAAAJAAAAQAEAAAAAAAA= - 10(Worst) Quality - max encode
+
+    ABR (Target Bitrate):
+        bDNwbSAAAAABAAAA..AAAAQAAAAEAAAAQAEAAEABAAA= - the encoding quality, refer the format-matrix above for the values to insert here
+
+      The following strings have slowest encoding-quality set:        
+        bDNwbSAAAAABAAAAAAAAAAQAAAAEAAAAQAEAAEABAAA= - 320 kbps - max encode
+        bDNwbSAAAAABAAAAAAAAAAQAAAAEAAAAQAEAAAABAAA= - 256 kbps - max encode
+        bDNwbSAAAAABAAAAAAAAAAQAAAAEAAAAQAEAAOAAAAA= - 224 kbps - max encode
+        bDNwbSAAAAABAAAAAAAAAAQAAAAEAAAAQAEAAMAAAAA= - 192 kbps - max encode
+        bDNwbSAAAAABAAAAAAAAAAQAAAAEAAAAQAEAAKAAAAA= - 160 kbps - max encode
+        bDNwbSAAAAABAAAAAAAAAAQAAAAEAAAAQAEAAIAAAAA= - 128 kbps - max encode
+        bDNwbSAAAAABAAAAAAAAAAQAAAAEAAAAQAEAAHAAAAA= - 112 kbps - max encode
+        bDNwbSAAAAABAAAAAAAAAAQAAAAEAAAAQAEAAGAAAAA= - 96 kbps - max encode
+        bDNwbSAAAAABAAAAAAAAAAQAAAAEAAAAQAEAAFAAAAA= - 80 kbps - max encode
+        bDNwbSAAAAABAAAAAAAAAAQAAAAEAAAAQAEAAEAAAAA= - 64 kbps - max encode
+        bDNwbSAAAAABAAAAAAAAAAQAAAAEAAAAQAEAADgAAAA= - 56 kbps - max encode
+        bDNwbSAAAAABAAAAAAAAAAQAAAAEAAAAQAEAADAAAAA= - 48 kbps - max encode
+        bDNwbSAAAAABAAAAAAAAAAQAAAAEAAAAQAEAACgAAAA= - 40 kbps - max encode
+        bDNwbSAAAAABAAAAAAAAAAQAAAAEAAAAQAEAACAAAAA= - 32 kbps - max encode
+        bDNwbSAAAAABAAAAAAAAAAQAAAAEAAAAQAEAABgAAAA= - 24 kbps - max encode
+        bDNwbSAAAAABAAAAAAAAAAQAAAAEAAAAQAEAABAAAAA= - 16 kbps - max encode
+        bDNwbSAAAAABAAAAAAAAAAQAAAAEAAAAQAEAAAgAAAA= - 8 kbps - max encode
+
+    CBR (Constant Bitrate):
+        bDNwbUABAAABAAAA..AAAP////8EAAAAQAEAAAAAAAA= - the encoding quality, refer the format-matrix above for the values to insert here
+      
+      The following strings have slowest encoding-quality set:
+        bDNwbUABAAABAAAAAAAAAP////8EAAAAQAEAAAAAAAA= - 320 kbps - max encode
+        bDNwbQABAAABAAAAAAAAAP////8EAAAAAAEAAAAAAAA= - 256 kbps - max encode
+        bDNwbeAAAAABAAAAAAAAAP////8EAAAA4AAAAAAAAAA= - 224 kbps - max encode
+        bDNwbcAAAAABAAAAAAAAAP////8EAAAAwAAAAAAAAAA= - 192 kbps - max encode
+        bDNwbaAAAAABAAAAAAAAAP////8EAAAAoAAAAAAAAAA= - 160 kbps - max encode
+        bDNwbYAAAAABAAAAAAAAAP////8EAAAAgAAAAAAAAAA= - 128 kbps - max encode
+        bDNwbXAAAAABAAAAAAAAAP////8EAAAAcAAAAAAAAAA= - 112 kbps - max encode
+        bDNwbWAAAAABAAAAAAAAAP////8EAAAAYAAAAAAAAAA= - 96 kbps - max encode
+        bDNwbVAAAAABAAAAAAAAAP////8EAAAAUAAAAAAAAAA= - 80 kbps - max encode
+        bDNwbUAAAAABAAAAAAAAAP////8EAAAAQAAAAAAAAAA= - 64 kbps - max encode
+        bDNwbTgAAAABAAAAAAAAAP////8EAAAAOAAAAAAAAAA= - 56 kbps - max encode
+        bDNwbTAAAAABAAAAAAAAAP////8EAAAAMAAAAAAAAAA= - 48 kbps - max encode
+        bDNwbSgAAAABAAAAAAAAAP////8EAAAAKAAAAAAAAAA= - 40 kbps - max encode
+        bDNwbSAAAAABAAAAAAAAAP////8EAAAAIAAAAAAAAAA= - 32 kbps - max encode
+        bDNwbRgAAAABAAAAAAAAAP////8EAAAAGAAAAAAAAAA= - 24 kbps - max encode
+        bDNwbRAAAAABAAAAAAAAAP////8EAAAAEAAAAAAAAAA= - 16 kbps - max encode
+        bDNwbQgAAAABAAAAAAAAAP////8EAAAACAAAAAAAAAA= - 8 kbps - max encode
+
+
+  Opus:
+    Format-matrix:
+    U2dnTwAA      AAAA==
+    ------------..------ complexity: Cg(10), CQ, CA, Bw, Bg, BQ, BA, Aw, Ag, AQ, AA(0)
+    -----------.-------- Bitrate-mode, A(VBR), B(CVBR), C(HARD-CBR)
+    --------...--------- Bitrate
+
+    Bitrates:
+        --------...---------
+        gEM - vbr 256 kbps 
+        YEM - 224 kbps
+        QEM - 192 kbps
+        IEM - 160 kbps
+        AEM - 128 kbps
+        4EI - 112 kbps
+        wEI - 96 kbps 
+        oEI - 80 kbps
+        gEI - 64 kbps
+        YEI - 56 kbps
+        QEI - 48 kbps
+        IEI - 40 kbps
+        AEI - 32 kbps
+        wEE - 24 kbps
+        gEE - 16 kbps
+        AEE - 8 kbps
+
+
+    VBR:
+        --------...-------- Bitrate
+        U2dnTwAAgEMACgAAAA== - vbr 256 kbps complexity 10
+        U2dnTwAAYEMACgAAAA== - 224 kbps compl 10
+        U2dnTwAAQEMACgAAAA== - 192 kbps compl 10
+        U2dnTwAAIEMACgAAAA== - 160 kbps compl 10
+        U2dnTwAAAEMACgAAAA== - 128 kbps compl 10
+        U2dnTwAA4EIACgAAAA== - 112 kbps compl 10
+        U2dnTwAAwEIACgAAAA== - 96 kbps compl 10
+        U2dnTwAAoEIACgAAAA== - 80 kbps - compl 10
+        U2dnTwAAgEIACgAAAA== - 64 kbps - compl 10
+        U2dnTwAAYEIACgAAAA== - 56 kbps - compl 10
+        U2dnTwAAQEIACgAAAA== - 48 kbps - compl 10
+        U2dnTwAAIEIACgAAAA== - 40 kbps - compl 10
+        U2dnTwAAAEIACgAAAA== - 32 kbps - compl 10
+        U2dnTwAAwEEACgAAAA== - 24 kbps - compl 10
+        U2dnTwAAgEEACgAAAA== - 16 kbps - compl 10
+        U2dnTwAAAEEACgAAAA== - 8 kbps - compl 10
+
+    CVBR:
+        --------...-------- Bitrate
+        U2dnTwAAgEMBCgAAAA== - 256 kbps complexity 10
+        U2dnTwAAYEMBCgAAAA== - 224 kbps compl 10
+        U2dnTwAAQEMBCgAAAA== - 192 kbps compl 10
+        U2dnTwAAIEMBCgAAAA== - 160 kbps compl 10
+        U2dnTwAAAEMBCgAAAA== - 128 kbps compl 10
+        U2dnTwAA4EIBCgAAAA== - 112 kbps compl 10
+        U2dnTwAAwEIBCgAAAA== - 96 kbps compl 10
+        U2dnTwAAoEIBCgAAAA== - 80 kbps - compl 10
+        U2dnTwAAgEIBCgAAAA== - 64 kbps - compl 10
+        U2dnTwAAYEIBCgAAAA== - 56 kbps - compl 10
+        U2dnTwAAQEIBCgAAAA== - 48 kbps - compl 10
+        U2dnTwAAIEIBCgAAAA== - 40 kbps - compl 10
+        U2dnTwAAAEIBCgAAAA== - 32 kbps - compl 10
+        U2dnTwAAwEEBCgAAAA== - 24 kbps - compl 10
+        U2dnTwAAgEEBCgAAAA== - 16 kbps - compl 10
+        U2dnTwAAAEEBCgAAAA== - 8 kbps - compl 10
+
+    HARD-CBR:
+        --------...-------- Bitrate
+        U2dnTwAAgEMCCgAAAA== - 256 kbps complexity 10
+        U2dnTwAAYEMCCgAAAA== - 224 kbps compl 10
+        U2dnTwAAQEMCCgAAAA== - 192 kbps compl 10
+        U2dnTwAAIEMCCgAAAA== - 160 kbps compl 10
+        U2dnTwAAAEMCCgAAAA== - 128 kbps compl 10
+        U2dnTwAA4EICCgAAAA== - 112 kbps compl 10
+        U2dnTwAAwEICCgAAAA== - 96 kbps compl 10
+        U2dnTwAAoEICCgAAAA== - 80 kbps - compl 10
+        U2dnTwAAgEICCgAAAA== - 64 kbps - compl 10
+        U2dnTwAAYEICCgAAAA== - 56 kbps - compl 10
+        U2dnTwAAQEICCgAAAA== - 48 kbps - compl 10
+        U2dnTwAAIEICCgAAAA== - 40 kbps - compl 10
+        U2dnTwAAAEICCgAAAA== - 32 kbps - compl 10
+        U2dnTwAAwEECCgAAAA== - 24 kbps - compl 10
+        U2dnTwAAgEECCgAAAA== - 16 kbps - compl 10
+        U2dnTwAAAEECCgAAAA== - 8 kbps - compl 10
+
+
+  VIDEO:
+    Format-matrix:
+    UE1GRg.AAAA.AAAA...AAA.AAA....AA...AA...AA......AQAAA..AAAA= the render-string for video; fill the gaps with the accompanying 
+                                                                         setting-strings/characters
+    ------.----------------------------------------------------- Video Container Y(WebM), Q(MKV), M(MP4,QT,MOV), A(AVI)
+    -----------.------------------------------------------------ Video Format AVI: C(DV),D(MJPEG),E(FFV1 Losless),F(Huffyuv Losless)
+                                                                              QT/MOV/MP4: C(MJPEG)
+                                                                              MKV: C(FFV1 Losless), D(Huffyuv losless), E(MJPEG)
+                                                                              WebM: A(VP8)
+    ----------------...----------------------------------------- Video Bit Rate
+    ----------------------.------------------------------------- Audio-Format M(16 Bit PCM), Q(24 Bit PCM), U(32 Bit FP), 
+                                                                              QT/MOV/MP4: I(16 Bit PCM), M(24 Bit PCM), Q(32 Bit FP)
+                                                                              MKV: I(16 Bit PCM), M(24 Bit PCM), Q(32 Bit FP)
+                                                                              WebM: A(Vorbis)
+    --------------------------....------------------------------ Audio Bitrate (only used with WebM, has no effect with other containers.)
+                                                                              When using other containers, just use any of the bitrate-codes existing.
+    --------------------------------XXX------------------------- Width
+    -------------------------------------YYY-------------------- Height
+    ------------------------------------------FPS...------------ FPS (not encoded as 29.97 but rather as 97.29 !)
+    -----------------------------------------------------..----- MJPEG quality (only when MPJPEG is selected, has no effect with other encoding methods)
+                                                                              If you don't use MJPEG, use any of the MJPEG-quality-codes.
+
+    MJPEG-Quality:
+        GQ - 100%
+        Fo - 90%
+        FA - 80%
+        EY - 70%
+        Dw - 60%
+        DI - 50%
+        Cg - 40%
+        B4 - 30%
+        BQ - 20%
+        BM - 19%
+        BI - 18%
+        BE - 17%
+        BA - 16%
+        A8 - 15%
+        A4 - 14%
+        A0 - 13%
+        Aw - 12%
+        As - 11%
+        Ao - 10%
+        Ak - 9%
+        Ag - 8%
+        Ac - 7%
+        AY - 6&
+        AU - 5%
+        AQ - 4%
+        AM - 3%
+        AI - 2%
+        AE - 1%
+        AA - 0%
+
+    Resolution(Width x Height):
+        Some common resolutions, though Reaper supports many others, from 1 x 1 to 10000 x 10000 and higher. These represent two strings, the first
+        for the width and the second for the height. The x in the middle is not(!) part of the renderstring!
+            FullHD - gAc x DgE
+            HD - AAU x NAC
+            XGA - AAQ x AAD
+
+    Videobitrate:
+        Some common video-bitrates, though others are possible to set.
+            256  - AAE
+            384  - gAE
+            512  - AAI
+            768  - AAM
+            1024 - AAQ
+            1200 - sAQ
+            1600 - QAY
+            2400 - YAk
+            5000 - iBM
+            10000 - ECc
+            16000 - gD4
+            24000 - wF0
+
+    AudioBitrate (WebM only):
+        Some common audio-bitrates, though others are possible to set.
+            256 kbps - AAAQ
+            224 kbps - DgAA
+            192 kbps - DAAA
+            160 kbps - CgAA
+            128 kbps - CAAA
+            112 kbps - BwAA
+            96 kbps  - BgAA
+            80 kbps  - BQAA
+            64 kbps  - BAAA
+            56 kbps  - A4AA
+            48 kbps  - AwAA
+            40 kbps  - AoAA
+            32 kbps  - AgAA
+            24 kbps  - AYAA
+            16 kbps  - AQAA
+            8 kbps   - AIAA
+
+    FPS:
+        Some common frames-per-second-codes, though others are possible to set as well.
+            1200.00 - AAAJZE
+            580.00 - AAABFE
+            240.00 - AAAHBD
+            120.00 - AAAPBC
+            60.00 - AAAHBC
+            48.00 - AAAEBC
+            30.00 - AAAPBB
+            29.97 - CPwu9B
+            25.00 - AAAMhB
+            24.00 - AAAMBB
+            23.98 - DZzr9B
+            20.00 - AAAKBB
+            18.00 - AAAJBB
+            15.00 - AAAHBB
+            12.00 - AAAEBB
+            08.00 - AAAABB
+
+  Some example video-render-strings:
+    WebM
+        Video:2048 kbps Audio:128kbps
+            UE1GRgYAAAAAAAAAAAgAAAAAAACAAAAAgAcAADgEAAAAAPBBAQAAAF8AAAA= - FullHD - 30fps
+            UE1GRgYAAAAAAAAAAAgAAAAAAACAAAAAAAUAANACAAAAAPBBAQAAAF8AAAA= - HD - 30fps
+            UE1GRgYAAAAAAAAAAAgAAAAAAACAAAAAAAQAAAADAAAAAPBBAQAAAF8AAAA= - XGA - 30fps
+
+    MKV-Video
+        Video:MJPEG 95% - Audio:24Bit PCM
+            UE1GRgQAAAAEAAAADycAAAMAAADnAwAAgAcAADgEAAAAAPBBAQAAAF8AAAA= - FullHD - 30fps
+            UE1GRgQAAAAEAAAADycAAAMAAADnAwAAAAUAANACAAAAAPBBAQAAAF8AAAA= - HD - 30fps
+            UE1GRgQAAAAEAAAADycAAAMAAADnAwAAAAQAAAADAAAAAPBBAQAAAF8AAAA= - XGA - 30 fps
+
+    QT/MOV/MP4-Video
+        Video:MJPEG 95% - Audio:24Bit PCM
+            UE1GRgMAAAACAAAADycAAAMAAADnAwAAgAcAADgEAAAAAPBBAQAAAF8AAAA= - FullHD - 30fps
+            UE1GRgMAAAACAAAADycAAAMAAADnAwAAAAUAANACAAAAAPBBAQAAAF8AAAA= - HD - 30fps
+            UE1GRgMAAAACAAAADycAAAMAAADnAwAAAAQAAAADAAAAAPBBAQAAAF8AAAA= - XGA - 30fps
+
+    AVI
+        Video:DV - Audio:24Bit PCM
+            UE1GRgAAAAACAAAADycAAAQAAADnAwAAgAcAADgEAAAAAPBBAQAAAF8AAAA= - FullHD - 30fps
+            UE1GRgAAAAACAAAADycAAAQAAADnAwAAAAUAANACAAAAAPBBAQAAAF8AAAA= - HD - 30fps
+            UE1GRgAAAAACAAAADycAAAQAAADnAwAAAAQAAAADAAAAAPBBAQAAAF8AAAA= - XGA - 30fps

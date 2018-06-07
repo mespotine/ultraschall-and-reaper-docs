@@ -43,7 +43,6 @@
                 Be aware, that a lot of information is probably still missing in this documentation. Keep that in mind!<p>
                 </div>
             <div style="width: 95%;">
-                    <hr>
                                 <hr>
                 <a id="Reaper-kb.ini"><h2>Reaper-kb.ini (as of Reaper 5.77)</h2></a>
                 Stored in Reaper-ressources-folder or in the Reaper-Application-Folder(in portable installations)<p>
@@ -55,7 +54,7 @@
                     Lines with nothing or some kind of text seem to be ignored by Reaper, as long as they don't follow the scheme at all. They will be deleted, when you associate a new shortcut within Reaper, leading to the file Reaper-kb.ini newly written.<br>
                     Lines that are not correctly in their syntax, are normally ignored by Reaper. They can, however, lead to weirdly interpreted entries in the Action Command List. They might change, if you create a new shortcut within Reaper, leading to the file Reaper-kb.ini newly written. The "newly" changed entry is probably useless. So, if you're testing shortcuts you write into Reaper-kb.ini by hand, keep a "backup-copy" of it, or you might lose it in case of syntax errors.<p> 
                     
-                    The order, in which Reaper includes new entries seems not to follow a logical scheme. Especially KEY-entries seem to be included without any system at all(sometime at the beginning, sometimes at the end, sometimes inbetween). I think the order might reflect the history of when a certain shortcut was added into Reaper, but that needs more research.<p>
+                    The order, in which Reaper includes new entries seems not to follow a logical scheme. Especially KEY-entries seem to be included without any system at all(sometime at the beginning, sometimes at the end, sometimes inbetween). I think the order might reflect the history of when a certain shortcut was added by the developers into Reaper itself, but that needs more research.<p>
 
                     The file is written with CR-LF at the end of each line. That is important, if you want to do file-comparing in diff-/versioning-tools as e.g. github.<p>
                     
@@ -544,7 +543,7 @@ Files can be described in the reaper-configzip-info, but will be imported/export
                     <i style="padding-left:4%;">FLAGS configex ctheme wwwroot</i><p>
 
     After the FLAGS- individual entries for each file in the ReaperConfigZip follow, with a SHA-1 hash.<p>
-    Every file entry starts with <i>SHA (SHA-1-HashValueofFile) "[Directory\]Filename.extension"</i>The hashvalue MUST be a valid SHA-1-Hashvalue of the file within ReaperConfigZip, or else, it will be ignored by Reaper-Import. The hash seems to be to help Reaper to find out, if a file that exists, has changed(replace) or not(No change).<br>
+    Every file entry starts with <i>SHA (SHA-1-HashValueofFile) "[Directory\]Filename.extension"</i>. <br>The hashvalue MUST be a valid SHA-1-Hashvalue of the file within ReaperConfigZip, or else, it will be ignored by Reaper-Import. The hash seems to be to help Reaper finding out, if a file that exists, has changed(replace) or not(No change).<br>
     Every entry as well as the end of the FLAGS-entries(after wwwroot), ends with the Hex-value 00. Seems to work with a simple SPACE as well, though.<br>
     The reaper-configzip-info file seems to work with only the FLAG - section. But prefer to include the <i>SHA (SHA-1-HashValueofFile) "[Directory\]Filename.extension"</i>, as this is standard behavior of Reaper.<p>
 
@@ -598,6 +597,28 @@ Some sections begin with &lt; and end with &gt; while others are written in one 
     <i>VST-settings</i> - Long string of letters,numbers and signs that contains the settings of the plugin. Dont' change!<p>
     &gt;<p>
 
+    <h4>If it's a Video-processor-effect:</h4>
+    <div style="padding-left:4%">
+        <i>&lt;VIDEO_EFFECT "Video processor" "Name"</i>
+        <div style="padding-left:4%;">
+        <i>"Name"</i> - Name can be freely chosen and will be displayed in the FX-chain, instead of Video processor.
+        </div><br>
+        
+        <div style="padding-left:4%">
+              <i>&lt;CODE<br>
+                |Tudelu;<br>
+              &gt;<br></i>
+         </div>
+         <div style="padding-left:8%;">
+         The code of the video-processor-plugin, written between <i>&lt;CODE</i> and the closing tag &gt;. Every line must begin with a |<p>
+         </div>
+            <i>CODEPARM 0.0000000000 0.0000000000 0.0000000000 0.0000000000 0.0000000000 0.0000000000 0.0000000000 0.0000000000 0.0000000000 0.0000000000 0.0000000000 0.0000000000 0.0000000000 0.0000000000 0.0000000000 0.0000000000</i>
+            <div style="padding-left:4%;">
+            The settings for each of the possible 16 knobs within this video-effect.</div>
+            </i><br>
+        &gt;
+    </div>
+    
     <h4>If it's a JS-plugin:</h4>
 
     <i>&lt;JS [path/]Pluginfilename "name"</i><p> 
@@ -911,6 +932,98 @@ The entries below a header can be either item_ID, title or icon_ID(icons in tool
     <div style="padding-left:4%;"><p>
             <i>a</i> - Title for this Toolbar, as it will be shown in Reaper, usually in the menu-editor.<p></p>
     </div>
+    <h4>Menu only actions</h4>
+    There are some actions in Reaper, that can only be accessed from the menus(not toolbars and not from the actionlist-dialog!)<p>
+    In the [Brackets] you can see, where they are available in the menu by default, though some of them may be useable in other menus as well, probably depending on the action-context accepted in a specific menu.<p>
+    <div style="padding-left:4%;"><p>
+       Section -> ID -> Action [The menu this action is placed into by default]<br>
+        Main -> 42219 -> Automation items	[Automation item context]<br>
+        Main -> 42094 -> <automation items on disk>	[Automation item context]<br>
+        Main -> 46001 -> (track template list)	[Empty TCP context]<br>
+        Main -> 40854 -> Select envelope (env name)	[Envelope context]<br>
+        Main -> 41933 -> Volume envelope: amplitude scaling	[Envelope context]<br>
+        Main -> 41934 -> Volume envelope: fader scaling	[Envelope context]<br>
+        Main -> 40700 -> Pitch envelope: range/snap...	[Envelope context]<br>
+        Main -> 40055 -> Create new point	[Envelope context]<br>
+        Main -> 42094 -> <automation items on disk>	[Envelope context]<br>
+        Main -> 40854 -> Select envelope (env name)	[Envelope point context]<br>
+        Main -> 41933 -> Volume envelope: amplitude scaling	[Envelope point context]<br>
+        Main -> 41934 -> Volume envelope: fader scaling	[Envelope point context]<br>
+        Main -> 40700 -> Pitch envelope: range/snap...	[Envelope point context]<br>
+        Main -> 40154 -> Set point value...	[Envelope point context]<br>
+        Main -> 40191 -> Linear	[Envelope point context]<br>
+        Main -> 40192 -> Square	[Envelope point context]<br>
+        Main -> 40423 -> Slow start/end	[Envelope point context]<br>
+        Main -> 40426 -> Fast start	[Envelope point context]<br>
+        Main -> 40427 -> Fast end	[Envelope point context]<br>
+        Main -> 40682 -> Bezier	[Envelope point context]<br>
+        Main -> 40054 -> Delete point	[Envelope point context]<br>
+        Main -> 42094 -> <automation items on disk>	[Envelope point context]<br>
+        Main -> 40556 -> Add FX...	[FX extended mixer context]<br>
+        Main -> 41068 -> Quick add FX	[FX extended mixer context]<br>
+        Main -> 41073 -> Add FX chain	[FX extended mixer context]<br>
+        Main -> 41915 -> Replace FX...	[FX extended mixer context]<br>
+        Main -> 41917 -> Quick replace FX	[FX extended mixer context]<br>
+        Main -> 40554 -> Float FX configuration	[FX extended mixer context]<br>
+        Main -> 40553 -> Show FX chain	[FX extended mixer context]<br>
+        Main -> 40555 -> Bypass chain	[FX extended mixer context]<br>
+        Main -> 40550 -> Bypass FX	[FX extended mixer context]<br>
+        Main -> 40551 -> Offline FX	[FX extended mixer context]<br>
+        Main -> 40552 -> Delete FX	[FX extended mixer context]<br>
+        Main -> 40562 -> Rename FX instance	[FX extended mixer context]<br>
+        Main -> 2998 -> Show recent actions	[Main actions]<br>
+        Main -> 48000 -> (project template list)	[Main file]<br>
+        Main -> 44000 -> (recent project list)	[Main file]<br>
+        Main -> 46001 -> (track template list)	[Main insert]<br>
+        Main -> 45100 -> (comp list)	[Main item]<br>
+        Main -> 45500 -> Default Classic	[Main options]<br>
+        Main -> 46001 -> (track template list)	[Main track]<br>
+        Main -> 48400 -> Default	[Main track]<br>
+        Main -> 45100 -> (comp list)	[Media item context]<br>
+        Main -> 40079 -> Close	[Mixer context]<br>
+        Main -> 40561 -> Show send parameters	[Sends extended mixer context]<br>
+        Main -> 40559 -> Mute send	[Sends extended mixer context]<br>
+        Main -> 40560 -> Remove send	[Sends extended mixer context]<br>
+        Main -> 40558 -> Show track routing window	[Sends extended mixer context]<br>
+        Main -> 40564 -> Go to send destination track	[Sends extended mixer context]<br>
+        Main -> 46001 -> (track template list)	[Track control panel context]<br>
+        Main -> 48400 -> Default	[Track control panel context]<br>
+        Main -> 40264 -> no markers	[Transport context]<br>
+        Main -> 40673 -> Playrate fader range: 0.25-4.0 (default)	[Transport context]<br>
+        Main -> 40674 -> Playrate fader range: 0.5-2.0	[Transport context]<br>
+        Main -> 40675 -> Playrate fader range: 0.75-1.5	[Transport context]<br>
+        Main -> 40676 -> Playrate fader range: 0.9-1.1	[Transport context]<br>
+        Main -> 2 -> Hide Transport	[Transport context]<br>
+        MIDI Editor -> 2998 -> Show recent actions	[MIDI main actions]<br>
+        MIDI Editor -> 40894 -> Media item	[MIDI main contents]<br>
+        MIDI Editor -> 40895 -> Track	[MIDI main contents]<br>
+        MIDI Editor -> 40896 -> Project	[MIDI main contents]<br>
+        MIDI Editor -> 40897 -> Open the clicked MIDI item only	[MIDI main contents]<br>
+        MIDI Editor -> 40898 -> Open all selected MIDI items	[MIDI main contents]<br>
+        MIDI Editor -> 40899 -> Open all MIDI items on the same track as the clicked item	[MIDI main contents]<br>
+        MIDI Editor -> 40900 -> Open all MIDI in the project	[MIDI main contents]<br>
+        MIDI Editor -> 40916 -> <recent note name files>	[MIDI main file]<br>
+        MIDI Editor -> 40408 -> Automatically save modified file on close	[MIDI main file]<br>
+        MIDI Editor -> 40916 -> <recent note name files>	[MIDI main menu context]<br>
+        MIDI Editor -> 40749 -> MIDI editor mouse modifiers...	[MIDI main menu context]<br>
+        MIDI Editor -> 40894 -> Media item	[MIDI main menu context]<br>
+        MIDI Editor -> 40895 -> Track	[MIDI main menu context]<br>
+        MIDI Editor -> 40896 -> Project	[MIDI main menu context]<br>
+        MIDI Editor -> 40897 -> Open the clicked MIDI item only	[MIDI main menu context]<br>
+        MIDI Editor -> 40898 -> Open all selected MIDI items	[MIDI main menu context]<br>
+        MIDI Editor -> 40899 -> Open all MIDI items on the same track as the clicked item	[MIDI main menu context]<br>
+        MIDI Editor -> 40900 -> Open all MIDI in the project	[MIDI main menu context]<br>
+        MIDI Editor -> 2998 -> Show recent actions	[MIDI main menu context]<br>
+        MIDI Editor -> 40408 -> Automatically save modified file on close	[MIDI main menu context]<br>
+        MIDI Editor -> 40749 -> MIDI editor mouse modifiers...	[MIDI main options]<br>
+        MIDI Editor -> 40638 -> [velocity list]	[MIDI piano roll context]<br>
+        MIDI Editor -> 41989 -> (note notation menu)	[MIDI piano roll context]<br>
+        MIDI Editor -> 1215 -> CC selection follows note selection	[MIDI piano roll toolbar]<br>
+        MIDI Inline Editor -> 40457 -> Humanize notes...	[MIDI inline editor context]<br>
+        MIDI Inline Editor -> 40434 -> Select all notes with same pitch	[MIDI inline editor context]<br>
+        MIDI Event List Editor -> 1000 -> Add	[MIDI event list toolbar]<br>
+        MIDI Event List Editor -> 1002 -> Delete[MIDI event list toolbar]<br>
+        </div>
     </div>
 
 
