@@ -25,7 +25,7 @@ files[23]=reaper.GetResourcePath().."/reaper-screensets.ini"
 files[24]=reaper.GetResourcePath().."/reaper-joystick.ini"
 files[25]=reaper.GetResourcePath().."/reaper-pinstates.ini"
 files[26]=reaper.GetResourcePath().."/S&M_Cyclactions.ini"
-files[27]=reaper.GetResourcePath().."/ultraschall.ini"
+--files[27]=reaper.GetResourcePath().."/ultraschall.ini"
 --]]
 
 maximumpowercounter=30
