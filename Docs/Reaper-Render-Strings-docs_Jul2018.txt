@@ -44,6 +44,7 @@ Introduction:
 
 AIFF:
     .....------- ZmZpY signals AIFF
+    -----..-----
     ZmZpYQgAAA== 8 bit PCM
     ZmZpYRAAAA== 16 bit PCM
     ZmZpYRgAAA== 24 bit PCM
@@ -87,16 +88,23 @@ WAV:
 
                       Include marker dropdownlist(continuation); still only one of all entries from the dropdownlist is selectable, but
                       these entries need two characters to be altered in the render-string.
-        -------..---    Markers only - set the first letter one higher(A->B) and the second eight higher(B->J)
+        ------..----    Markers only - set the first letter one higher(A->B) and the second eight higher(B->J)
                         Markers starting with # only - set the first letter one higher(A->B) and the second 24 higher(B->Z)
                         Regions only - set the first letter two higher(A->C) and the second eight higher(B->J)
                         Regions starting with # only - set the first letter two higher(A->C) and the second 24 higher(B->Z)
         
-        -------.---- Embed project tempo (use with care): add 32 to the letter (B->h)
+        -------.---- Embed project tempo (use with care): checked -> add 38 to the letter (B->h): 
+                                                                            only for: Do not include markers or regions, Markers + regions,
+                                                                                      Markers only, Regions only
+                                                                     subtract 43 from the letter (c->8)
+                                                                            only for: Markers + regions starting with #, Markers starting with # only
+                                                                                      Regions starting with # only
+                                                                     unchecked -> keep the value
 
         
 WAVPACK:
         a3B2dwQAAAANAAAAAAAAAAMAAAA= 
+        a3B2dw[MODE]AAAA[BITDEPTH]AAAAA[WRITEMARKERS]AAAA[BWFCHUNK]AAAA=
         ......---------------------- a3B2dw signals WAVPACK
         ------.--------------------- Mode: A(Normal), E(Fast), M(High), Q(Very High (slowest))
         -----------.---------------- Bit depth: A(16Bit), B(24Bit), C(32Bit integer), D(32Bit floating point), E(23/24 Bit), F(22/24 Bit), G(21/24 Bit), 
@@ -105,8 +113,8 @@ WAVPACK:
         -----------------.---------- Write markers as cues: 
                                                 A(nothing checked), g(Write markers as cues->checked), Q(Write markers as cues and Only write markers starting with #->checked)
         ----------------------.----- Write BWF chunk and Include project filename in BWF data-checkboxes)
-                                                E(Only Write BWF-chunk), I(Include project filename in BWF data), M(Only write BWF-chunk and Include project filename in BWF data)
-
+                                                A(nothing checked), E(Only Write BWF-chunk), I(Include project filename in BWF data), 
+                                                M(Write BWF-chunk and Include project filename in BWF data)
                                                 
 DDP:
     IHBkZA= - DDP
@@ -125,10 +133,10 @@ MP3:
     
     Format-matrix
     .....--------------------------------------- bDNwb signals MP3
-    ----------------..-------------------------- Encoding Quality CQ(fastest encode), Bw, BQ, Ag, AA(maximum slow); only available for VBR, ABR & CBR.
+    -----...------------------------------------ kbps(CBR) another CBR-kbps-value(unknown, why a second one); only available with CBR
+    ----------------..-------------------------- Encoding Speed   CQ(fastest encode), Bw(FastEncode), BQ(Normal), Ag(Better), AA(maximum slow); only available for VBR, ABR & CBR.
                                                                   Cg(only with Maximum bitrate/quality-setting)
-    ----------------..-------------------------- Encoding Speed
-    ---------------------------.---------------- VBR-Quality (VBR only)
+    ---------------------------.---------------- VBR-Quality (VBR only) - A(100), B(90), C(80), D(70), E(60), F(50), G(40), H(30), I(20), J(10)
     --------------------------------...--------- kbps(CBR only)
     -------------------------------------...---- kbps(ABR only)
 
@@ -136,10 +144,11 @@ MP3:
         bDNwbUABAAABAAAACgAAAP////8EAAAAQAEAAAAAAAA=
         
     VBR:
-        bDNwbSAAAAABAAAA..AAAAAAAAAAAAAAQAEAAAAAAAA=
-        ----------------..-------------------------- Encoding Speed
-        ---------------------------.---------------- VBR-Quality
-
+        bDNwbSAAAAABAAAA..AAAAAAAAA.AAAAQAEAAAAAAAA=
+        ----------------..-------------------------- Encoding Speed   CQ(fastest encode), Bw(FastEncode), BQ(Normal), Ag(Better), AA(maximum slow); only available for VBR, ABR & CBR.
+                                                                      Cg(only with Maximum bitrate/quality-setting)
+        ---------------------------.---------------- VBR-Quality (VBR only) - A(100), B(90), C(80), D(70), E(60), F(50), G(40), H(30), I(20), J(10)
+        
       The following strings have slowest encoding-speed set:
         bDNwbSAAAAABAAAAAAAAAAAAAAAAAAAAQAEAAAAAAAA= - 100(Best) Quality - maximum encode
         bDNwbSAAAAABAAAAAAAAAAAAAAABAAAAQAEAAAAAAAA= - 90 Quality - maximum encode
@@ -154,8 +163,10 @@ MP3:
 
     ABR (Target Bitrate):
         bDNwbSAAAAABAAAA..AAAAQAAAAEAAAAQAEAAEABAAA=
-        ----------------..-------------------------- Encoding Speed
-        -------------------------------------...---- kbps(ABR)
+        ----------------..-------------------------- Encoding Speed   CQ(fastest encode), Bw(FastEncode), BQ(Normal), Ag(Better), AA(maximum slow); only available for VBR, ABR & CBR.
+                                                                      Cg(only with Maximum bitrate/quality-setting)
+        -------------------------------------...---- kbps(ABR)  EAB(320), AAB(256), OAA(224), MAA(192), KAA(160), IAA(128), HAA(112), GAA(96), 
+                                                                FAA(80), EAA(64), DgA(56), DAA(48), CgA(40), CAA(32), BgA(24), BAA(16), AgA(8)
 
       The following strings have slowest encoding-speed set:        
         bDNwbSAAAAABAAAAAAAAAAQAAAAEAAAAQAEAAEABAAA= - 320 kbps - max encode
@@ -177,9 +188,14 @@ MP3:
         bDNwbSAAAAABAAAAAAAAAAQAAAAEAAAAQAEAAAgAAAA= - 8 kbps - max encode
 
     CBR (Constant Bitrate):
-        bDNwbUABAAABAAAA..AAAP////8EAAAAQAEAAAAAAAA= - the encoding speed, refer the format-matrix above for the values to insert here
-        ----------------..-------------------------- Encoding Speed
-        --------------------------------...--------- kbps(CBR)
+        bDNwb...AAABAAAA..AAAP////8EAAAAQAEAAAAAAAA= - the encoding speed, refer the format-matrix above for the values to insert here
+        -----...------------------------------------ kbps(CBR) another kbps-value(unknown, why)
+                                                               UAB(320), QAB(256), eAA(224), cAA(192), aAA(160), YAA(128), XAA(112), WAA(96)
+                                                               VAA(80), UAA(64), TgA(56), TAA(48), SgA(40), SAA(32), RgA(24), RAA(16), QgA(8)
+        ----------------..-------------------------- Encoding Speed   CQ(fastest encode), Bw(FastEncode), BQ(Normal), Ag(Better), AA(maximum slow); only available for VBR, ABR & CBR.
+                                                                      Cg(only with Maximum bitrate/quality-setting)
+        --------------------------------...--------- kbps(CBR)  QAE(320), AAE(256), 4AA(224), wAA(192), oAA(160), gAA(128), cAA(112), YAA(96), 
+                                                                UAA(80), QAA(64), OAA(56), MAA(48), KAA(40), IAA(32), GAA(24), EAA(16), CAA(8)
       
       The following strings have slowest encoding-speed set:
         bDNwbUABAAABAAAAAAAAAP////8EAAAAQAEAAAAAAAA= - 320 kbps - max encode
@@ -200,7 +216,11 @@ MP3:
         bDNwbRAAAAABAAAAAAAAAP////8EAAAAEAAAAAAAAAA= - 16 kbps - max encode
         bDNwbQgAAAABAAAAAAAAAP////8EAAAACAAAAAAAAAA= - 8 kbps - max encode
         
-    
+        
+M4A(MP4):
+    RlZBWAMAAAAAAAAAAAgAAAAAAACAAAAAgAcAADgEAAAAAPBBAQAAAF8AAAA=
+        
+        
 Opus:
     U2dnTwAA      AAAA==
     ........------------ U2dnTwAA signals Opus Audio
@@ -223,8 +243,9 @@ Ogg Vorbis:
    
     
 Video:
-    UE1GRg.AAAA.AAAA...AAA.AAA....AA...AA...AA......AQAAA..AAAA= the render-string for video; fill the gaps with the accompanying 
+    UE1GRg.AAAA.AAAA...AAA.AAA....AA...AA...AA......A.AAA..AAAA= the render-string for video; fill the gaps with the accompanying 
                                                                          setting-strings/characters
+                                                                         
     ......------------------------------------------------------ UE1GRg signals Video
     ------.----------------------------------------------------- Video Container Y(WebM), Q(MKV), M(MP4,QT,MOV), A(AVI)
     -----------.------------------------------------------------ Video Format AVI: C(DV),D(MJPEG),E(FFV1 Losless),F(Huffyuv Losless)
