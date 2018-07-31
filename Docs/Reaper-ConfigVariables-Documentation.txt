@@ -39,6 +39,13 @@
 # effect on the setting behind them and therefore can only be used for getting their current setting.
 # So test this out, if you need to get/set a specific variable.
 #
+# Setting some of the variables results in a different behavior, as you might expect them to behave. 
+# Such examples are mastermutesolo, where you can set the master's mute and solo-states successfully, however, the UserInterface 
+# of Reaper will NOT reflect that. It rather will show the old mute-solo-state instead.
+# Another such example is reccfg, where you can set another recording-audio-format, but setting it to Video, GIF or AudioCD will result
+# in strange behavior of the Project Settings-dialog, even though you can successfully record in these formats as well.
+# So doublecheck them twice for any side-effects. These sideeffects aren't documented much in here(too much work for one young fellow like me ;) )
+#
 # I also document limitations with variables within this textfile. These are not taken from actually setting these variables, 
 # but rather taken from the limitations imposed by setting-dialogs. So, even if I write about limitations, other values
 # may be possible as well, though I would say, this could lead to unpredictable behavior of Reaper.
@@ -2975,6 +2982,8 @@ mastermutesolo
             1 0, L
             0 1, R
             1 1, L-R
+            
+    Does not update state of the mute/solo-buttons or in the Track Manager, though it changes the state of mute/solo itself!
     
 maxitemlanes
     Maximum number of lanes, when showing overlapping items in lanes-inputbox, as set in Preferences -> Appearance
@@ -5004,6 +5013,12 @@ recaddatloop
 reccfg
     The audioformat for Recording, as set in the Project Settings->Media-dialog
     Only includes the format, not the individual format-settings(like bitrate, etc)
+    Setting them changes the recording-format, though setting some will 
+        not update the Project Settings->Media-dialog properly (Video, GIF, AudioCD) 
+        but will show WAV instead with the additional dialog-boxes for Video, GIF 
+        or AudioCD added.
+    If you change the audioformat, it will use the last used setting for the "new" format, as set
+    in this project. Uses the default Reaper-settings for formats in new projects.
     It is an integer.
         1179012432, Video (ffmpeg/libav encoder)
         1195984416, Video (GIF)
