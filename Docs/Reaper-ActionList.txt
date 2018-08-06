@@ -1,7 +1,7 @@
 Compiled by Meo Mespotine(mespotine.de) for the ultraschall.fm-project
 
-This list contains all actions for Reaper and SWS, available in Reaper 5.80. At the end of the list, you can also find actions, that are
-only available for use in menus, like project-lists or template-lists.
+This list contains all actions for Reaper and SWS, available in Reaper 5.941 and SWS 2.9.7 
+At the end of the list, you can also find actions, that are only available for use in menus, like project-lists or template-lists.
 
 1. Introduction
     This section covers Action and Command IDs, that you can call/request to make Reaper certain things. For example, if you call the 
@@ -2341,6 +2341,7 @@ only available for use in menus, like project-lists or template-lists.
         Main	40721	Loop points: Halve loop length
         Main	40722	Loop points: Double loop length
         Main	40723	View: Expand selected track height, minimize others
+        Main	40725	Grid: Toggle measure grid
         Main	40726	Envelope: Insert 4 envelope points at time selection
         Main	40727	View: Minimize all tracks
         Main	40728	Track: Solo tracks
@@ -2507,6 +2508,7 @@ only available for use in menus, like project-lists or template-lists.
         Main	40900	Track: Remove track icon
         Main	40901	Track: Freeze to mono (render pre-fader, save/remove items and online FX)
         Main	40903	Mixer: Toggle show track icons in mixer
+        Main	40904	Grid: Set framerate grid
         Main	40905	Toolbars: Customize...
         Main	40906	View: Show track manager window
         Main	40907	Track: Insert/show reaControlMIDI (MIDI track control)
@@ -2525,6 +2527,7 @@ only available for use in menus, like project-lists or template-lists.
         Main	40920	Item: Explode MIDI note rows (pitch) to new items
         Main	40921	Item: Set item mix behavior to always replace
         Main	40922	Item: Set item mix behavior to project default
+        Main	40923	Grid: Set measure grid
         Main	40925	Markers: Quantize tempo markers to MIDI resolution
         Main	40926	Envelope: Toggle show all active envelopes for all tracks
         Main	40927	Options: Enable auto-crossfade on split
@@ -7224,6 +7227,7 @@ only available for use in menus, like project-lists or template-lists.
         MIDI Editor	42078	Navigate: Select previous note on the same staff with the same voice (notation view)
         MIDI Editor	42079	Navigate: Select next note on the same staff with the same voice (notation view)
         MIDI Editor	42173	Notation: Delete note text or custom ornament
+        MIDI Editor	42430	Options: Make secondary items editable by default
         MIDI Editor	_FNG_ME_SELECT_MUTED	SWS/FNG: Select muted MIDI notes
         MIDI Editor	_FNG_ME_SELECT_NOTES_NEAR_EDIT_CURSOR	SWS/FNG: Select notes nearest edit cursor
         MIDI Editor	_FNG_ME_APPLY_MIDI_GROOVE_16	SWS/FNG: Apply groove to selected MIDI notes (within 16th)

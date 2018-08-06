@@ -1,11 +1,14 @@
-# The following 413 variable-names can be used for the SWS-functions 
+# List of all Config Variables as of Reaper 5.941
+# 
+# The following 415 variable-names can be used for the SWS-functions 
 #
-#    SNM_GetIntConfigVar(), SNM_SetIntConfigVar(), SNM_GetDoubleConfigVar() and SNM_SetDoubleConfigVar(), as well as 
-#    the C++-only function get_config_var()
+#    SNM_GetIntConfigVar(), SNM_SetIntConfigVar(), SNM_GetDoubleConfigVar() and SNM_SetDoubleConfigVar(), 
+# as well as the C++-only functions
+#    get_config_var(), projectconfig_var_addr() and projectconfig_var_getoffs()
 #
 # who change Reaper's configuration-variables at run time. Just pass the variable-name to the parameter "varname".
 #
-# These variablenames are from Reaper 5.80 and probably missing some, but should be fairly complete anyway.
+# These variablenames are from Reaper 5.941 and probably missing some, but should be fairly complete anyway.
 #
 # These can be used to set configuration-stuff in the preferences, the project-settings, the render-dialog,
 # many context-menus(like MCP or transport-context-menus) and many others.
@@ -79,10 +82,11 @@
 # the View-menu, the Options-menu, Customize menus/toolbars, Adjust Entire Tempo Envelope, Quantize Item Positions, MIDI Editor and 
 # Render to File-dialogs are completely documented, as well as all variables toggled by actions only.
 #
-# Some variables I couldn't trigger, so the following 20 aren't documented and are unknown:
+# Some variables I couldn't trigger, so the following 22 aren't documented and are unknown:
 #   ctrlcopyitem, disk_rdblksex, itemdblclk, itemprops, itemprops_timemode, maxspeakgain, metronome_flags, midiins,
 #   midiins_cs, mousemovemod, newfnopt, projmidieditor, renderqdelay, rightclickemulate,
 #   scoreminnotelen, scorequant, selitemtop, titlebarreghide, tsmarker, vstfolder_settings
+#   projmeasoffsruler, miscopts
 
 # The following variables can be triggered by actions only
 #   aot, cueitems, itemtexthide, psmaxv, psminv, templateditcursor
@@ -3067,6 +3071,9 @@ metronome_flags
     unknown
     It is an integer
     
+miscopts
+    undocumented
+    
 midiccdensity
     Events per quarter note when drawing in CC lines-inputbox, as set in Preferences -> MIDI Editor
     It is an integer
@@ -4253,7 +4260,10 @@ projmeasoffs
         -2147483647(for -2147483648) to 2147483646(for 2147483647)
 
     Stored in reaper.ini under the same name in the section REAPER, when Save as default project settings has been clicked.
-        
+
+projmeasoffsruler
+    undocumented
+    
 projmetrobeatlen
     The metronome-beat click length in ms, as set in the "Metronome Preroll Settings"-dialog(options-menu)
     Only integer allowed.
