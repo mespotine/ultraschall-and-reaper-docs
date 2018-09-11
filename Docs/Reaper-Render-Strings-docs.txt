@@ -221,13 +221,30 @@ M4A(MP4):
     RlZBWAMAAAAAAAAAAAgAAAAAAACAAAAAgAcAADgEAAAAAPBBAQAAAF8AAAA=
         
         
-Opus:
+Opus(Reaper 5.941 and earlier):
     U2dnTwAA      AAAA==
-    ........------------ U2dnTwAA signals Opus Audio
+    ........------------ U2dnTwAA signals Opus Audio; render-string-length of 20 characters signals Opus-Render-String of Reaper5.941 and earlier
     --------...--------- Bitrate
     -----------.-------- Bitrate-mode, A(VBR), B(CVBR), C(HARD-CBR)
     ------------..------ complexity: Cg(10), CQ, CA, Bw, Bg, BQ, BA, Aw, Ag, AQ, AA(0)
+
+Opus (Reaper 5.95 and later):
+    U2dnTwAAgD8AAAAAAAIAAAA=
+
+    U2dnTwAAgEQCAAAAAAAAAAA=
+    U2dnTwAAgD8CAAAAAAAAAAA=
+    U2dnTwCAzUMCAAAAAAAAAAA=
+    U2dnTwBMMkYCAAAAAAAAAAA=
     
+    ......------------------ U2dnTwAA signals Opus-Render-String; render-cfg-length of 24 characters is Reaper 5.95 and higher
+    ------.....------------- Bitrate 6 to 256
+    -----------.------------ Mode: A(VBR), B (CVBR), C(Hard-CBR)
+    ------------..---------- Complexity : Cg(10), CQ, CA, Bw, Bg, BQ, BA, Aw, Ag, AQ, AA(0)
+    ------------------.----- Encode 3-8 channel audio as 2.1-7.1(LFE)-checkbox and per-channel-bitrate-radiobuttons
+                                             A - Encode-checkbox unchecked and per channel (6-256)-radiobutton
+                                             I - Encode-checkbox unchecked and Combined-radiobutton
+                                             E - Encode-checkbox checked and per channel (6-256)-radiobutton
+                                             M - Encode-checkbox checked and Combined-radiobutton    
 
 Ogg Vorbis:
     dmdnbwAAAD8AAAAAAAAAAAAgAAAAAAEAAA==
