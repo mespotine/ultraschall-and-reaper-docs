@@ -1,4 +1,4 @@
-# List of all Config Variables as of Reaper 5.941
+# List of all Config Variables as of Reaper 5.95
 # 
 # The following 415 variable-names can be used for the SWS-functions 
 #
@@ -8,7 +8,7 @@
 #
 # who change Reaper's configuration-variables at run time. Just pass the variable-name to the parameter "varname".
 #
-# These variablenames are from Reaper 5.941 and probably missing some, but should be fairly complete anyway.
+# These variablenames are from Reaper 5.95 and probably missing some, but should be fairly complete anyway.
 #
 # These can be used to set configuration-stuff in the preferences, the project-settings, the render-dialog,
 # many context-menus(like MCP or transport-context-menus) and many others.
@@ -247,7 +247,7 @@ applyfxtail
     Stored in reaper.ini under the same name in the section REAPER.
 
 ara
-    Only available in pre-releases or Reaper, yet!
+    Only available in pre-releases of Reaper, yet!
     Enable ARA for VST3 plug-ins that support it(requires restarting REAPER) in section VST compatibility, as set in Preferences -> VST
         0, enable ARA(on) - checked
         1, disable ARA(off) - unchecked
@@ -477,7 +477,7 @@ copyimpmedia
 cpuallowed
     The Restrict REAPER to specific CPUs-inputbox.
     It is an integer-bitfield.
-    Every bit represents a given cpu. Set it to 1 and Reaper uses the cpu, set it to 0, Reaper will no use the cpu.
+    Every bit represents a given cpu. Set it to 1 and Reaper uses the cpu, set it to 0, Reaper will not use the cpu.
     There are 32 cpus supported (0 to 31)
             &0, allow cpu number 0
             &1, allow cpu number 1
@@ -1962,7 +1962,7 @@ edit_fontsize
     It is an integer.
         negative values are treated like the positive value+1; 16 is default
         
-    Stored in reaper.ini under the same name in the section REAPER, as soon as the variable is changed.
+    Stored in reaper.ini under the same name in the section REAPER; is updated as soon as the variable is changed.
         
 env_autoadd
     Several settings from the Automation-section, as set in Preferences -> Automation.
@@ -2180,6 +2180,9 @@ errnowarn
         
         &16=0, Warn when changing volume envelope scaling will change envelope sound(Preferences -> Track/Send Defaults)(on) - checked
         &16=1, Warn when changing volume envelope scaling will change envelope sound(Preferences -> Track/Send Defaults)(off) - unchecked
+        
+        &32=0, Warn when enabled MIDI devices are not present - checked
+        &32=1, Warn when enabled MIDI devices are not present - unchecked
     
     For other settings in Preferences -> Audio, see audiocloseinactive, audioclosestop, hwfadex, optimizesilence
     For other settings set in Preferences -> Recording, see adjreclat, adjrecmanlat, adjrecmanlatin, diskcheck, diskcheckmb, manuallat, recfile_wildcards,
@@ -2294,26 +2297,26 @@ feedbackmode
     
     Stored in reaper.ini under the same name in the section REAPER, when Save as default project settings has been clicked.
     
-fullscreenRectB
+fullscreenrectb
     When Reaper is fullscreen, the position of the bottom of Reaper's window, as toggled by the fullscreen-action 40346
     It is an integer
     
     Stored in reaper.ini under the same name in the section REAPER.
     
-fullscreenRectL
+fullscreenrectl
     When Reaper is fullscreen, the position of the left of Reaper's window, as toggled by the fullscreen-action 40346
     Can be negative(probably -4)
     It is an integer
 
     Stored in reaper.ini under the same name in the section REAPER.
  
-fullscreenRectR
+fullscreenrectr
     When Reaper is fullscreen, the position of the right of Reaper's window, as toggled by the fullscreen-action 40346
     It is an integer
     
     Stored in reaper.ini under the same name in the section REAPER.
  
-fullscreenRectT
+fullscreenrectt
     When Reaper is fullscreen, the position of the top of Reaper's window, as toggled by the fullscreen-action 40346
     Can be negative(probably -4)
     It is an integer
@@ -2524,13 +2527,13 @@ insertmtrack
     
     Stored in reaper.ini under the same name in the section REAPER.
     
-isFullscreen 
+isfullscreen 
     Stores, if Reaper is currently set to fullscreen as well as toggled by action 40346
     It is an integer
         0, Reaper isn't fullscreen
         1, Reaper is fullscreen
 
-    For the position of the edges of fullscreen, see fullscreenRectB, fullscreenRectL, fullscreenRectR, fullscreenRectT
+    For the position of the edges of fullscreen, see fullscreenrectb, fullscreenrectl, fullscreenrectr, fullscreenrectt
         
     Stored in reaper.ini under the same name in the section REAPER.
     
@@ -4692,14 +4695,14 @@ projsmptesync
 projsrate
     The project's sample-rate in Hertz, as set in the Project Settings -> Project Settings
     It is an integer.
-        -2147483648 to 2147483647 Hz are alloed
+        -2147483648 to 2147483647 Hz are allowed
         
     Stored in reaper.ini under the same name in the section REAPER, when Save as default project settings has been clicked.
         
 projsrateuse
     Use Project sample rate-checkbox, as set in the Project Settings -> Project Settings
     It is an integer.
-        0, unchecked; dont use project sample rate
+        0, unchecked; don't use project sample rate
         1, checked; use project sample rate
         
     Stored in reaper.ini under the same name in the section REAPER, when Save as default project settings has been clicked.
@@ -4775,11 +4778,11 @@ projvidflags
         &256 = 0, items in higher numbered tracks replace lower
         &256 = 1, items in lower numbered tracks replace higher
         
-        &512 = 0, unchecked: Always resize video sources to prefered video size
-        &512 = 1, checked: Always resize video sources to prefered video size
+        &512 = 0, unchecked: Always resize video sources to preferred video size
+        &512 = 1, checked: Always resize video sources to preferred video size
         
-        &1024 = 0, unchecked: Always resize output to prefered video size
-        &1024 = 1, checked: Always resize output to prefered video size
+        &1024 = 0, unchecked: Always resize output to preferred video size
+        &1024 = 1, checked: Always resize output to preferred video size
         
         &2048 = 0, checked: Use high quality filtering when resizing
         &2048 = 1, unchecked: Use high quality filtering when resizing
