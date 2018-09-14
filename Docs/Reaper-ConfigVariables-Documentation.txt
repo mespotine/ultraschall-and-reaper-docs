@@ -5,6 +5,8 @@
 #    SNM_GetIntConfigVar(), SNM_SetIntConfigVar(), SNM_GetDoubleConfigVar() and SNM_SetDoubleConfigVar(), 
 # as well as the C++-only functions
 #    get_config_var(), projectconfig_var_addr() and projectconfig_var_getoffs()
+# and Reaper's prerelease-only function
+#    get_config_var_string()
 #
 # who change Reaper's configuration-variables at run time. Just pass the variable-name to the parameter "varname".
 #
@@ -90,6 +92,9 @@
 
 # The following variables can be triggered by actions only
 #   aot, cueitems, itemtexthide, psmaxv, psminv, templateditcursor
+
+# the following variables are available in pre-releases of Reaper only
+#   ara, bouncecfg, defstretchmode, wiring_options, uiscale
 
 __numcpu
     The number of CPUs available in your system. 
@@ -248,6 +253,7 @@ applyfxtail
 
 ara
     Only available in pre-releases of Reaper, yet!
+    It is an integer.
     Enable ARA for VST3 plug-ins that support it(requires restarting REAPER) in section VST compatibility, as set in Preferences -> VST
         0, enable ARA(on) - checked
         1, disable ARA(off) - unchecked
@@ -449,6 +455,12 @@ autoxfade
                                                                           deffadelen, defsplitxfadelen
     Stored in reaper.ini under the same name in the section REAPER, but not, when changed through the Options-menu!
 
+bouncecfg
+    only available in pre-releases of Reaper, yet
+    unknown, but seems to be for storing bounce-settings
+    it is an integer
+    
+    
 bigwndframes
     Use large (non-tool) window frames for windows-checkbox, as set in Preferences -> General -> Advanced UI/system tweaks-button
     It is an integer
@@ -1691,7 +1703,14 @@ defsplitxfadelen
                                                                           deffadelen
         
     Stored in reaper.ini under the same name in the section REAPER.
+
     
+defstretchmode
+    only available in pre-releases of Reaper, yet
+    unknown
+    It is an integer
+    
+
 deftrackrecflags
     The Record arm-checkbox and Record config-dropdownlist from the section Tracks, as set in Preferences -> Track/Send Defaults
     Default Recording-management is stored in here, but not the default recording-inputs!
@@ -2527,7 +2546,7 @@ insertmtrack
     
     Stored in reaper.ini under the same name in the section REAPER.
     
-isfullscreen 
+isfullscreen
     Stores, if Reaper is currently set to fullscreen as well as toggled by action 40346
     It is an integer
         0, Reaper isn't fullscreen
@@ -3075,7 +3094,12 @@ metronome_flags
     It is an integer
     
 miscopts
-    undocumented
+    Enable 'Preserve pitch when changing rate' for new items-checkbox
+    It is an integer
+        0, checked
+        1, unchecked
+    
+    Stored in reaper.ini under the same name in the section REAPER.
     
 midiccdensity
     Events per quarter note when drawing in CC lines-inputbox, as set in Preferences -> MIDI Editor
@@ -5175,7 +5199,7 @@ renderbsnew
 
     Stored in reaper.ini under the same name in the section REAPER.
     
-rendercfg 
+rendercfg
     The render-format set in the render-dialog
     Only includes the format, not the individual format-settings(like bitrate, etc)
     It is an integer.
@@ -6339,7 +6363,13 @@ tsmarker
     It is an integer
         0, unknown
         1, unknown
-    
+
+uiscale
+    only available in pre-releases of Reaper, yet
+    Seems to be the ui-scale-setting, as set in Preferences -> General -> Advanced UI/system tweaks-button, but isn't updated when the option is changed, unlike it's reaper.ini-entry.
+    It is an integer
+        
+        
 undomask
     The "Include Selection" in the "Undo settings"-section, as set in Preferences -> General
     Is an integer-bitfield.
@@ -6724,6 +6754,20 @@ warnmaxram64
     
     Stored in reaper.ini under the same name in the section REAPER.
     
+    
+wiring_options
+    only available in pre-releases of Reaper, yet
+    It is the context-menu from within the wiring-diagram
+    It is an integer-bitfield
+        &1=0, only show send wires on track mouseover -> unchecked 
+        &1=1, only show send wires on track mouseover -> checked 
+    
+        &16=0, show routing controls when creating send/hardware output -> unchecked 
+        &16=1, show routing controls when creating send/hardware output -> checked 
+    
+        &16=0, only show hardware output/input wires on track mouseover -> unchecked 
+        &16=1, only show hardware output/input wires on track mouseover -> checked 
+        
 workbehvr
     Behavior-dropdownlist, as set in Preferences -> Buffering
     It is an integer
