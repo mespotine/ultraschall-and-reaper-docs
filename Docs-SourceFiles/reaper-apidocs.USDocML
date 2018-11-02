@@ -4,16 +4,21 @@
         <slug>1.Introduction</slug>
         <title>1 Introduction to ReaScript</title>
         <description markup_type="markdown" markup_version="1.0.1" indent="default">
-            ##ReaScript API as of Reaper 5.95
+            ##ReaScript API as of Reaper 5.961
             
             REAPER provides an API (advanced programming interface) for users and third parties to create extended functionality. API functions can be called from a compiled C/C++ dynamic library that is loaded by REAPER, or at run-time by user-created ReaScripts that can be written using REAPER's own editor.
 
             ReaScripts can be written in EEL, a specialized language that is also used to write JSFX; Lua, a popular scripting language; or Python, another scripting language. EEL and Lua are embedded within REAPER and require no additional downloads or settings. Python must be downloaded and installed separately, and enabled in REAPER preferences.
 
             A script named "__startup.lua|.eel" will be started automatically by Reaper at startup. You can have both; Reaper will run __startup.eel first, __startup.lua second.
+            This __startup-script doesn't need to be registered into the actionlist of Reaper; it's pure existence in the scripts-folder of the resources-folder of Reaper is sufficient for it to be run.
+            
             Learn more about ReaScript: [http://www.cockos.com/reaper/sdk/reascript/reascript.php](http://www.cockos.com/reaper/sdk/reascript/reascript.php).
             
-            The IDE in Reaper has some limitations though, as every line must not exceed 4095 characters, or they will be split when the script is loaded the next time.
+            The IDE in Reaper has some limitations, as every line must not exceed 4095 characters, or they will be split when the script is loaded the next time.
+            
+            The base-directory for ReaScript can be read from the reaper.ini -> [REAPER] -> lastcwd=
+            That means, if you create a new file without giving it a path, it will be created in the path set in lastcwd.            
         </description>
         <target_document>ReaperApiFunctionsReference</target_document>
         <source_document></source_document>
@@ -60,6 +65,8 @@
                 MediaItem_Take - a take within a MediaItem as object
                 TrackEnvelope - an envelope of a track as object
                 WDL_FastString\(S&M\) - a different kind of a string, made into a Reaper-object
+                
+                deviceHDC - get it using function [JS_GDI_GetWindowDC](#JS_GDI_GetWindowDC)
         </description>
         <target_document>ReaperApiFunctionsReference</target_document>
         <source_document>reaper_plugin.h</source_document>
@@ -4494,6 +4501,43 @@
     </US_DocBloc>
 
     <US_DocBloc version="1.0" spok_lang="en" prog_lang="*">
+        <slug>GetAudioDeviceInfo</slug>
+        <title>GetAudioDeviceInfo</title>
+        <functioncall prog_lang="cpp">bool GetAudioDeviceInfo(const char* attribute, char* desc, int desc_sz)</functioncall>
+        <functioncall prog_lang="eel">bool GetAudioDeviceInfo("attribute", #desc)</functioncall>
+        <functioncall prog_lang="lua">boolean retval, string desc = reaper.GetAudioDeviceInfo(string attribute, string desc)</functioncall>
+        <functioncall prog_lang="python">(Boolean retval, String attribute, String desc, Int desc_sz) = RPR_GetAudioDeviceInfo(attribute, desc, desc_sz)</functioncall>
+        <requires>
+            Reaper=5.96
+            Lua=5.3
+        </requires>
+        <description prog_lang="*" markup_type="markdown" markup_version="1.0.1" indent="default">
+            get information about the currently open audio device. 
+            Attribute can be MODE, IDENT_IN, IDENT_OUT, BSIZE, SRATE, BPS. returns false if unknown attribute or device not open.
+        </description>
+        <retvals>
+            boolean retval - true, if returning a value is possible; false, if not(unknown attribute or device not open)
+            string desc - the returned value; will not return a value, if Preferences are opened
+        </retvals>
+        <parameters>
+            string attribute - the attribute to get, as set in Preferences -> Device
+                             - MODE - the Audio system selected 
+                             - IDENT_IN - the selected Input device
+                             - IDENT_OUT - the selected Output device 
+                             - BSIZE - the Buffer-sample-size (not the multiplier!)
+                             - SRATE - the samplerate in Hz
+                             - BPS - the sample-format (e.g 16, 24, 32 bit)
+            string desc - a string the API needs to return the value; in Lua set it to ""
+        </parameters>
+        <target_document>ReaperApiFunctionsReference</target_document>
+        <source_document></source_document>
+        <chapter_context>
+            Audio Management
+        </chapter_context>
+        <tags></tags>
+    </US_DocBloc>
+    
+    <US_DocBloc version="1.0" spok_lang="en" prog_lang="*">
         <slug>GetConfigWantsDock</slug>
         <title>GetConfigWantsDock</title>
         <functioncall prog_lang="cpp">int GetConfigWantsDock(const char* ident_str)</functioncall>
@@ -5386,7 +5430,7 @@
         <title>GetMainHwnd</title>
         <functioncall prog_lang="cpp">HWND GetMainHwnd()</functioncall>
         <functioncall prog_lang="eel">HWND GetMainHwnd()</functioncall>
-        <functioncall prog_lang="lua">HWND = reaper.GetMainHwnd()</functioncall>
+        <functioncall prog_lang="lua">HWND hwnd = reaper.GetMainHwnd()</functioncall>
         <functioncall prog_lang="python">HWND RPR_GetMainHwnd()</functioncall>
         <requires>
             Reaper=5.62
@@ -5396,7 +5440,7 @@
             Get the Reaper-window as an HWND-object
         </description>
         <retvals>
-            HWND - the Reaper-Window
+            HWND hwnd - the Reaper-Window
         </retvals>
         <target_document>ReaperApiFunctionsReference</target_document>
         <source_document></source_document>
@@ -5411,7 +5455,7 @@
         <title>GetMasterMuteSoloFlags</title>
         <functioncall prog_lang="cpp">int GetMasterMuteSoloFlags()</functioncall>
         <functioncall prog_lang="eel">int GetMasterMuteSoloFlags()</functioncall>
-        <functioncall prog_lang="lua">integer = reaper.GetMasterMuteSoloFlags()</functioncall>
+        <functioncall prog_lang="lua">integer mastermutesolo = reaper.GetMasterMuteSoloFlags()</functioncall>
         <functioncall prog_lang="python">Int RPR_GetMasterMuteSoloFlags()</functioncall>
         <requires>
             Reaper=5.62
@@ -5421,7 +5465,7 @@
             Deprecated: Get the mute/solo-state of the master-track. This is deprecated as you can just query the master track as well.
         </description>
         <retvals>
-            integer - state of mute/solo of the master-track; &amp;1=master mute,&amp;2=master solo.
+            integer mastermutesolo - state of mute/solo of the master-track; &amp;1=master mute,&amp;2=master solo.
         </retvals>
         <target_document>ReaperApiFunctionsReference</target_document>
         <source_document></source_document>
@@ -5436,7 +5480,7 @@
         <title>GetMasterTrack</title>
         <functioncall prog_lang="cpp">MediaTrack* GetMasterTrack(ReaProject* proj)</functioncall>
         <functioncall prog_lang="eel">MediaTrack GetMasterTrack(ReaProject proj)</functioncall>
-        <functioncall prog_lang="lua">MediaTrack = reaper.GetMasterTrack(ReaProject proj)</functioncall>
+        <functioncall prog_lang="lua">MediaTrack track = reaper.GetMasterTrack(ReaProject proj)</functioncall>
         <functioncall prog_lang="python">MediaTrack RPR_GetMasterTrack(ReaProject proj)</functioncall>
         <requires>
             Reaper=5.62
@@ -5446,7 +5490,7 @@
             Get a MediaTrack-object of the MasterTrack.
         </description>
         <retvals>
-            MediaTrack - the MediaTrack-object of the MasterTrack
+            MediaTrack track - the MediaTrack-object of the MasterTrack
         </retvals>
         <parameters markup_type="markdown" markup_version="1.0.1">
             ReaProject proj - the project-number. 0 for the current project. Can also be a ReaProject-object, as returned by [EnumProjects](#EnumProjects)
@@ -5464,7 +5508,7 @@
         <title>GetMasterTrackVisibility</title>
         <functioncall prog_lang="cpp">int GetMasterTrackVisibility()</functioncall>
         <functioncall prog_lang="eel">int GetMasterTrackVisibility()</functioncall>
-        <functioncall prog_lang="lua">integer = reaper.GetMasterTrackVisibility()</functioncall>
+        <functioncall prog_lang="lua">integer master_visibility = reaper.GetMasterTrackVisibility()</functioncall>
         <functioncall prog_lang="python">Int RPR_GetMasterTrackVisibility()</functioncall>
         <requires>
             Reaper=5.62
@@ -5474,7 +5518,7 @@
             Get the visibility of the master-track in mixer and track-control-panel. See [SetMasterTrackVisibility](#SetMasterTrackVisibility).
         </description>
         <retvals>
-            integer - state of visibility of the master-track
+            integer master_visibility - state of visibility of the master-track
                     &1 - 1, master track visible in tcp; 0, master track invisible in mixer
                     &2 - 2, master track invisible in mixer; 0, master track visible in mixer
         </retvals>
@@ -5570,7 +5614,7 @@
         <title>GetMediaItem_Track</title>
         <functioncall prog_lang="cpp">MediaTrack* GetMediaItem_Track(MediaItem* item)</functioncall>
         <functioncall prog_lang="eel">MediaTrack GetMediaItem_Track(MediaItem item)</functioncall>
-        <functioncall prog_lang="lua">MediaTrack = reaper.GetMediaItem_Track(MediaItem item)</functioncall>
+        <functioncall prog_lang="lua">MediaTrack track = reaper.GetMediaItem_Track(MediaItem item)</functioncall>
         <functioncall prog_lang="python">MediaTrack RPR_GetMediaItem_Track(MediaItem item)</functioncall>
         <requires>
             Reaper=5.62
@@ -5580,7 +5624,7 @@
             Get parent track of media item
         </description>
         <retvals>
-            MediaTrack - the returned MediaTrack, in which the MediaItem lies
+            MediaTrack track - the returned MediaTrack, in which the MediaItem lies
         </retvals>
         <parameters>
             MediaItem item - the MediaItem, whose track you want to know
@@ -5650,7 +5694,7 @@
         <title>GetMediaItemInfo_Value</title>
         <functioncall prog_lang="cpp">double GetMediaItemInfo_Value(MediaItem* item, const char* parmname)</functioncall>
         <functioncall prog_lang="eel">double GetMediaItemInfo_Value(MediaItem item, "parmname")</functioncall>
-        <functioncall prog_lang="lua">number = reaper.GetMediaItemInfo_Value(MediaItem item, string parmname)</functioncall>
+        <functioncall prog_lang="lua">number retval = reaper.GetMediaItemInfo_Value(MediaItem item, string parmname)</functioncall>
         <functioncall prog_lang="python">Float RPR_GetMediaItemInfo_Value(MediaItem item, String parmname)</functioncall>
         <requires>
             Reaper=5.95
@@ -5660,7 +5704,7 @@
             Get media item numerical-value attributes.
         </description>
         <retvals>
-            number - the value you requested
+            number retval - the value you requested
         </retvals>
         <parameters>
             MediaItem item - the MediaItem, whose value you want to have
@@ -5706,7 +5750,7 @@
         <title>GetMediaItemNumTakes</title>
         <functioncall prog_lang="cpp">int GetMediaItemNumTakes(MediaItem* item)</functioncall>
         <functioncall prog_lang="eel">int GetMediaItemNumTakes(MediaItem item)</functioncall>
-        <functioncall prog_lang="lua">integer = reaper.GetMediaItemNumTakes(MediaItem item)</functioncall>
+        <functioncall prog_lang="lua">integer itemnumtakes = reaper.GetMediaItemNumTakes(MediaItem item)</functioncall>
         <functioncall prog_lang="python">Int RPR_GetMediaItemNumTakes(MediaItem item)</functioncall>
         <requires>
             Reaper=5.62
@@ -5716,7 +5760,7 @@
             Get the number of takes in a MediaItem-object.
         </description>
         <retvals>
-            integer - the number of takes within the MediaItem-object
+            integer itemnumtakes- the number of takes within the MediaItem-object
         </retvals>
         <parameters>
             MediaItem item - the MediaItem-object, whose number of takes you want to know.
@@ -5763,7 +5807,7 @@
         <title>GetMediaItemTake_Item</title>
         <functioncall prog_lang="cpp">MediaItem* GetMediaItemTake_Item(MediaItem_Take* take)</functioncall>
         <functioncall prog_lang="eel">MediaItem GetMediaItemTake_Item(MediaItem_Take take)</functioncall>
-        <functioncall prog_lang="lua">MediaItem = reaper.GetMediaItemTake_Item(MediaItem_Take take)</functioncall>
+        <functioncall prog_lang="lua">MediaItem item = reaper.GetMediaItemTake_Item(MediaItem_Take take)</functioncall>
         <functioncall prog_lang="python">MediaItem RPR_GetMediaItemTake_Item(MediaItem_Take take)</functioncall>
         <requires>
             Reaper=5.62
@@ -5773,7 +5817,7 @@
             Get parent item of media item take.
         </description>
         <retvals>
-            MediaItem - the MediaItem, in which the MediaItem_Take takes place.
+            MediaItem item - the MediaItem, in which the MediaItem_Take takes place.
         </retvals>
         <parameters>
             MediaItem_Take take - the MediaItem_Take-object, whose accompanying MediaItem you want to request.
@@ -5791,7 +5835,7 @@
         <title>GetMediaItemTake_Peaks</title>
         <functioncall prog_lang="cpp">int GetMediaItemTake_Peaks(MediaItem_Take* take, double peakrate, double starttime, int numchannels, int numsamplesperchannel, int want_extra_type, double* buf)</functioncall>
         <functioncall prog_lang="eel">int GetMediaItemTake_Peaks(MediaItem_Take take, peakrate, starttime, int numchannels, int numsamplesperchannel, int want_extra_type, buffer_ptr buf)</functioncall>
-        <functioncall prog_lang="lua">integer = reaper.GetMediaItemTake_Peaks(MediaItem_Take take, number peakrate, number starttime, integer numchannels, integer numsamplesperchannel, integer want_extra_type, reaper.array buf)</functioncall>
+        <functioncall prog_lang="lua">integer peaks = reaper.GetMediaItemTake_Peaks(MediaItem_Take take, number peakrate, number starttime, integer numchannels, integer numsamplesperchannel, integer want_extra_type, reaper.array buf)</functioncall>
         <functioncall prog_lang="python">(Int retval, MediaItem_Take take, Float peakrate, Float starttime, Int numchannels, Int numsamplesperchannel, Int want_extra_type, Float buf) = RPR_GetMediaItemTake_Peaks(take, peakrate, starttime, numchannels, numsamplesperchannel, want_extra_type, buf)</functioncall>
         <requires>
             Reaper=5.62
@@ -5801,7 +5845,7 @@
             Gets block of peak samples to buf. Note that the peak samples are interleaved, but in two or three blocks (maximums, then minimums, then extra). Return value has 20 bits of returned sample count, then 4 bits of output_mode (0xf00000), then a bit to signify whether extra_type was available (0x1000000). extra_type can be 115 ('s') for spectral information, which will return peak samples as integers with the low 15 bits frequency, next 14 bits tonality.
         </description>
         <retvals>
-            integer - 
+            integer peaks - 
         </retvals>
         <parameters>
             MediaItem_Take take - 
@@ -5824,7 +5868,7 @@
         <title>GetMediaItemTake_Source</title>
         <functioncall prog_lang="cpp">PCM_source* GetMediaItemTake_Source(MediaItem_Take* take)</functioncall>
         <functioncall prog_lang="eel">PCM_source GetMediaItemTake_Source(MediaItem_Take take)</functioncall>
-        <functioncall prog_lang="lua">PCM_source = reaper.GetMediaItemTake_Source(MediaItem_Take take)</functioncall>
+        <functioncall prog_lang="lua">PCM_source source = reaper.GetMediaItemTake_Source(MediaItem_Take take)</functioncall>
         <functioncall prog_lang="python">PCM_source RPR_GetMediaItemTake_Source(MediaItem_Take take)</functioncall>
         <requires>
             Reaper=5.62
@@ -5834,7 +5878,7 @@
             Get media source of media item take
         </description>
         <retvals>
-            PCM_source - 
+            PCM_source source - 
         </retvals>
         <parameters>
             MediaItem_Take take - 
@@ -5852,7 +5896,7 @@
         <title>GetMediaItemTake_Track</title>
         <functioncall prog_lang="cpp">MediaTrack* GetMediaItemTake_Track(MediaItem_Take* take)</functioncall>
         <functioncall prog_lang="eel">MediaTrack GetMediaItemTake_Track(MediaItem_Take take)</functioncall>
-        <functioncall prog_lang="lua">MediaTrack = reaper.GetMediaItemTake_Track(MediaItem_Take take)</functioncall>
+        <functioncall prog_lang="lua">MediaTrack track = reaper.GetMediaItemTake_Track(MediaItem_Take take)</functioncall>
         <functioncall prog_lang="python">MediaTrack RPR_GetMediaItemTake_Track(MediaItem_Take take)</functioncall>
         <requires>
             Reaper=5.62
@@ -5862,7 +5906,7 @@
             Get parent track of media item take
         </description>
         <retvals>
-            MediaTrack - 
+            MediaTrack track - 
         </retvals>
         <parameters>
             MediaItem_Take take - 
@@ -5880,7 +5924,7 @@
         <title>GetMediaItemTakeByGUID</title>
         <functioncall prog_lang="cpp">MediaItem_Take* GetMediaItemTakeByGUID(ReaProject* project, const GUID* guid)</functioncall>
         <functioncall prog_lang="eel">MediaItem_Take GetMediaItemTakeByGUID(ReaProject project, "guidGUID")</functioncall>
-        <functioncall prog_lang="lua">MediaItem_Take = reaper.GetMediaItemTakeByGUID(ReaProject project, string guidGUID)</functioncall>
+        <functioncall prog_lang="lua">MediaItem_Take take = reaper.GetMediaItemTakeByGUID(ReaProject project, string guidGUID)</functioncall>
         <functioncall prog_lang="python">MediaItem_Take RPR_GetMediaItemTakeByGUID(ReaProject project, const GUID guid)</functioncall>
         <requires>
             Reaper=5.62
@@ -5890,7 +5934,7 @@
             
         </description>
         <retvals>
-            MediaItem_Take - 
+            MediaItem_Take - take
         </retvals>
         <parameters markup_type="markdown" markup_version="1.0.1">
             ReaProject project - the project-number. 0 for the current project. Can also be a ReaProject-object, as returned by [EnumProjects](#EnumProjects)
@@ -5909,7 +5953,7 @@
         <title>GetMediaItemTakeInfo_Value</title>
         <functioncall prog_lang="cpp">double GetMediaItemTakeInfo_Value(MediaItem_Take* take, const char* parmname)</functioncall>
         <functioncall prog_lang="eel">double GetMediaItemTakeInfo_Value(MediaItem_Take take, "parmname")</functioncall>
-        <functioncall prog_lang="lua">number = reaper.GetMediaItemTakeInfo_Value(MediaItem_Take take, string parmname)</functioncall>
+        <functioncall prog_lang="lua">number retval = reaper.GetMediaItemTakeInfo_Value(MediaItem_Take take, string parmname)</functioncall>
         <functioncall prog_lang="python">Float RPR_GetMediaItemTakeInfo_Value(MediaItem_Take take, String parmname)</functioncall>
         <requires>
             Reaper=5.95
@@ -5933,7 +5977,7 @@
             P_SOURCE : PCM_source *. Note that if setting this, you should first retrieve the old source, set the new, THEN delete the old.
         </description>
         <retvals>
-            number - 
+            number retval - 
         </retvals>
         <parameters>
             MediaItem_Take take - 
@@ -5994,6 +6038,7 @@
         </retvals>
         <parameters>
             PCM_source source - 
+            string filenamebuf - 
         </parameters>
         <target_document>ReaperApiFunctionsReference</target_document>
         <source_document></source_document>
@@ -6037,7 +6082,7 @@
         <title>GetMediaSourceNumChannels</title>
         <functioncall prog_lang="cpp">int GetMediaSourceNumChannels(PCM_source* source)</functioncall>
         <functioncall prog_lang="eel">int GetMediaSourceNumChannels(PCM_source source)</functioncall>
-        <functioncall prog_lang="lua">integer = reaper.GetMediaSourceNumChannels(PCM_source source)</functioncall>
+        <functioncall prog_lang="lua">integer mediasourcenumchans = reaper.GetMediaSourceNumChannels(PCM_source source)</functioncall>
         <functioncall prog_lang="python">Int RPR_GetMediaSourceNumChannels(PCM_source source)</functioncall>
         <requires>
             Reaper=5.62
@@ -6047,7 +6092,7 @@
             Returns the number of channels in the source media.
         </description>
         <retvals>
-            integer - 
+            integer mediasourcenumchans - 
         </retvals>
         <parameters>
             PCM_source source - 
@@ -6093,7 +6138,7 @@
         <title>GetMediaSourceSampleRate</title>
         <functioncall prog_lang="cpp">int GetMediaSourceSampleRate(PCM_source* source)</functioncall>
         <functioncall prog_lang="eel">int GetMediaSourceSampleRate(PCM_source source)</functioncall>
-        <functioncall prog_lang="lua">integer = reaper.GetMediaSourceSampleRate(PCM_source source)</functioncall>
+        <functioncall prog_lang="lua">integer mediasourcesamplerate = reaper.GetMediaSourceSampleRate(PCM_source source)</functioncall>
         <functioncall prog_lang="python">Int RPR_GetMediaSourceSampleRate(PCM_source source)</functioncall>
         <requires>
             Reaper=5.62
@@ -6103,7 +6148,7 @@
             Returns the sample rate. MIDI source media will return zero.
         </description>
         <retvals>
-            integer - 
+            integer mediasourcesamplerate - 
         </retvals>
         <parameters>
             PCM_source source - 
@@ -6131,10 +6176,10 @@
             copies the media source type ("WAV", "MIDI", etc) to typebuf
         </description>
         <retvals>
-            typebuf - 
+            string typebuf - a string-buffer needed by the function, use "" in Lua
         </retvals>
         <parameters>
-            source - 
+           PCM_source source - 
         </parameters>
         <target_document>ReaperApiFunctionsReference</target_document>
         <source_document></source_document>
@@ -6149,7 +6194,7 @@
         <title>GetMediaTrackInfo_Value</title>
         <functioncall prog_lang="cpp">double GetMediaTrackInfo_Value(MediaTrack* tr, const char* parmname)</functioncall>
         <functioncall prog_lang="eel">double GetMediaTrackInfo_Value(MediaTrack tr, "parmname")</functioncall>
-        <functioncall prog_lang="lua">number = reaper.GetMediaTrackInfo_Value(MediaTrack tr, string parmname)</functioncall>
+        <functioncall prog_lang="lua">number retval = reaper.GetMediaTrackInfo_Value(MediaTrack tr, string parmname)</functioncall>
         <functioncall prog_lang="python">Float RPR_GetMediaTrackInfo_Value(MediaTrack tr, String parmname)</functioncall>
         <requires>
             Reaper=5.95
@@ -6198,11 +6243,11 @@
             P_PROJECT : ReaProject * : parent project (read-only)
         </description>
         <retvals>
-            number - 
+            number retval - 
         </retvals>
         <parameters>
-            tr - 
-            parmname - 
+            MediaTrack tr - 
+            string parmname - 
         </parameters>
         <target_document>ReaperApiFunctionsReference</target_document>
         <source_document></source_document>
@@ -6227,11 +6272,12 @@
             returns true if device present
         </description>
         <retvals>
-             retval - 
-            nameout - 
+            boolean retval - 
+            string nameout - 
         </retvals>
         <parameters>
-            dev - 
+            integer dev - 
+            string nameout - 
         </parameters>
         <target_document>ReaperApiFunctionsReference</target_document>
         <source_document></source_document>
@@ -6256,11 +6302,12 @@
             returns true if device present
         </description>
         <retvals>
-             retval - 
-            nameout - 
+            boolean retval - 
+            string nameout - 
         </retvals>
         <parameters>
-            dev - 
+            integer dev - 
+            string nameout - 
         </parameters>
         <target_document>ReaperApiFunctionsReference</target_document>
         <source_document></source_document>
@@ -6275,7 +6322,7 @@
         <title>GetMixerScroll</title>
         <functioncall prog_lang="cpp">MediaTrack* GetMixerScroll()</functioncall>
         <functioncall prog_lang="eel">MediaTrack GetMixerScroll()</functioncall>
-        <functioncall prog_lang="lua">MediaTrack = reaper.GetMixerScroll()</functioncall>
+        <functioncall prog_lang="lua">MediaTrack leftmosttrack = reaper.GetMixerScroll()</functioncall>
         <functioncall prog_lang="python">MediaTrack RPR_GetMixerScroll()</functioncall>
         <requires>
             Reaper=5.62
@@ -6285,7 +6332,7 @@
             Get the leftmost track visible in the mixer
         </description>
         <retvals>
-            MediaTrack - the leftmose track in the MCP
+            MediaTrack leftmosttrack - the leftmost track in the MCP
         </retvals>
         <target_document>ReaperApiFunctionsReference</target_document>
         <source_document></source_document>
@@ -6313,11 +6360,12 @@
             See [SetMouseModifier](#SetMouseModifier) for more information.
         </description>
         <retvals>
-            action - 
+            string action - 
         </retvals>
         <parameters>
-            context - 
-            modifier_flag - 
+            string context - 
+            integer modifier_flag - 
+            string action - 
         </parameters>
         <target_document>ReaperApiFunctionsReference</target_document>
         <source_document></source_document>
@@ -6332,7 +6380,7 @@
         <title>GetMousePosition</title>
         <functioncall prog_lang="cpp">void GetMousePosition(int* xOut, int* yOut)</functioncall>
         <functioncall prog_lang="eel">GetMousePosition(int &amp;x, int &amp;y)</functioncall>
-        <functioncall prog_lang="lua">number x, number y = reaper.GetMousePosition()</functioncall>
+        <functioncall prog_lang="lua">integer x, integer y = reaper.GetMousePosition()</functioncall>
         <functioncall prog_lang="python">(Int xOut, Int yOut) = RPR_GetMousePosition(xOut, yOut)</functioncall>
         <requires>
             Reaper=5.62
@@ -6342,8 +6390,8 @@
             get mouse position in screen coordinates
         </description>
         <retvals>
-            x - horizontal position of the mouse in pixels
-            y - vertical position of the mouse in pixels
+            integer x - horizontal position of the mouse in pixels
+            integer y - vertical position of the mouse in pixels
         </retvals>
         <target_document>ReaperApiFunctionsReference</target_document>
         <source_document></source_document>
@@ -6358,7 +6406,7 @@
         <title>GetNumAudioInputs</title>
         <functioncall prog_lang="cpp">int GetNumAudioInputs()</functioncall>
         <functioncall prog_lang="eel">int GetNumAudioInputs()</functioncall>
-        <functioncall prog_lang="lua">integer = reaper.GetNumAudioInputs()</functioncall>
+        <functioncall prog_lang="lua">integer numAudioIns = reaper.GetNumAudioInputs()</functioncall>
         <functioncall prog_lang="python">Int RPR_GetNumAudioInputs()</functioncall>
         <requires>
             Reaper=5.62
@@ -6368,7 +6416,7 @@
             Return number of normal audio hardware inputs available
         </description>
         <retvals>
-            integer - the number of audio hardware outputs available
+            integer numAudioIns - the number of audio hardware outputs available
         </retvals>
         <target_document>ReaperApiFunctionsReference</target_document>
         <source_document></source_document>
@@ -6383,7 +6431,7 @@
         <title>GetNumAudioOutputs</title>
         <functioncall prog_lang="cpp">int GetNumAudioOutputs()</functioncall>
         <functioncall prog_lang="eel">int GetNumAudioOutputs()</functioncall>
-        <functioncall prog_lang="lua">integer = reaper.GetNumAudioOutputs()</functioncall>
+        <functioncall prog_lang="lua">integer numAudioOuts = reaper.GetNumAudioOutputs()</functioncall>
         <functioncall prog_lang="python">Int RPR_GetNumAudioOutputs()</functioncall>
         <requires>
             Reaper=5.62
@@ -6393,7 +6441,7 @@
             Return number of normal audio hardware outputs available
         </description>
         <retvals>
-            integer - the number of audio hardware outputs available
+            integer numAudioOuts - the number of audio hardware outputs available
         </retvals>
         <target_document>ReaperApiFunctionsReference</target_document>
         <source_document></source_document>
@@ -6408,7 +6456,7 @@
         <title>GetNumMIDIInputs</title>
         <functioncall prog_lang="cpp">int GetNumMIDIInputs()</functioncall>
         <functioncall prog_lang="eel">int GetNumMIDIInputs()</functioncall>
-        <functioncall prog_lang="lua">integer = reaper.GetNumMIDIInputs()</functioncall>
+        <functioncall prog_lang="lua">integer numMidiIns = reaper.GetNumMIDIInputs()</functioncall>
         <functioncall prog_lang="python">Int RPR_GetNumMIDIInputs()</functioncall>
         <requires>
             Reaper=5.62
@@ -6418,7 +6466,7 @@
             returns max number of real midi hardware inputs
         </description>
         <retvals>
-            returns max number of real midi hardware inputs
+            integer numMidiIns - 
         </retvals>
         <target_document>ReaperApiFunctionsReference</target_document>
         <source_document></source_document>
@@ -6433,7 +6481,7 @@
         <title>GetNumMIDIOutputs</title>
         <functioncall prog_lang="cpp">int GetNumMIDIOutputs()</functioncall>
         <functioncall prog_lang="eel">int GetNumMIDIOutputs()</functioncall>
-        <functioncall prog_lang="lua">integer = reaper.GetNumMIDIOutputs()</functioncall>
+        <functioncall prog_lang="lua">integer numMidiOuts = reaper.GetNumMIDIOutputs()</functioncall>
         <functioncall prog_lang="python">Int RPR_GetNumMIDIOutputs()</functioncall>
         <requires>
             Reaper=5.62
@@ -6443,7 +6491,7 @@
             returns max number of real midi hardware outputs
         </description>
         <retvals>
-            integer - the number of real midi hardware outputs
+            integer numMidiOuts - the number of real midi hardware outputs
         </retvals>
         <target_document>ReaperApiFunctionsReference</target_document>
         <source_document></source_document>
@@ -6458,7 +6506,7 @@
         <title>GetNumTracks</title>
         <functioncall prog_lang="cpp">int GetNumTracks()</functioncall>
         <functioncall prog_lang="eel">int GetNumTracks()</functioncall>
-        <functioncall prog_lang="lua">integer = reaper.GetNumTracks()</functioncall>
+        <functioncall prog_lang="lua">integer numtracks = reaper.GetNumTracks()</functioncall>
         <functioncall prog_lang="python">Int RPR_GetNumTracks()</functioncall>
         <requires>
             Reaper=5.62
@@ -6468,7 +6516,7 @@
             Get the number of tracks. Excluding the master-track.
         </description>
         <retvals>
-            integer - the number of tracks in the current project.
+            integer numtracks - the number of tracks in the current project.
         </retvals>
         <target_document>ReaperApiFunctionsReference</target_document>
         <source_document></source_document>
@@ -6483,7 +6531,7 @@
         <title>GetOS</title>
         <functioncall prog_lang="cpp">const char* GetOS()</functioncall>
         <functioncall prog_lang="eel">bool GetOS(#retval)</functioncall>
-        <functioncall prog_lang="lua">string = reaper.GetOS()</functioncall>
+        <functioncall prog_lang="lua">string os = reaper.GetOS()</functioncall>
         <functioncall prog_lang="python">String RPR_GetOS()</functioncall>
         <requires>
             Reaper=5.62
@@ -6493,7 +6541,7 @@
             Returns the current operating-system. Good for determining, e.g. the correct filesystem-separators.
         </description>
         <retvals>
-            string - "Win32", "Win64", "OSX32", "OSX64", or "Other"
+            string os - "Win32", "Win64", "OSX32", "OSX64", or "Other"
         </retvals>
         <target_document>ReaperApiFunctionsReference</target_document>
         <source_document></source_document>
@@ -6508,7 +6556,7 @@
         <title>GetOutputChannelName</title>
         <functioncall prog_lang="cpp">const char* GetOutputChannelName(int channelIndex)</functioncall>
         <functioncall prog_lang="eel">bool GetOutputChannelName(#retval, int channelIndex)</functioncall>
-        <functioncall prog_lang="lua">string = reaper.GetOutputChannelName(integer channelIndex)</functioncall>
+        <functioncall prog_lang="lua">string outputchanname= reaper.GetOutputChannelName(integer channelIndex)</functioncall>
         <functioncall prog_lang="python">String RPR_GetOutputChannelName(Int channelIndex)</functioncall>
         <requires>
             Reaper=5.62
@@ -6518,10 +6566,10 @@
             Get the name of a specific output-channel.
         </description>
         <retvals>
-            string - the name of the output-channel.
+            string outputchanname - the name of the output-channel.
         </retvals>
         <parameters>
-            channelIndex - the index of the output-channel
+            integer channelIndex - the index of the output-channel
         </parameters>
         <target_document>ReaperApiFunctionsReference</target_document>
         <source_document></source_document>
@@ -6536,7 +6584,7 @@
         <title>GetOutputLatency</title>
         <functioncall prog_lang="cpp">double GetOutputLatency()</functioncall>
         <functioncall prog_lang="eel">double GetOutputLatency()</functioncall>
-        <functioncall prog_lang="lua">number = reaper.GetOutputLatency()</functioncall>
+        <functioncall prog_lang="lua">number outputlatency = reaper.GetOutputLatency()</functioncall>
         <functioncall prog_lang="python">Float RPR_GetOutputLatency()</functioncall>
         <requires>
             Reaper=5.62
@@ -6546,7 +6594,7 @@
             returns output latency in seconds
         </description>
         <retvals>
-            number - output-latency in seconds
+            number outputlatency - output-latency in seconds
         </retvals>
         <target_document>ReaperApiFunctionsReference</target_document>
         <source_document></source_document>
@@ -6561,7 +6609,7 @@
         <title>GetParentTrack</title>
         <functioncall prog_lang="cpp">MediaTrack* GetParentTrack(MediaTrack* track)</functioncall>
         <functioncall prog_lang="eel">MediaTrack GetParentTrack(MediaTrack track)</functioncall>
-        <functioncall prog_lang="lua">MediaTrack = reaper.GetParentTrack(MediaTrack track)</functioncall>
+        <functioncall prog_lang="lua">MediaTrack parenttrack = reaper.GetParentTrack(MediaTrack track)</functioncall>
         <functioncall prog_lang="python">MediaTrack RPR_GetParentTrack(MediaTrack track)</functioncall>
         <requires>
             Reaper=5.62
@@ -6571,10 +6619,10 @@
             Get the parent MediaTrack, if a MediaTrack is a track of a foldered track.
         </description>
         <retvals>
-            MediaTrack - the returned parent MediaTrack of a foldered MediaTrack
+            MediaTrack parenttrack- the returned parent MediaTrack of a foldered MediaTrack
         </retvals>
         <parameters>
-            track - the MediaTrack in a folder, whose parent MediaTrack you want
+            MediaTrack track - the MediaTrack in a folder, whose parent MediaTrack you want
         </parameters>
         <target_document>ReaperApiFunctionsReference</target_document>
         <source_document></source_document>
@@ -6599,10 +6647,10 @@
             get the peak file name for a given file (can be either filename.reapeaks,or a hashed filename in another path)
         </description>
         <retvals>
-            buf - 
+            string buf - 
         </retvals>
         <parameters>
-            fn - 
+            string fn - 
         </parameters>
         <target_document>ReaperApiFunctionsReference</target_document>
         <source_document></source_document>
@@ -6627,12 +6675,12 @@
             get the peak file name for a given file (can be either filename.reapeaks,or a hashed filename in another path)
         </description>
         <retvals>
-            buf - 
+            string buf - the peak-filename
         </retvals>
         <parameters>
-            fn - 
-            forWrite - 
-            forWrite - 
+            string fn - 
+            string buf - a string-buffer needed by the function, just give "" in Lua
+            boolean forWrite - 
         </parameters>
         <target_document>ReaperApiFunctionsReference</target_document>
         <source_document></source_document>
@@ -6657,13 +6705,13 @@
             Like GetPeakFileNameEx, but you can specify peaksfileextension such as ".reapeaks"
         </description>
         <retvals>
-            buf - 
+           string buf - the peak-filename
         </retvals>
         <parameters>
-            fn - 
-            forWrite - 
-            forWrite - 
-            peaksfileextension - 
+           string fn - 
+           string buf - a string-buffer needed by the function, just give "" in Lua
+           boolean forWrite - 
+           string peaksfileextension - 
         </parameters>
         <target_document>ReaperApiFunctionsReference</target_document>
         <source_document></source_document>
@@ -6678,7 +6726,7 @@
         <title>GetPlayPosition</title>
         <functioncall prog_lang="cpp">double GetPlayPosition()</functioncall>
         <functioncall prog_lang="eel">double GetPlayPosition()</functioncall>
-        <functioncall prog_lang="lua">number = reaper.GetPlayPosition()</functioncall>
+        <functioncall prog_lang="lua">number playposition = reaper.GetPlayPosition()</functioncall>
         <functioncall prog_lang="python">Float RPR_GetPlayPosition()</functioncall>
         <requires>
             Reaper=5.62
@@ -6688,7 +6736,7 @@
             returns latency-compensated actual-what-you-hear position
         </description>
         <retvals>
-            number - the playposition in seconds
+            number playposition - the playposition in seconds
         </retvals>
         <target_document>ReaperApiFunctionsReference</target_document>
         <source_document></source_document>
@@ -6703,7 +6751,7 @@
         <title>GetPlayPosition2</title>
         <functioncall prog_lang="cpp">double GetPlayPosition2()</functioncall>
         <functioncall prog_lang="eel">double GetPlayPosition2()</functioncall>
-        <functioncall prog_lang="lua">number = reaper.GetPlayPosition2()</functioncall>
+        <functioncall prog_lang="lua">number playposition = reaper.GetPlayPosition2()</functioncall>
         <functioncall prog_lang="python">Float RPR_GetPlayPosition2()</functioncall>
         <requires>
             Reaper=5.62
@@ -6713,7 +6761,7 @@
             returns position of next audio block being processed
         </description>
         <retvals>
-            number - the playposition in seconds
+            number playposition - the playposition in seconds
         </retvals>
         <target_document>ReaperApiFunctionsReference</target_document>
         <source_document></source_document>
@@ -6728,7 +6776,7 @@
         <title>GetPlayPosition2Ex</title>
         <functioncall prog_lang="cpp">double GetPlayPosition2Ex(ReaProject* proj)</functioncall>
         <functioncall prog_lang="eel">double GetPlayPosition2Ex(ReaProject proj)</functioncall>
-        <functioncall prog_lang="lua">number = reaper.GetPlayPosition2Ex(ReaProject proj)</functioncall>
+        <functioncall prog_lang="lua">number playposition = reaper.GetPlayPosition2Ex(ReaProject proj)</functioncall>
         <functioncall prog_lang="python">Float RPR_GetPlayPosition2Ex(ReaProject proj)</functioncall>
         <requires>
             Reaper=5.62
@@ -6738,10 +6786,10 @@
             returns position of next audio block being processed from a specific project
         </description>
         <retvals>
-            number - the playposition in seconds
+            number playposition - the playposition in seconds
         </retvals>
         <parameters markup_type="markdown" markup_version="1.0.1">
-            proj - the project-number. 0 for the current project. Can also be a ReaProject-object, as returned by [EnumProjects](#EnumProjects)
+            ReaProject proj - the project-number. 0 for the current project. Can also be a ReaProject-object, as returned by [EnumProjects](#EnumProjects)
         </parameters>
         <target_document>ReaperApiFunctionsReference</target_document>
         <source_document></source_document>
@@ -6756,7 +6804,7 @@
         <title>GetPlayPositionEx</title>
         <functioncall prog_lang="cpp">double GetPlayPositionEx(ReaProject* proj)</functioncall>
         <functioncall prog_lang="eel">double GetPlayPositionEx(ReaProject proj)</functioncall>
-        <functioncall prog_lang="lua">number = reaper.GetPlayPositionEx(ReaProject proj)</functioncall>
+        <functioncall prog_lang="lua">number playposition = reaper.GetPlayPositionEx(ReaProject proj)</functioncall>
         <functioncall prog_lang="python">Float RPR_GetPlayPositionEx(ReaProject proj)</functioncall>
         <requires>
             Reaper=5.62
@@ -6766,10 +6814,10 @@
             returns latency-compensated actual-what-you-hear position from a specific project
         </description>
         <retvals>
-            number - the playposition in seconds
+            number playposition - the playposition in seconds
         </retvals>
         <parameters markup_type="markdown" markup_version="1.0.1">
-            proj - the project-number. 0 for the current project. Can also be a ReaProject-object, as returned by [EnumProjects](#EnumProjects)
+            ReaProject proj - the project-number. 0 for the current project. Can also be a ReaProject-object, as returned by [EnumProjects](#EnumProjects)
         </parameters>
         <target_document>ReaperApiFunctionsReference</target_document>
         <source_document></source_document>
@@ -6784,7 +6832,7 @@
         <title>GetPlayState</title>
         <functioncall prog_lang="cpp">int GetPlayState()</functioncall>
         <functioncall prog_lang="eel">int GetPlayState()</functioncall>
-        <functioncall prog_lang="lua">integer = reaper.GetPlayState()</functioncall>
+        <functioncall prog_lang="lua">integer playstate = reaper.GetPlayState()</functioncall>
         <functioncall prog_lang="python">Int RPR_GetPlayState()</functioncall>
         <requires>
             Reaper=5.62
@@ -6794,7 +6842,7 @@
             returns, in which play-state the current project is
         </description>
         <retvals>
-            integer - Either bitwise: &amp;1=playing,&amp;2=pause,&amp;=4 is recording, or
+            integer playstate - Either bitwise: &amp;1=playing,&amp;2=pause,&amp;=4 is recording, or
             -0, stop
             -1, play
             -2, paused play
@@ -6814,7 +6862,7 @@
         <title>GetPlayStateEx</title>
         <functioncall prog_lang="cpp">int GetPlayStateEx(ReaProject* proj)</functioncall>
         <functioncall prog_lang="eel">int GetPlayStateEx(ReaProject proj)</functioncall>
-        <functioncall prog_lang="lua">integer = reaper.GetPlayStateEx(ReaProject proj)</functioncall>
+        <functioncall prog_lang="lua">integer playstate = reaper.GetPlayStateEx(ReaProject proj)</functioncall>
         <functioncall prog_lang="python">Int RPR_GetPlayStateEx(ReaProject proj)</functioncall>
         <requires>
             Reaper=5.62
@@ -6824,7 +6872,7 @@
             returns, in which play-state a certain project is
         </description>
         <retvals>
-            integer - Either bitwise: &amp;1=playing,&amp;2=pause,&amp;=4 is recording, or
+            integer playstate - Either bitwise: &amp;1=playing,&amp;2=pause,&amp;=4 is recording, or
             -0, stop
             -1, play
             -2, paused play
@@ -6832,7 +6880,7 @@
             -6, paused recording
         </retvals>
         <parameters markup_type="markdown" markup_version="1.0.1">
-            proj - the project-number. 0 for the current project. Can also be a ReaProject-object, as returned by [EnumProjects](#EnumProjects)
+            ReaProject proj - the project-number. 0 for the current project. Can also be a ReaProject-object, as returned by [EnumProjects](#EnumProjects)
         </parameters>
         <target_document>ReaperApiFunctionsReference</target_document>
         <source_document></source_document>
@@ -6847,7 +6895,7 @@
         <title>GetProjectLength</title>
         <functioncall prog_lang="cpp">double GetProjectLength(ReaProject* proj)</functioncall>
         <functioncall prog_lang="eel">double GetProjectLength(ReaProject proj)</functioncall>
-        <functioncall prog_lang="lua">number = reaper.GetProjectLength(ReaProject proj)</functioncall>
+        <functioncall prog_lang="lua">number length = reaper.GetProjectLength(ReaProject proj)</functioncall>
         <functioncall prog_lang="python">Float RPR_GetProjectLength(ReaProject proj)</functioncall>
         <requires>
             Reaper=5.62
@@ -6857,10 +6905,10 @@
             returns length of project (maximum of end of media item, markers, end of regions, tempo map)
         </description>
         <retvals>
-            number - the length of the project in seconds
+            number length - the length of the project in seconds
         </retvals>
         <parameters markup_type="markdown" markup_version="1.0.1">
-            proj - the project-number. 0 for the current project. Can also be a ReaProject-object, as returned by [EnumProjects](#EnumProjects)
+            ReaProject proj - the project-number. 0 for the current project. Can also be a ReaProject-object, as returned by [EnumProjects](#EnumProjects)
         </parameters>
         <target_document>ReaperApiFunctionsReference</target_document>
         <source_document></source_document>
@@ -6885,10 +6933,10 @@
             Get the name of the projectfile.
         </description>
         <retvals>
-            buf - unknown
+            string buf - a string-buffer needed by the function; just give "" in Lua
         </retvals>
         <parameters markup_type="markdown" markup_version="1.0.1">
-            proj - the project-number. 0 for the current project. Can also be a ReaProject-object, as returned by [EnumProjects](#EnumProjects)
+            ReaProject proj - the project-number. 0 for the current project. Can also be a ReaProject-object, as returned by [EnumProjects](#EnumProjects)
         </parameters>
         <target_document>ReaperApiFunctionsReference</target_document>
         <source_document></source_document>
@@ -6910,13 +6958,16 @@
             Lua=5.3
         </requires>
         <description prog_lang="*" markup_type="markdown" markup_version="1.0.1">
-            Get the path of the project, usually the recordings-folder.
+            Get the path of the project. Will return the defaults project-path's recording-folder, when the project hasn't been saved yet; when the project has been saved, it will return the path to the recording-folder.
             
             If you need the filename of the path+projectfile itself, use [EnumProjects](#EnumProjects) instead.            
         </description>
         <retvals>
-            buf - unknown
+            string buf - the returned path
         </retvals>
+        <parmeters>
+            string buf - a string-buffer needed by the function, just give "" in Lua
+        </parameters>
         <target_document>ReaperApiFunctionsReference</target_document>
         <source_document></source_document>
         <chapter_context>
@@ -6940,10 +6991,10 @@
             Get the path of a specific project, usually the recordings-folder.
         </description>
         <retvals>
-            buf - unknown
+            string buf - a string-buffer needed by the function, just use "" in Lua
         </retvals>
         <parameters markup_type="markdown" markup_version="1.0.1">
-            proj - the project-number. 0 for the current project. Can also be a ReaProject-object, as returned by [EnumProjects](#EnumProjects)
+            ReaProject proj - the project-number. 0 for the current project. Can also be a ReaProject-object, as returned by [EnumProjects](#EnumProjects)
         </parameters>
         <target_document>ReaperApiFunctionsReference</target_document>
         <source_document></source_document>
@@ -9587,11 +9638,11 @@
         <functioncall prog_lang="lua">integer = reaper.InsertAutomationItem(TrackEnvelope env, integer pool_id, number position, number length)</functioncall>
         <functioncall prog_lang="python">Int RPR_InsertAutomationItem(TrackEnvelope env, Int pool_id, Float position, Float length)</functioncall>
         <requires>
-            Reaper=5.62
+            Reaper=5.96
             Lua=5.3
         </requires>
         <description prog_lang="*" markup_type="markdown" markup_version="1.0.1" indent="default">
-            Insert a new automation item. pool_id &gt; 0 collects existing envelope points into the automation item; otherwise, the automation item will be a new instance of an existing pool. Returns the index of the item, suitable for passing to other automation item API functions. See [GetSetAutomationItemInfo](#GetSetAutomationItemInfo).
+            Insert a new automation item. pool_id &lt; 0 collects existing envelope points into the automation item; if pool_id is &gt;= 0 the automation item will be a new instance of that pool (which will be created as an empty instance if it does not exist). Returns the index of the item, suitable for passing to other automation item API functions. See [GetSetAutomationItemInfo](#GetSetAutomationItemInfo).
         </description>
         <retvals>
             integer - 
@@ -13871,11 +13922,11 @@
         <functioncall prog_lang="lua">boolean = reaper.SetMediaItemTake_Source(MediaItem_Take take, PCM_source source)</functioncall>
         <functioncall prog_lang="python">Boolean RPR_SetMediaItemTake_Source(MediaItem_Take take, PCM_source source)</functioncall>
         <requires>
-            Reaper=5.62
+            Reaper=5.961
             Lua=5.3
         </requires>
         <description prog_lang="*">
-            Set media source of media item take
+            Set media source of media item take. The old source will not be destroyed, it is the caller's responsibility to retrieve it and destroy it after. If source already exists in any project, it will be duplicated before being set. C/C++ code should not use this and instead use GetSetMediaItemTakeInfo() with P_SOURCE to manage ownership directly.
         </description>
         <retvals>
             boolean - 
@@ -21894,50 +21945,9 @@
         <retvals>
             number - the returned number/doublefloat-value of varname
         </retvals>
-        <parameters>
+        <parameters markup_type="markdown" markup_version="1.0.1" indent="default">
             string varname - the name of the config-variable to be read; not case sensitive
-                    - the following varnames are valid:
-                    __numcpu, acidimport, actionmenu, adjreclat, adjrecmanlat, adjrecmanlatin, afxcfg, allstereopairs, altpeaks, altpeaksopathlist, altpeakspath, 
-                    - alwaysallowkb, aot, applyfxtail, audioasync, audiocloseinactive, audioclosestop, audioprshift, audiothreadpr, autoclosetrackwnds, automute, 
-                    - automuteflags, automuteval, autonbworkerthreads, autoreturntime, autoreturntime_action, autosaveint, autosavemode, autoxfade, copyimpmedia, 
-                    - cpuallowed, csurfrate, ctrlcopyitem, cueitems, custommenu, defautomode, defenvs, deffadelen, deffadeshape, defhwvol, defpitchcfg, defrenderpath, 
-                    - defsavepath, defsendflag, defsendvol, defsplitxfadelen, deftrackrecflags, deftrackrecinput, deftrackvol, defvzoom, defxfadeshape, disabledxscan, 
-                    - disk_peakmmap2, disk_rdblksex, disk_rdmodeex, disk_rdsizeex, disk_wrblks, disk_wrblks2, disk_wrmode, disk_wrsize, diskcheck, diskcheckmb, 
-                    - edit_fontsize, env_autoadd, env_deffoc, env_ol_minh, env_options, env_reduce, envattach, ENVATTACH, envclicksegmode, envlanes, envtranstime, 
-                    - envtrimadjmode, envwritepasschg, errnowarn, fadeeditflags, fadeeditlink, fadeeditpostsel, fadeeditpresel, feedbackmode, fullscreenRectB, 
-                    - fullscreenRectL, fullscreenRectR, fullscreenRectT, fxdenorm, fxfloat_focus, fxresize, g_config_project, g_markerlist_updcnt, griddot, 
-                    - gridinbg, gridinbg2, groupdispmode, guidelines2, handzoom, help, hwfadex, hwoutfx_bypass, ide_colors, insertmtrack, isFullscreen, 
-                    - itemclickmovecurs, itemdblclk, itemeditpr, itemfade_minheight, itemfade_minwidth, itemfadehandle_maxwidth, itemfxtail, itemicons, 
-                    - itemicons_minheight, itemlabel_minheight, itemlowerhalf_minheight, itemmixflag, itemprops, itemprops_timemode, itemsnap, itemtexthide, 
-                    - itemtimelock, itemvolmode, kbd_usealt, labelitems2, lastthemefn5, loadlastproj, locklooptotime, loop, loopclickmode, loopgran, loopgranlen, 
-                    - loopnewitems, loopselpr, loopstopfx, manuallat, manuallatin, mastermutesolo, maxitemlanes, maxrecent, maxrecentfx, maxrecsize, maxrecsize_use,
-                    - maxsnaptrack, maxspeakgain, metronome_defout, metronome_flags, midiccdensity, mididefcolormap, midieditor, midiins, midiins_cs, midioctoffs, 
-                    - midiouts, midiouts_clock, midiouts_clock_nospp, midiouts_llmode, midioutthread, midisendflags, miditicksperbeat, midivu, mixerflag, mixeruiflag, 
-                    - mixrowflags, mousemovemod, mousewheelmode, multiprojopt, multitouch, multitouch_ignore_ms, multitouch_ignorewheel_ms, multitouch_rotate_gear, 
-                    - multitouch_swipe_gear, multitouch_zoom_gear, mutefadems10, mvu_rmsgain, mvu_rmsmode, mvu_rmsoffs2, mvu_rmsred, mvu_rmssize, nativedrawtext, 
-                    - newfnopt, newprojdo, newtflag, nometers, norunmute, offlineinact, opencopyprompt, opennotes, optimizesilence, pandispmode, panlaw, panmode, 
-                    - peakcachegenmode, peakcachegenrs, peakrecbm, peaksedges, pitchenvrange, playcursormode, playrate, playresamplemode, pmfol, pooledenvattach, 
-                    - pooledenvs, prebufperb, preroll, prerollmeas, projalignbeatsrate, projbpm, projfrbase, projfrdrop, projgriddiv, projgriddivsnap, projgridframe, 
-                    - projgridmin, projgridsnapmin, projgridswing, projgroupover, projgroupsel, projintmix, projmasternch, projmastervuflags, projmaxlen, projmaxlenuse, 
-                    - projmeaslen, projmeasoffs, projmetrobeatlen, projmetrocountin, projmetroen, projmetrof1, projmetrof2, projmetrov1, projmetrov2, projmidieditor, 
-                    - projpeaksgain, projrecforopencopy, projrecmode, projrelpath, projrenderaddtoproj, projrenderdither, projrenderlimit, projrendernch, projrenderqdelay, 
-                    - projrenderrateinternal, projrenderresample, projrendersrate, projrenderstems, projripedit, projsellock, projshowgrid, projsmpteahead, projsmptefw_rec, 
-                    - projsmpteinput, projsmptemaxfree, projsmpteoffs, projsmpterate, projsmpterateuseproj, projsmpteresync, projsmpteresync_rec, projsmpteskip, 
-                    - projsmptesync, projsrate, projsrateuse, projtakelane, projtimemode, projtimemode2, projtimeoffs, projtrackgroupdisabled, projtsdenom, projvidflags, 
-                    - projvidh, projvidw, promptendrec, psmaxv, psminv, quantflag, quantolms, quantolms2, quantsize2, rbn, reamote_maxblock, reamote_maxlat_render, 
-                    - reamote_maxpkt, reamote_smplfmt, reascript, reascripttimeout, recaddatloop, reccfg, recfile_wildcards, recopts, recupdatems, relativeedges, relsnap, 
-                    - renderaheadlen, renderaheadlen2, renderbsnew, rendercfg, renderclosewhendone, renderqdelay, rendertail, rendertaillen, rendertails, resetvuplay, 
-                    - restrictcpu, rewireslave, rewireslavedelay, reximport, rfprojfirst, rightclickemulate, ripplelockmode, rulerlayout, runafterstop, runallonstop, 
-                    - sampleedges, saveopts, saveundostatesproj, scnameedit, scnotes, scoreminnotelen, scorequant, screenset_as_views, screenset_as_win, screenset_autosave, 
-                    - scrubloopend, scrubloopstart, scrubmode, scrubrelgain, seekmodes, selitem_tintalpha, selitemtop, showctinmix, showlastundo, showmaintrack, 
-                    - showpeaks, showpeaksbuild, showrecitems, slidermaxv, sliderminv, slidershex, smoothseek, smoothseekmeas, snapextrad, snapextraden, solodimdb10, 
-                    - solodimen, soloip, specpeak_alpha, specpeak_bv, specpeak_ftp, specpeak_hueh, specpeak_huel, specpeak_lo, specpeak_na, splitautoxfade, stopendofloop, 
-                    - stopprojlen, syncsmpmax2, syncsmpuse, tabtotransflag, takelanes, tcpalign, templateditcursor, tempoenvmax, tempoenvmin, tempoenvtimelock, textflags, 
-                    - threadpr, timeseledge, tinttcp, titlebarreghide, tooltipdelay, tooltips, trackitemgap, trackselonmouse, transflags, transientsensitivity, 
-                    - transientthreshold, trimmidionsplit, tsmarker, undomask, undomaxmem, unselitem_tintalpha, use_reamote, usedxplugs, useinnc, userewire, verchk, 
-                    - vgrid, video_colorspace, video_decprio, video_delayms, viewadvance, volenvrange, vstbr64, vstfolder_settings, vstfullstate, vuclipstick, vudecay, 
-                    - vumaxvol, vuminvol, vuupdfreq, vzoom2, vzoommode, warnmaxram64, workbehvr, workbuffxuims, workbufmsex, workrender, workset_max, workset_min, 
-                    - workset_use, workthreads, zoom, zoommode, zoomshowarm
+                    - see [Reaper_Config_Variables.html](Reaper_Config_Variables.html) for valid config-vars
             number errvalue - the errorvalue that will be returned, if varname isn't a valid one
         </parameters>
         <target_document>ReaperApiFunctionsReference</target_document>
@@ -22027,50 +22037,9 @@
         <retvals>
             integer retval - the returned integer-value of varname
         </retvals>
-        <parameters>
+        <parameters markup_type="markdown" markup_version="1.0.1" indent="default">
             string varname - the name of the config-variable to be read; not case sensitive
-                    - the following varnames are valid:
-                    - __numcpu, acidimport, actionmenu, adjreclat, adjrecmanlat, adjrecmanlatin, afxcfg, allstereopairs, altpeaks, altpeaksopathlist, altpeakspath, 
-                    - alwaysallowkb, aot, applyfxtail, audioasync, audiocloseinactive, audioclosestop, audioprshift, audiothreadpr, autoclosetrackwnds, automute, 
-                    - automuteflags, automuteval, autonbworkerthreads, autoreturntime, autoreturntime_action, autosaveint, autosavemode, autoxfade, copyimpmedia, 
-                    - cpuallowed, csurfrate, ctrlcopyitem, cueitems, custommenu, defautomode, defenvs, deffadelen, deffadeshape, defhwvol, defpitchcfg, defrenderpath, 
-                    - defsavepath, defsendflag, defsendvol, defsplitxfadelen, deftrackrecflags, deftrackrecinput, deftrackvol, defvzoom, defxfadeshape, disabledxscan, 
-                    - disk_peakmmap2, disk_rdblksex, disk_rdmodeex, disk_rdsizeex, disk_wrblks, disk_wrblks2, disk_wrmode, disk_wrsize, diskcheck, diskcheckmb, 
-                    - edit_fontsize, env_autoadd, env_deffoc, env_ol_minh, env_options, env_reduce, envattach, ENVATTACH, envclicksegmode, envlanes, envtranstime, 
-                    - envtrimadjmode, envwritepasschg, errnowarn, fadeeditflags, fadeeditlink, fadeeditpostsel, fadeeditpresel, feedbackmode, fullscreenRectB, 
-                    - fullscreenRectL, fullscreenRectR, fullscreenRectT, fxdenorm, fxfloat_focus, fxresize, g_config_project, g_markerlist_updcnt, griddot, 
-                    - gridinbg, gridinbg2, groupdispmode, guidelines2, handzoom, help, hwfadex, hwoutfx_bypass, ide_colors, insertmtrack, isFullscreen, 
-                    - itemclickmovecurs, itemdblclk, itemeditpr, itemfade_minheight, itemfade_minwidth, itemfadehandle_maxwidth, itemfxtail, itemicons, 
-                    - itemicons_minheight, itemlabel_minheight, itemlowerhalf_minheight, itemmixflag, itemprops, itemprops_timemode, itemsnap, itemtexthide, 
-                    - itemtimelock, itemvolmode, kbd_usealt, labelitems2, lastthemefn5, loadlastproj, locklooptotime, loop, loopclickmode, loopgran, loopgranlen, 
-                    - loopnewitems, loopselpr, loopstopfx, manuallat, manuallatin, mastermutesolo, maxitemlanes, maxrecent, maxrecentfx, maxrecsize, maxrecsize_use,
-                    - maxsnaptrack, maxspeakgain, metronome_defout, metronome_flags, midiccdensity, mididefcolormap, midieditor, midiins, midiins_cs, midioctoffs, 
-                    - midiouts, midiouts_clock, midiouts_clock_nospp, midiouts_llmode, midioutthread, midisendflags, miditicksperbeat, midivu, mixerflag, mixeruiflag, 
-                    - mixrowflags, mousemovemod, mousewheelmode, multiprojopt, multitouch, multitouch_ignore_ms, multitouch_ignorewheel_ms, multitouch_rotate_gear, 
-                    - multitouch_swipe_gear, multitouch_zoom_gear, mutefadems10, mvu_rmsgain, mvu_rmsmode, mvu_rmsoffs2, mvu_rmsred, mvu_rmssize, nativedrawtext, 
-                    - newfnopt, newprojdo, newtflag, nometers, norunmute, offlineinact, opencopyprompt, opennotes, optimizesilence, pandispmode, panlaw, panmode, 
-                    - peakcachegenmode, peakcachegenrs, peakrecbm, peaksedges, pitchenvrange, playcursormode, playrate, playresamplemode, pmfol, pooledenvattach, 
-                    - pooledenvs, prebufperb, preroll, prerollmeas, projalignbeatsrate, projbpm, projfrbase, projfrdrop, projgriddiv, projgriddivsnap, projgridframe, 
-                    - projgridmin, projgridsnapmin, projgridswing, projgroupover, projgroupsel, projintmix, projmasternch, projmastervuflags, projmaxlen, projmaxlenuse, 
-                    - projmeaslen, projmeasoffs, projmetrobeatlen, projmetrocountin, projmetroen, projmetrof1, projmetrof2, projmetrov1, projmetrov2, projmidieditor, 
-                    - projpeaksgain, projrecforopencopy, projrecmode, projrelpath, projrenderaddtoproj, projrenderdither, projrenderlimit, projrendernch, projrenderqdelay, 
-                    - projrenderrateinternal, projrenderresample, projrendersrate, projrenderstems, projripedit, projsellock, projshowgrid, projsmpteahead, projsmptefw_rec, 
-                    - projsmpteinput, projsmptemaxfree, projsmpteoffs, projsmpterate, projsmpterateuseproj, projsmpteresync, projsmpteresync_rec, projsmpteskip, 
-                    - projsmptesync, projsrate, projsrateuse, projtakelane, projtimemode, projtimemode2, projtimeoffs, projtrackgroupdisabled, projtsdenom, projvidflags, 
-                    - projvidh, projvidw, promptendrec, psmaxv, psminv, quantflag, quantolms, quantolms2, quantsize2, rbn, reamote_maxblock, reamote_maxlat_render, 
-                    - reamote_maxpkt, reamote_smplfmt, reascript, reascripttimeout, recaddatloop, reccfg, recfile_wildcards, recopts, recupdatems, relativeedges, relsnap, 
-                    - renderaheadlen, renderaheadlen2, renderbsnew, rendercfg, renderclosewhendone, renderqdelay, rendertail, rendertaillen, rendertails, resetvuplay, 
-                    - restrictcpu, rewireslave, rewireslavedelay, reximport, rfprojfirst, rightclickemulate, ripplelockmode, rulerlayout, runafterstop, runallonstop, 
-                    - sampleedges, saveopts, saveundostatesproj, scnameedit, scnotes, scoreminnotelen, scorequant, screenset_as_views, screenset_as_win, screenset_autosave, 
-                    - scrubloopend, scrubloopstart, scrubmode, scrubrelgain, seekmodes, selitem_tintalpha, selitemtop, showctinmix, showlastundo, showmaintrack, 
-                    - showpeaks, showpeaksbuild, showrecitems, slidermaxv, sliderminv, slidershex, smoothseek, smoothseekmeas, snapextrad, snapextraden, solodimdb10, 
-                    - solodimen, soloip, specpeak_alpha, specpeak_bv, specpeak_ftp, specpeak_hueh, specpeak_huel, specpeak_lo, specpeak_na, splitautoxfade, stopendofloop, 
-                    - stopprojlen, syncsmpmax2, syncsmpuse, tabtotransflag, takelanes, tcpalign, templateditcursor, tempoenvmax, tempoenvmin, tempoenvtimelock, textflags, 
-                    - threadpr, timeseledge, tinttcp, titlebarreghide, tooltipdelay, tooltips, trackitemgap, trackselonmouse, transflags, transientsensitivity, 
-                    - transientthreshold, trimmidionsplit, tsmarker, undomask, undomaxmem, unselitem_tintalpha, use_reamote, usedxplugs, useinnc, userewire, verchk, 
-                    - vgrid, video_colorspace, video_decprio, video_delayms, viewadvance, volenvrange, vstbr64, vstfolder_settings, vstfullstate, vuclipstick, vudecay, 
-                    - vumaxvol, vuminvol, vuupdfreq, vzoom2, vzoommode, warnmaxram64, workbehvr, workbuffxuims, workbufmsex, workrender, workset_max, workset_min, 
-                    - workset_use, workthreads, zoom, zoommode, zoomshowarm
+                    - see [Reaper_Config_Variables.html](Reaper_Config_Variables.html) for valid config-vars
             integer errvalue - the errorvalue that will be returned, if varname isn't a valid one
         </parameters>
         <target_document>ReaperApiFunctionsReference</target_document>
@@ -22443,50 +22412,9 @@
         <retvals>
             boolean retval - true, if setting was successful; false, if not 
         </retvals>
-        <parameters>
+        <parameters markup_type="markdown" markup_version="1.0.1" indent="default">
             string varname - the name of the config-variable to be read; not case sensitive
-                    - the following varnames are valid:
-                    - __numcpu, acidimport, actionmenu, adjreclat, adjrecmanlat, adjrecmanlatin, afxcfg, allstereopairs, altpeaks, altpeaksopathlist, altpeakspath, 
-                    - alwaysallowkb, aot, applyfxtail, audioasync, audiocloseinactive, audioclosestop, audioprshift, audiothreadpr, autoclosetrackwnds, automute, 
-                    - automuteflags, automuteval, autonbworkerthreads, autoreturntime, autoreturntime_action, autosaveint, autosavemode, autoxfade, copyimpmedia, 
-                    - cpuallowed, csurfrate, ctrlcopyitem, cueitems, custommenu, defautomode, defenvs, deffadelen, deffadeshape, defhwvol, defpitchcfg, defrenderpath, 
-                    - defsavepath, defsendflag, defsendvol, defsplitxfadelen, deftrackrecflags, deftrackrecinput, deftrackvol, defvzoom, defxfadeshape, disabledxscan, 
-                    - disk_peakmmap2, disk_rdblksex, disk_rdmodeex, disk_rdsizeex, disk_wrblks, disk_wrblks2, disk_wrmode, disk_wrsize, diskcheck, diskcheckmb, 
-                    - edit_fontsize, env_autoadd, env_deffoc, env_ol_minh, env_options, env_reduce, envattach, ENVATTACH, envclicksegmode, envlanes, envtranstime, 
-                    - envtrimadjmode, envwritepasschg, errnowarn, fadeeditflags, fadeeditlink, fadeeditpostsel, fadeeditpresel, feedbackmode, fullscreenRectB, 
-                    - fullscreenRectL, fullscreenRectR, fullscreenRectT, fxdenorm, fxfloat_focus, fxresize, g_config_project, g_markerlist_updcnt, griddot, 
-                    - gridinbg, gridinbg2, groupdispmode, guidelines2, handzoom, help, hwfadex, hwoutfx_bypass, ide_colors, insertmtrack, isFullscreen, 
-                    - itemclickmovecurs, itemdblclk, itemeditpr, itemfade_minheight, itemfade_minwidth, itemfadehandle_maxwidth, itemfxtail, itemicons, 
-                    - itemicons_minheight, itemlabel_minheight, itemlowerhalf_minheight, itemmixflag, itemprops, itemprops_timemode, itemsnap, itemtexthide, 
-                    - itemtimelock, itemvolmode, kbd_usealt, labelitems2, lastthemefn5, loadlastproj, locklooptotime, loop, loopclickmode, loopgran, loopgranlen, 
-                    - loopnewitems, loopselpr, loopstopfx, manuallat, manuallatin, mastermutesolo, maxitemlanes, maxrecent, maxrecentfx, maxrecsize, maxrecsize_use,
-                    - maxsnaptrack, maxspeakgain, metronome_defout, metronome_flags, midiccdensity, mididefcolormap, midieditor, midiins, midiins_cs, midioctoffs, 
-                    - midiouts, midiouts_clock, midiouts_clock_nospp, midiouts_llmode, midioutthread, midisendflags, miditicksperbeat, midivu, mixerflag, mixeruiflag, 
-                    - mixrowflags, mousemovemod, mousewheelmode, multiprojopt, multitouch, multitouch_ignore_ms, multitouch_ignorewheel_ms, multitouch_rotate_gear, 
-                    - multitouch_swipe_gear, multitouch_zoom_gear, mutefadems10, mvu_rmsgain, mvu_rmsmode, mvu_rmsoffs2, mvu_rmsred, mvu_rmssize, nativedrawtext, 
-                    - newfnopt, newprojdo, newtflag, nometers, norunmute, offlineinact, opencopyprompt, opennotes, optimizesilence, pandispmode, panlaw, panmode, 
-                    - peakcachegenmode, peakcachegenrs, peakrecbm, peaksedges, pitchenvrange, playcursormode, playrate, playresamplemode, pmfol, pooledenvattach, 
-                    - pooledenvs, prebufperb, preroll, prerollmeas, projalignbeatsrate, projbpm, projfrbase, projfrdrop, projgriddiv, projgriddivsnap, projgridframe, 
-                    - projgridmin, projgridsnapmin, projgridswing, projgroupover, projgroupsel, projintmix, projmasternch, projmastervuflags, projmaxlen, projmaxlenuse, 
-                    - projmeaslen, projmeasoffs, projmetrobeatlen, projmetrocountin, projmetroen, projmetrof1, projmetrof2, projmetrov1, projmetrov2, projmidieditor, 
-                    - projpeaksgain, projrecforopencopy, projrecmode, projrelpath, projrenderaddtoproj, projrenderdither, projrenderlimit, projrendernch, projrenderqdelay, 
-                    - projrenderrateinternal, projrenderresample, projrendersrate, projrenderstems, projripedit, projsellock, projshowgrid, projsmpteahead, projsmptefw_rec, 
-                    - projsmpteinput, projsmptemaxfree, projsmpteoffs, projsmpterate, projsmpterateuseproj, projsmpteresync, projsmpteresync_rec, projsmpteskip, 
-                    - projsmptesync, projsrate, projsrateuse, projtakelane, projtimemode, projtimemode2, projtimeoffs, projtrackgroupdisabled, projtsdenom, projvidflags, 
-                    - projvidh, projvidw, promptendrec, psmaxv, psminv, quantflag, quantolms, quantolms2, quantsize2, rbn, reamote_maxblock, reamote_maxlat_render, 
-                    - reamote_maxpkt, reamote_smplfmt, reascript, reascripttimeout, recaddatloop, reccfg, recfile_wildcards, recopts, recupdatems, relativeedges, relsnap, 
-                    - renderaheadlen, renderaheadlen2, renderbsnew, rendercfg, renderclosewhendone, renderqdelay, rendertail, rendertaillen, rendertails, resetvuplay, 
-                    - restrictcpu, rewireslave, rewireslavedelay, reximport, rfprojfirst, rightclickemulate, ripplelockmode, rulerlayout, runafterstop, runallonstop, 
-                    - sampleedges, saveopts, saveundostatesproj, scnameedit, scnotes, scoreminnotelen, scorequant, screenset_as_views, screenset_as_win, screenset_autosave, 
-                    - scrubloopend, scrubloopstart, scrubmode, scrubrelgain, seekmodes, selitem_tintalpha, selitemtop, showctinmix, showlastundo, showmaintrack, 
-                    - showpeaks, showpeaksbuild, showrecitems, slidermaxv, sliderminv, slidershex, smoothseek, smoothseekmeas, snapextrad, snapextraden, solodimdb10, 
-                    - solodimen, soloip, specpeak_alpha, specpeak_bv, specpeak_ftp, specpeak_hueh, specpeak_huel, specpeak_lo, specpeak_na, splitautoxfade, stopendofloop, 
-                    - stopprojlen, syncsmpmax2, syncsmpuse, tabtotransflag, takelanes, tcpalign, templateditcursor, tempoenvmax, tempoenvmin, tempoenvtimelock, textflags, 
-                    - threadpr, timeseledge, tinttcp, titlebarreghide, tooltipdelay, tooltips, trackitemgap, trackselonmouse, transflags, transientsensitivity, 
-                    - transientthreshold, trimmidionsplit, tsmarker, undomask, undomaxmem, unselitem_tintalpha, use_reamote, usedxplugs, useinnc, userewire, verchk, 
-                    - vgrid, video_colorspace, video_decprio, video_delayms, viewadvance, volenvrange, vstbr64, vstfolder_settings, vstfullstate, vuclipstick, vudecay, 
-                    - vumaxvol, vuminvol, vuupdfreq, vzoom2, vzoommode, warnmaxram64, workbehvr, workbuffxuims, workbufmsex, workrender, workset_max, workset_min, 
-                    - workset_use, workthreads, zoom, zoommode, zoomshowarm
+                    - see [Reaper_Config_Variables.html](Reaper_Config_Variables.html) for valid config-vars
             number newvalue - the new value to be set into varname
         </parameters>
         <target_document>ReaperApiFunctionsReference</target_document>
@@ -22548,50 +22476,9 @@
         <retvals>
             boolean retval - true, if setting was successful, false if not
         </retvals>
-        <parameters>
-            string varname - the name of the config-variable to be set; not case sensitive
-                    - the following varnames are valid:
-                    __numcpu, acidimport, actionmenu, adjreclat, adjrecmanlat, adjrecmanlatin, afxcfg, allstereopairs, altpeaks, altpeaksopathlist, altpeakspath, 
-                    - alwaysallowkb, aot, applyfxtail, audioasync, audiocloseinactive, audioclosestop, audioprshift, audiothreadpr, autoclosetrackwnds, automute, 
-                    - automuteflags, automuteval, autonbworkerthreads, autoreturntime, autoreturntime_action, autosaveint, autosavemode, autoxfade, copyimpmedia, 
-                    - cpuallowed, csurfrate, ctrlcopyitem, cueitems, custommenu, defautomode, defenvs, deffadelen, deffadeshape, defhwvol, defpitchcfg, defrenderpath, 
-                    - defsavepath, defsendflag, defsendvol, defsplitxfadelen, deftrackrecflags, deftrackrecinput, deftrackvol, defvzoom, defxfadeshape, disabledxscan, 
-                    - disk_peakmmap2, disk_rdblksex, disk_rdmodeex, disk_rdsizeex, disk_wrblks, disk_wrblks2, disk_wrmode, disk_wrsize, diskcheck, diskcheckmb, 
-                    - edit_fontsize, env_autoadd, env_deffoc, env_ol_minh, env_options, env_reduce, envattach, ENVATTACH, envclicksegmode, envlanes, envtranstime, 
-                    - envtrimadjmode, envwritepasschg, errnowarn, fadeeditflags, fadeeditlink, fadeeditpostsel, fadeeditpresel, feedbackmode, fullscreenRectB, 
-                    - fullscreenRectL, fullscreenRectR, fullscreenRectT, fxdenorm, fxfloat_focus, fxresize, g_config_project, g_markerlist_updcnt, griddot, 
-                    - gridinbg, gridinbg2, groupdispmode, guidelines2, handzoom, help, hwfadex, hwoutfx_bypass, ide_colors, insertmtrack, isFullscreen, 
-                    - itemclickmovecurs, itemdblclk, itemeditpr, itemfade_minheight, itemfade_minwidth, itemfadehandle_maxwidth, itemfxtail, itemicons, 
-                    - itemicons_minheight, itemlabel_minheight, itemlowerhalf_minheight, itemmixflag, itemprops, itemprops_timemode, itemsnap, itemtexthide, 
-                    - itemtimelock, itemvolmode, kbd_usealt, labelitems2, lastthemefn5, loadlastproj, locklooptotime, loop, loopclickmode, loopgran, loopgranlen, 
-                    - loopnewitems, loopselpr, loopstopfx, manuallat, manuallatin, mastermutesolo, maxitemlanes, maxrecent, maxrecentfx, maxrecsize, maxrecsize_use,
-                    - maxsnaptrack, maxspeakgain, metronome_defout, metronome_flags, midiccdensity, mididefcolormap, midieditor, midiins, midiins_cs, midioctoffs, 
-                    - midiouts, midiouts_clock, midiouts_clock_nospp, midiouts_llmode, midioutthread, midisendflags, miditicksperbeat, midivu, mixerflag, mixeruiflag, 
-                    - mixrowflags, mousemovemod, mousewheelmode, multiprojopt, multitouch, multitouch_ignore_ms, multitouch_ignorewheel_ms, multitouch_rotate_gear, 
-                    - multitouch_swipe_gear, multitouch_zoom_gear, mutefadems10, mvu_rmsgain, mvu_rmsmode, mvu_rmsoffs2, mvu_rmsred, mvu_rmssize, nativedrawtext, 
-                    - newfnopt, newprojdo, newtflag, nometers, norunmute, offlineinact, opencopyprompt, opennotes, optimizesilence, pandispmode, panlaw, panmode, 
-                    - peakcachegenmode, peakcachegenrs, peakrecbm, peaksedges, pitchenvrange, playcursormode, playrate, playresamplemode, pmfol, pooledenvattach, 
-                    - pooledenvs, prebufperb, preroll, prerollmeas, projalignbeatsrate, projbpm, projfrbase, projfrdrop, projgriddiv, projgriddivsnap, projgridframe, 
-                    - projgridmin, projgridsnapmin, projgridswing, projgroupover, projgroupsel, projintmix, projmasternch, projmastervuflags, projmaxlen, projmaxlenuse, 
-                    - projmeaslen, projmeasoffs, projmetrobeatlen, projmetrocountin, projmetroen, projmetrof1, projmetrof2, projmetrov1, projmetrov2, projmidieditor, 
-                    - projpeaksgain, projrecforopencopy, projrecmode, projrelpath, projrenderaddtoproj, projrenderdither, projrenderlimit, projrendernch, projrenderqdelay, 
-                    - projrenderrateinternal, projrenderresample, projrendersrate, projrenderstems, projripedit, projsellock, projshowgrid, projsmpteahead, projsmptefw_rec, 
-                    - projsmpteinput, projsmptemaxfree, projsmpteoffs, projsmpterate, projsmpterateuseproj, projsmpteresync, projsmpteresync_rec, projsmpteskip, 
-                    - projsmptesync, projsrate, projsrateuse, projtakelane, projtimemode, projtimemode2, projtimeoffs, projtrackgroupdisabled, projtsdenom, projvidflags, 
-                    - projvidh, projvidw, promptendrec, psmaxv, psminv, quantflag, quantolms, quantolms2, quantsize2, rbn, reamote_maxblock, reamote_maxlat_render, 
-                    - reamote_maxpkt, reamote_smplfmt, reascript, reascripttimeout, recaddatloop, reccfg, recfile_wildcards, recopts, recupdatems, relativeedges, relsnap, 
-                    - renderaheadlen, renderaheadlen2, renderbsnew, rendercfg, renderclosewhendone, renderqdelay, rendertail, rendertaillen, rendertails, resetvuplay, 
-                    - restrictcpu, rewireslave, rewireslavedelay, reximport, rfprojfirst, rightclickemulate, ripplelockmode, rulerlayout, runafterstop, runallonstop, 
-                    - sampleedges, saveopts, saveundostatesproj, scnameedit, scnotes, scoreminnotelen, scorequant, screenset_as_views, screenset_as_win, screenset_autosave, 
-                    - scrubloopend, scrubloopstart, scrubmode, scrubrelgain, seekmodes, selitem_tintalpha, selitemtop, showctinmix, showlastundo, showmaintrack, 
-                    - showpeaks, showpeaksbuild, showrecitems, slidermaxv, sliderminv, slidershex, smoothseek, smoothseekmeas, snapextrad, snapextraden, solodimdb10, 
-                    - solodimen, soloip, specpeak_alpha, specpeak_bv, specpeak_ftp, specpeak_hueh, specpeak_huel, specpeak_lo, specpeak_na, splitautoxfade, stopendofloop, 
-                    - stopprojlen, syncsmpmax2, syncsmpuse, tabtotransflag, takelanes, tcpalign, templateditcursor, tempoenvmax, tempoenvmin, tempoenvtimelock, textflags, 
-                    - threadpr, timeseledge, tinttcp, titlebarreghide, tooltipdelay, tooltips, trackitemgap, trackselonmouse, transflags, transientsensitivity, 
-                    - transientthreshold, trimmidionsplit, tsmarker, undomask, undomaxmem, unselitem_tintalpha, use_reamote, usedxplugs, useinnc, userewire, verchk, 
-                    - vgrid, video_colorspace, video_decprio, video_delayms, viewadvance, volenvrange, vstbr64, vstfolder_settings, vstfullstate, vuclipstick, vudecay, 
-                    - vumaxvol, vuminvol, vuupdfreq, vzoom2, vzoommode, warnmaxram64, workbehvr, workbuffxuims, workbufmsex, workrender, workset_max, workset_min, 
-                    - workset_use, workthreads, zoom, zoommode, zoomshowarm
+        <parameters markup_type="markdown" markup_version="1.0.1" indent="default">
+            string varname - the name of the config-variable to be read; not case sensitive
+                    - see [Reaper_Config_Variables.html](Reaper_Config_Variables.html) for valid config-vars
             integer newvalue - the newly set value for varname
         </parameters>            
         <target_document>ReaperApiFunctionsReference</target_document>
@@ -26238,16 +26125,34 @@
             Reaper=5.94
             Lua=5.3
         </requires>
-        <description indent="default">
-            If char is 0 or omitted, returns a character from the keyboard queue, or 0 if no character is available, or -1 if the graphics window is not open. If char is specified and nonzero, that character's status will be checked, and the function will return greater than 0 if it is pressed.Common values are standard ASCII, such as 'a', 'A', '=' and '1', but for many keys multi-byte values are used, including 'home', 'up', 'down', 'left', 'rght', 'f1'.. 'f12', 'pgup', 'pgdn', 'ins', and 'del'. Modified and special keys can also be returned, including:
-            - Ctrl/Cmd+A..Ctrl+Z as 1..26
-            - Ctrl/Cmd+Alt+A..Z as 257..282
-            - Alt+A..Z as 'A'+256..'Z'+256
-            - 27 for ESC
-            - 13 for Enter
-            - ' ' for space
-            - 
-            - use 65536 as parameter charactercode for query of special flags, returns: &1 (supported in this script), &2=window has focus, &4=window is visible
+        <description markup_type="markdown" markup_version="1.0.1" indent="default">
+            If char is 0 or omitted, returns a character from the keyboard queue, or 0 if no character is available, or -1 if the graphics window is not open. 
+            
+            If char is specified and nonzero, that character's status will be checked, and the function will return greater than 0 if it is pressed.
+            Common values are standard ASCII, such as 'a', 'A', '=' and '1', but for many keys multi-byte values are used, 
+            including 'home', 'up', 'down', 'left', 'right', 'f1'.. 'f12', 'pgup', 'pgdn', 'ins', and 'del'. 
+            
+            Modified and special keys can also be returned, including:  
+            
+            - Ctrl/Cmd+A..Ctrl+Z as 1..26  
+            - Ctrl/Cmd+Alt+A..Z as 257..282  
+            - Alt+A..Z as 'A'+256..'Z'+256  
+            - 27 for ESC  
+            - 13 for Enter  
+            - ' ' for space  
+            -   
+            - use 65536 as parameter charactercode to query special flags, returns: &1 (supported in this script), &2=window has focus, &4=window is visible  
+            
+            Some multibyte-characters, like home, up, down, left, right, f1 .. f12, pgup, pgdn, ins, del are returned as values above 255, but some other characters, like €,  
+            are "real"-multibyte-characters(Unicode, etc).  
+            To retreive them, you need to run gfx.getchar() twice per defer-cycle and return their retvals into two variables:  
+            Example:
+            
+                        A=gfx.getchar() -- first byte
+                        B=gfx.getchar() -- second byte
+                        
+                        if A==261 and B==128 then reaper.MB("You typed the €-symbol.", "Message", 0) end -- typed character is the Euro-currency-symbol: €
+                                                
         </description>
         <retvals>
             integer charactercode - either the charactercode or 0 if nothing is pressed
@@ -27966,8 +27871,10 @@
         <requires>
             Reaper=5.62
         </requires>
-        <description indent="default">
+        <description indent="default" markup_type="markdown" markup_version="1.0.1" indent="default">
             gets config var
+            
+            see [Reaper_Config_Variables.html](Reaper_Config_Variables.html) for valid config-vars
         </description>
         <retvals>
             void* -
@@ -30804,8 +30711,10 @@
         <requires>
             Reaper=5.62
         </requires>
-        <description indent="default">
+        <description indent="default" markup_type="markdown" markup_version="1.0.1" indent="default">
             Project config var addr.
+            
+            see [Reaper_Config_Variables.html](Reaper_Config_Variables.html) for valid config-vars
         </description>
         <retvals>
             void* -
@@ -30830,8 +30739,10 @@
         <requires>
             Reaper=5.62
         </requires>
-        <description indent="default">
+        <description indent="default" markup_type="markdown" markup_version="1.0.1" indent="default">
             Returns offset to pass to projectconfig_var_addr() to get project-config var of name. szout gets size of object.
+            
+            see [Reaper_Config_Variables.html](Reaper_Config_Variables.html) for valid config-vars
         </description>
         <retvals>
             int -
@@ -31653,5 +31564,415 @@
             reaper_plugin_functions.h
         </chapter_context>
         <tags>cpp, check, function, plugin, api</tags>
-    </US_DocBloc>                
-</USDocBloc>>
+    </US_DocBloc>
+    
+    
+    
+    
+    
+    <US_DocBloc version="1.0" spok_lang="en" prog_lang="*">
+        <slug>JS_Byte</slug>
+        <title>JS_Byte(JS)</title>
+        <functioncall prog_lang="cpp">void JS_Byte(void* address, int offset, int* byteOut)</functioncall>
+        <functioncall prog_lang="eel">extension_api("JS_Byte", void* address, int offset, int &byte)</functioncall>
+        <functioncall prog_lang="lua">number byte = reaper.JS_Byte(identifier address, integer offset)</functioncall>
+        <functioncall prog_lang="python">(void address, Int offset, Int byteOut) = JS_Byte(address, offset, byteOut)</functioncall>
+        <requires>
+            Reaper=5.941
+            JS=0.94
+            Lua=5.3
+        </requires>
+        <description prog_lang="*">
+            Returns the unsigned byte at address[offset]. Offset is added as steps of 1 byte each.
+        </description>
+        <retvals>
+            number byte - 
+        </retvals>
+        <parameters>
+            identifier address - 
+            integer offset - 
+        </parameters>
+        <target_document>ReaperApiFunctionsReference</target_document>
+        <source_document></source_document>
+        <chapter_context>
+            Api-Helper-Functions
+        </chapter_context>
+        <tags></tags>
+    </US_DocBloc>
+    
+        
+    
+    <US_DocBloc version="1.0" spok_lang="en" prog_lang="*">
+        <slug>JS_Double</slug>
+        <title>JS_Double(JS)</title>
+        <functioncall prog_lang="cpp">void JS_Double(void* address, int offset, double* doubleOut)</functioncall>
+        <functioncall prog_lang="eel">extension_api("JS_Double", void* address, int offset, &double)</functioncall>
+        <functioncall prog_lang="lua"> number double = reaper.JS_Double(identifier address, integer offset)</functioncall>
+        <functioncall prog_lang="python">(void address, Int offset, Float doubleOut) = JS_Double(address, offset, doubleOut)</functioncall>
+        <requires>
+            Reaper=5.941
+            JS=0.94
+            Lua=5.3
+        </requires>
+        <description prog_lang="*">
+            Returns the 8-byte floating point value at address[offset]. Offset is added as steps of 8 bytes each.
+        </description>
+        <retvals>
+            number double - 
+        </retvals>
+        <parameters>
+            identifier address - 
+            integer offset - 
+        </parameters>
+        <target_document>ReaperApiFunctionsReference</target_document>
+        <source_document></source_document>
+        <chapter_context>
+            Api-Helper-Functions
+        </chapter_context>
+        <tags></tags>
+    </US_DocBloc>
+        
+    
+    <US_DocBloc version="1.0" spok_lang="en" prog_lang="*">
+        <slug>JS_GDI_Blit</slug>
+        <title>JS_GDI_Blit(JS)</title>
+        <functioncall prog_lang="cpp">void JS_GDI_Blit(void* destHDC, int dstx, int dsty, void* sourceHDC, int srcx, int srxy, int width, int height)</functioncall>
+        <functioncall prog_lang="eel">extension_api("JS_GDI_Blit", void* destHDC, int dstx, int dsty, void* sourceHDC, int srcx, int srxy, int width, int height)</functioncall>
+        <functioncall prog_lang="lua">reaper.JS_GDI_Blit(identifier destHDC, integer dstx, integer dsty, identifier sourceHDC, integer srcx, integer srcy, integer width, integer height)</functioncall>
+        <functioncall prog_lang="python">JS_GDI_Blit(void destHDC, Int dstx, Int dsty, void sourceHDC, Int srcx, Int srxy, Int width, Int height)</functioncall>
+        <requires>
+            Reaper=5.941
+            JS=0.94
+            Lua=5.3
+        </requires>
+        <description prog_lang="*">
+            Blits between two device contexts, which may include LICE "system bitmaps".
+        </description>
+        <parameters>
+            identifier destHDC - 
+            integer dstx - 
+            integer dsty - 
+            identifier sourceHDC - 
+            integer srcx - 
+            integer srcy - 
+            integer width - 
+            integer height - 
+        </parameters>
+        <target_document>ReaperApiFunctionsReference</target_document>
+        <source_document></source_document>
+        <chapter_context>
+            GFX-functions
+        </chapter_context>
+        <tags></tags>
+    </US_DocBloc>
+    
+    <US_DocBloc version="1.0" spok_lang="en" prog_lang="*">
+        <slug>JS_GDI_CreateFillBrush</slug>
+        <title>JS_GDI_CreateFillBrush(JS)</title>
+        <functioncall prog_lang="cpp">void* JS_GDI_CreateFillBrush(int color)</functioncall>
+        <functioncall prog_lang="eel">void* extension_api("JS_GDI_CreateFillBrush", int color)</functioncall>
+        <functioncall prog_lang="lua">identifier reaper.JS_GDI_CreateFillBrush(integer color)</functioncall>
+        <functioncall prog_lang="python">void JS_GDI_CreateFillBrush(Int color)</functioncall>
+        <requires>
+            Reaper=5.941
+            JS=0.94
+            Lua=5.3
+        </requires>
+        <description prog_lang="*">
+            
+        </description>
+        <retvals>
+            identifier identifier - 
+        </retvals>
+        <parameters>
+            integer color - 
+        </parameters>
+        <target_document>ReaperApiFunctionsReference</target_document>
+        <source_document></source_document>
+        <chapter_context>
+            GFX-functions
+        </chapter_context>
+        <tags></tags>
+    </US_DocBloc>
+    
+    <US_DocBloc version="1.0" spok_lang="en" prog_lang="*">
+        <slug>JS_GDI_CreateFont</slug>
+        <title>JS_GDI_CreateFont(JS)</title>
+        <functioncall prog_lang="cpp">void* JS_GDI_CreateFont(int height, int weight, int angle, bool italic, bool underline, bool strikeOut, const char* fontName)</functioncall>
+        <functioncall prog_lang="eel">void* extension_api("JS_GDI_CreateFont", int height, int weight, int angle, bool italic, bool underline, bool strike, "fontName")</functioncall>
+        <functioncall prog_lang="lua">identifier reaper.JS_GDI_CreateFont(integer height, integer weight, integer angle, boolean italic, boolean underline, boolean strike, string fontName)</functioncall>
+        <functioncall prog_lang="python">void JS_GDI_CreateFont(Int height, Int weight, Int angle, Boolean italic, Boolean underline, Boolean strikeOut, String fontName)</functioncall>
+        <requires>
+            Reaper=5.941
+            JS=0.94
+            Lua=5.3
+        </requires>
+        <description prog_lang="*">
+            Note: Text color must be set separately.
+        </description>
+        <retvals>
+            identifier identifier - 
+        </retvals>
+        <parameters>
+            integer height - 
+            integer weight - 0 - 1000, with 0 = auto, 400 = normal and 700 = bold.
+            integer angle - the angle, in tenths of degrees, between the text and the x-axis of the device.
+            boolea italic - 
+            boolean underline - 
+            boolean strike - 
+            string fontname - If empty string "", uses first font that matches the other specified attributes.
+        </parameters>
+        <target_document>ReaperApiFunctionsReference</target_document>
+        <source_document></source_document>
+        <chapter_context>
+            GFX-functions
+        </chapter_context>
+        <tags></tags>
+    </US_DocBloc>
+    
+    <US_DocBloc version="1.0" spok_lang="en" prog_lang="*">
+        <slug>JS_GDI_CreatePen</slug>
+        <title>JS_GDI_CreatePen(JS)</title>
+        <functioncall prog_lang="cpp">void* JS_GDI_CreatePen(int width, int color)</functioncall>
+        <functioncall prog_lang="eel">void* extension_api("JS_GDI_CreatePen", int width, int color)</functioncall>
+        <functioncall prog_lang="lua">identifier reaper.JS_GDI_CreatePen(integer width, integer color)</functioncall>
+        <functioncall prog_lang="python">void JS_GDI_CreatePen(Int width, Int color)</functioncall>
+        <requires>
+            Reaper=5.941
+            JS=0.94
+            Lua=5.3
+        </requires>
+        <description prog_lang="*">
+            
+        </description>
+        <retvals>
+            identifier identifier - 
+        </retvals>
+        <parameters>
+            integer width - 
+            integer color - 
+        </parameters>
+        <target_document>ReaperApiFunctionsReference</target_document>
+        <source_document></source_document>
+        <chapter_context>
+            GFX-functions
+        </chapter_context>
+        <tags></tags>
+    </US_DocBloc>
+    
+    <US_DocBloc version="1.0" spok_lang="en" prog_lang="*">
+        <slug>JS_GDI_DeleteObject</slug>
+        <title>JS_GDI_DeleteObject(JS)</title>
+        <functioncall prog_lang="cpp">void JS_GDI_DeleteObject(void* GDIObject)</functioncall>
+        <functioncall prog_lang="eel">extension_api("JS_GDI_DeleteObject", void* GDIObject)</functioncall>
+        <functioncall prog_lang="lua">reaper.JS_GDI_DeleteObject(identifier GDIObject)</functioncall>
+        <functioncall prog_lang="python">JS_GDI_DeleteObject(void GDIObject)</functioncall>
+        <requires>
+            Reaper=5.941
+            JS=0.94
+            Lua=5.3
+        </requires>
+        <description prog_lang="*">
+            
+        </description>
+        <parameters>
+            identifier GDIObject - 
+        </parameters>
+        <target_document>ReaperApiFunctionsReference</target_document>
+        <source_document></source_document>
+        <chapter_context>
+            GFX-functions
+        </chapter_context>
+        <tags></tags>
+    </US_DocBloc>
+    
+    <US_DocBloc version="1.0" spok_lang="en" prog_lang="*">
+        <slug>JS_GDI_DrawText</slug>
+        <title>JS_GDI_DrawText(JS)</title>
+        <functioncall prog_lang="cpp">int JS_GDI_DrawText(void* deviceHDC, const char* text, int len, int left, int top, int right, int bottom, const char* align))</functioncall>
+        <functioncall prog_lang="eel">int extension_api("JS_GDI_DrawText", void* deviceHDC, "text", int len, int left, int top, int right, int bottom, "align)")</functioncall>
+        <functioncall prog_lang="lua">integer reaper.JS_GDI_DrawText(identifier deviceHDC, string text, integer len, integer left, integer top, integer right, integer bottom, string align))</functioncall>
+        <functioncall prog_lang="python">Int JS_GDI_DrawText(void deviceHDC, String text, Int len, Int left, Int top, Int right, Int bottom, String align))</functioncall>
+        <requires>
+            Reaper=5.941
+            JS=0.94
+            Lua=5.3
+        </requires>
+        <description prog_lang="*">
+            Parameters:
+            * align: Combination of: "TOP", "VCENTER", "LEFT", "HCENTER", "RIGHT", "BOTTOM", "WORDBREAK", "SINGLELINE", "NOCLIP", "CALCRECT", "NOPREFIX" or "ELLIPSIS"
+        </description>
+        <retvals>
+            integer retval - 
+        </retvals>
+        <parameters>
+            identifier deviceHDC - 
+            string text - 
+            integer len - 
+            integer left - 
+            integer top - 
+            integer right - 
+            integer bottom - 
+            string align -
+        </parameters>
+        <target_document>ReaperApiFunctionsReference</target_document>
+        <source_document></source_document>
+        <chapter_context>
+            GFX-functions
+        </chapter_context>
+        <tags></tags>
+    </US_DocBloc>
+    
+    <US_DocBloc version="1.0" spok_lang="en" prog_lang="*">
+        <slug>JS_GDI_FillEllipse</slug>
+        <title>JS_GDI_FillEllipse(JS)</title>
+        <functioncall prog_lang="cpp">void JS_GDI_FillEllipse(void* deviceHDC, int left, int top, int right, int bottom)</functioncall>
+        <functioncall prog_lang="eel">extension_api("JS_GDI_FillEllipse", void* deviceHDC, int left, int top, int right, int bottom)</functioncall>
+        <functioncall prog_lang="lua">reaper.JS_GDI_FillEllipse(identifier deviceHDC, integer left, integer top, integer right, integer bottom)</functioncall>
+        <functioncall prog_lang="python">JS_GDI_FillEllipse(void deviceHDC, Int left, Int top, Int right, Int bottom)</functioncall>
+        <requires>
+            Reaper=5.941
+            JS=0.94
+            Lua=5.3
+        </requires>
+        <description prog_lang="*">
+            
+        </description>
+       
+        <parameters>
+            identifier deviceHDC - 
+            integer left - 
+            integer top - 
+            integer right - 
+            integer bottom - 
+        </parameters>
+        <target_document>ReaperApiFunctionsReference</target_document>
+        <source_document></source_document>
+        <chapter_context>
+            GFX-functions
+        </chapter_context>
+        <tags></tags>
+    </US_DocBloc>
+
+    <US_DocBloc version="1.0" spok_lang="en" prog_lang="*">
+        <slug>JS_GDI_FillPolygon</slug>
+        <title>JS_GDI_FillPolygon(JS)</title>
+        <functioncall prog_lang="cpp">void JS_GDI_FillPolygon(void* deviceHDC, const char* packedX, const char* packedY, int numPoints)</functioncall>
+        <functioncall prog_lang="eel">extension_api("JS_GDI_FillPolygon", void* deviceHDC, "packedX", "packedY", int numPoints)</functioncall>
+        <functioncall prog_lang="lua">reaper.JS_GDI_FillPolygon(identifier deviceHDC, string packedX, string packedY, integer numPoints)</functioncall>
+        <functioncall prog_lang="python">JS_GDI_FillPolygon(void deviceHDC, String packedX, String packedY, Int numPoints)</functioncall>
+        <requires>
+            Reaper=5.941
+            JS=0.94
+            Lua=5.3
+        </requires>
+        <description prog_lang="*">
+            packedX and packedY are strings of points, each packed as "<i4".
+        </description>
+       
+        <parameters>
+            identifier deviceHDC - 
+            string packedX - 
+            string packedY - 
+            integer numPoints - 
+        </parameters>
+        <target_document>ReaperApiFunctionsReference</target_document>
+        <source_document></source_document>
+        <chapter_context>
+            GFX-functions
+        </chapter_context>
+        <tags></tags>
+    </US_DocBloc>
+    
+    <US_DocBloc version="1.0" spok_lang="en" prog_lang="*">
+        <slug>JS_GDI_FillRect</slug>
+        <title>JS_GDI_FillRect(JS)</title>
+        <functioncall prog_lang="cpp">void JS_GDI_FillRect(void* deviceHDC, int left, int top, int right, int bottom)</functioncall>
+        <functioncall prog_lang="eel">extension_api("JS_GDI_FillRect", void* deviceHDC, int left, int top, int right, int bottom)</functioncall>
+        <functioncall prog_lang="lua">reaper.JS_GDI_FillRect(identifier deviceHDC, integer left, integer top, integer right, integer bottom)</functioncall>
+        <functioncall prog_lang="python">JS_GDI_FillRect(void deviceHDC, Int left, Int top, Int right, Int bottom)</functioncall>
+        <requires>
+            Reaper=5.941
+            JS=0.94
+            Lua=5.3
+        </requires>
+        <description prog_lang="*">
+            
+        </description>
+       
+        <parameters>
+            identifier deviceHDC - 
+            integer left - 
+            integer top - - 
+            integer right - 
+            integer bottom - 
+        </parameters>
+        <target_document>ReaperApiFunctionsReference</target_document>
+        <source_document></source_document>
+        <chapter_context>
+            GFX-functions
+        </chapter_context>
+        <tags></tags>
+    </US_DocBloc>
+    
+    <US_DocBloc version="1.0" spok_lang="en" prog_lang="*">
+        <slug>JS_GDI_FillRoundRect</slug>
+        <title>JS_GDI_FillRoundRect(JS)</title>
+        <functioncall prog_lang="cpp">void JS_GDI_FillRoundRect(void* deviceHDC, int left, int top, int right, int bottom, int xrnd, int yrnd)</functioncall>
+        <functioncall prog_lang="eel">extension_api("JS_GDI_FillRoundRect", void* deviceHDC, int left, int top, int right, int bottom, int xrnd, int yrnd)</functioncall>
+        <functioncall prog_lang="lua">reaper.JS_GDI_FillRoundRect(identifier deviceHDC, integer left, integer top, integer right, integer bottom, integer xrnd, integer yrnd)</functioncall>
+        <functioncall prog_lang="python">JS_GDI_FillRoundRect(void deviceHDC, Int left, Int top, Int right, Int bottom, Int xrnd, Int yrnd)</functioncall>
+        <requires>
+            Reaper=5.941
+            JS=0.94
+            Lua=5.3
+        </requires>
+        <description prog_lang="*">
+            
+        </description>
+        <parameters>
+            identifier deviceHDC - 
+            integer left - 
+            integer top - - 
+            integer right - 
+            integer bottom - 
+            integer xrnd - 
+            integer yrnd - 
+        </parameters>
+        <target_document>ReaperApiFunctionsReference</target_document>
+        <source_document></source_document>
+        <chapter_context>
+            GFX-functions
+        </chapter_context>
+        <tags></tags>
+    </US_DocBloc>
+    
+    <US_DocBloc version="1.0" spok_lang="en" prog_lang="*">
+        <slug>JS_GDI_GetClientDC</slug>
+        <title>JS_GDI_GetClientDC(JS)</title>
+        <functioncall prog_lang="cpp">void* JS_GDI_GetClientDC(void* windowHWND)</functioncall>
+        <functioncall prog_lang="eel">void* extension_api("JS_GDI_GetClientDC", void* windowHWND)</functioncall>
+        <functioncall prog_lang="lua">identifier reaper.JS_GDI_GetClientDC(identifier windowHWND)</functioncall>
+        <functioncall prog_lang="python">void JS_GDI_GetClientDC(void windowHWND)</functioncall>
+        <requires>
+            Reaper=5.941
+            JS=0.94
+            Lua=5.3
+        </requires>
+        <description prog_lang="*">
+            Returns the device context for the client area of the specified window.
+        </description>
+        <retvals>
+            identifier identifier - 
+        </retvals>
+        <parameters>
+            identifier windowHWND - 
+        </parameters>
+        <target_document>ReaperApiFunctionsReference</target_document>
+        <source_document></source_document>
+        <chapter_context>
+            Window-functions
+        </chapter_context>
+        <tags></tags>
+    </US_DocBloc>
+</USDocBloc>
