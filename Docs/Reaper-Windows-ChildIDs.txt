@@ -226,6 +226,44 @@ ChildIDs:
     1057  Write markers as cues     -   Button
     65535  Bit depth:               -   Static
 
+>"Rendering to file..." or "Finished in ($time) (XX.Xx realtime)"
+    1      Close       -   Button
+    2      Cancel      -   Button
+    1007   output-filename with path textbox                         -   Edit
+    1036   the time elapse status/errormessage below Render status   -   Static
+    1039   Render status-area                                        -   Button
+    1040   the outputformat/errormessage below the output file-textboxframe      -   Static
+    1042   Automatically close when finished-checkbox                -   Button
+    1165   Peaks-area below the master-mix vus   -   REAPERminipeaks
+    1166   vu for channel 1    -   REAPERhorzvu
+    1167   vu for channel 2    -   REAPERhorzvu
+    1168   vu for channel 3    -   REAPERhorzvu
+    1169   vu for channel 4    -   REAPERhorzvu
+    1170   vu for channel 5    -   REAPERhorzvu
+    1171   vu for channel 6    -   REAPERhorzvu
+    1172   vu for channel 7    -   REAPERhorzvu
+    1173   vu for channel 8    -   REAPERhorzvu
+    1174   vu for channel 9    -   REAPERhorzvu
+    1175   vu for channel 10   -   REAPERhorzvu
+    1176   vu for channel 11   -   REAPERhorzvu
+    1177   vu for channel 12   -   REAPERhorzvu
+    1178   vu for channel 13   -   REAPERhorzvu
+    1179   vu for channel 14   -   REAPERhorzvu
+    1180   vu for channel 15   -   REAPERhorzvu
+    1181   vu for channel 16   -   REAPERhorzvu
+    1182   vu for channel 17   -   REAPERhorzvu
+    1183   vu for channel 18   -   REAPERhorzvu
+    1184   vu for channel 19   -   REAPERhorzvu
+    1185   vu for channel 20   -   REAPERhorzvu
+    1186   vu for channel 21   -   REAPERhorzvu
+    1187   vu for channel 22   -   REAPERhorzvu
+    1188   vu for channel 23   -   REAPERhorzvu
+    1189   vu for channel 24   -   REAPERhorzvu
+    1228   Launch File           -   Button
+    1229   Show in explorer...   -   Button
+    1230   Shup File  (purpose unknown) -   Button
+    40249  Output file           -   Button
+
 >Render-queue-dialog    
     1     Render all        -   Button
     2     Close             -   Button
