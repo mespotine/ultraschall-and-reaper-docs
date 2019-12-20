@@ -33,25 +33,11 @@ parameters:
                                     In most other parameters, this is omitted!
                                     
      integer midi_note - the midinote, that is assigned to this; 
-                             0,   OSC is used
-                             176, MIDI Chan 1 CC 0
-                             ...
-                             432, MIDI Chan 1 CC 1
-                             ...
+                             0,    OSC is used
                              9360, MIDI Chan 1 Note 36
                              9616, MIDI Chan 1 Note 37
                              9872, MIDI Chan 1 Note 38
                                ...
-                               
-                         CC Mode-dropdownlist:
-                            set the following flags to their specific values (0=0, 1=the value beginning &, like &65536 or &131072 or &262144)
-                             &65536 &131072 &262144 
-                                0       0       0,      Absolute
-                                1       0       0,      Relative 1(127=-1, 1=+1)
-                                0       1       0,      Relative 2(63=-1, 65=+1)
-                                1       1       0,      Relative 3(65=-1, 1=+1)
-                                0       0       1,      Toggle (>0=toggle)
-                             
                                
      integer checkboxflags - the checkboxes checked in the MIDI/OSC-learn dialog
                               0, no checkboxes
@@ -59,6 +45,7 @@ parameters:
                               2, Soft takeover (absolute mode only)
                               3, Soft takeover (absolute mode only)+enable only when track or item is selected
                               4, enable only when effect configuration is focused
+                              8, MUST NOT BE SET, or this entry will be changed into LFOLEARN instead!
                               20, enable only when effect configuration is visible
                               
      optional string string osc_message - the message of the osc-controller; only when midi_note is set to 0
@@ -257,6 +244,7 @@ LFOLearn:
                               2, Soft takeover (absolute mode only)
                               3, Soft takeover (absolute mode only)+enable only when track or item is selected
                               4, enable only when effect configuration is focused
+                              8, MUST BE SET, or this entry will be changed into PARMLEARN instead!
                               20, enable only when effect configuration is visible
                               
      optional string string osc_message - the message of the osc-controller; only when midi_note is set to 0
