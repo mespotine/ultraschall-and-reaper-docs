@@ -18,7 +18,8 @@ Lets' begin.
     Another funfact: 
         you can send midi AND computer-keyboard-shortcuts to the Add Shortcuts/Find Shortcuts-dialogs of the Actionslist.
     
-    This mirrors, in parts, the way, KEY-shortcut-entries are stored in the reaper-kb.ini-file
+    This mirrors, in parts, the way, KEY-shortcut-entries are stored in the reaper-kb.ini-file, though in detail, there seem 
+    to be differences between them, that I did not(yet) understand.
     
     Reaper itself stores all its keyboard-shortcuts as well as MIDI-messages as 3 byte sequence:
         
