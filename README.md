@@ -1,4 +1,4 @@
-# This is outdated, latest docs are available with Ultraschall-API from now on. 
+# This is outdated, latest docs and devtools are available with Ultraschall-API from now on. 
 [Ultraschall-API repository](https://github.com/Ultraschall/ultraschall-lua-api-for-reaper)
 Look in there for the folders Docs/ and Misc/ to find all docs available.
 
